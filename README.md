@@ -18,7 +18,7 @@
 
 [最常用出租屋管理系统rent6前后端分离版-thinkphp8+TDesign](https://gitee.com/MarcoMaHH/rent6)
 
-[最常用出租屋管理系统rent8混编版-thinkphp8+TDesignI](https://gitee.com/MarcoMaHH/rent8)
+[最常用出租屋管理系统rent8混编版-thinkphp8+TDesign](https://gitee.com/MarcoMaHH/rent8)
 
 ### 系统环境
 
