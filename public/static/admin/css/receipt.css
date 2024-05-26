@@ -1,0 +1,55 @@
+.setBorder {
+    border : 2px solid;
+    padding: 3px;
+}
+
+.setHeader {
+    text-align   : center;
+    font-size    : 17px;
+    font-weight  : bold;
+    margin-top   : 5px;
+    margin-bottom: 7px;
+}
+
+.container {
+    display      : flex;
+    width        : 100%;
+    margin-bottom: 7px;
+}
+
+.box {
+    flex      : 3;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.box2 {
+    flex      : 4;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.box3 {
+    flex      : 3;
+    box-sizing: border-box;
+    text-align: right;
+}
+
+.setTable {
+    width          : 100%;
+    border-collapse: collapse;
+    margin-bottom  : 7px;
+}
+
+.setTd {
+    border    : 1px solid black;
+    padding   : 8px;
+    text-align: left;
+}
+
+.setTh {
+    border          : 1px solid black;
+    padding         : 8px;
+    background-color: #f2f2f2;
+    text-align      : center;
+}

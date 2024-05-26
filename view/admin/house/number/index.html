@@ -1,0 +1,309 @@
+{extend name="common/layout" /}
+{block name="main"}
+<t-card class="list-card-container" :bordered="false">
+  <t-button theme="primary" style="margin-bottom: 10px;" @click="handleAdd">
+    <template #icon><t-icon name="add" /></template>
+    新建
+  </t-button>
+  <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
+    active-row-type="single" :hover="true" :pagination="pagination" :loading="tableLoading">
+    <template #state="{ row }">
+      <t-tag v-if="row.rent_mark === 'Y'" theme="danger" variant="light"> 已租 </t-tag>
+      <t-tag v-if="row.rent_mark === 'N'" theme="success" variant="light"> 空闲 </t-tag>
+    </template>
+    <template #lease_type="{ row }">
+      {{row.lease_type}} 个月
+    </template>
+    <template #op="slotProps">
+      <t-space>
+        <t-button size="small" @click="handleEdit(slotProps.row)">修改</t-button>
+        <t-button size="small" theme="success" v-if="slotProps.row.rent_mark === 'N'"
+          @click="handleCheckIn(slotProps.row)">入住</t-button>
+        <t-button size="small" theme="warning" v-if="slotProps.row.rent_mark === 'Y'"
+          @click="handleCheckOut(slotProps.row)">退房</t-button>
+        <t-button size="small" theme="default" @click="handleContract(slotProps.row)">合同</t-button>
+        <t-popconfirm theme="danger" content="确认删除?" @confirm="handleDelete(slotProps.row)">
+          <t-button theme="danger" size="small">删除</t-button>
+        </t-popconfirm>
+      </t-space>
+    </template>
+  </t-table>
+</t-card>
+
+<!-- 新增房间 -->
+<t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false" top="5px">
+  <t-form ref="numberForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
+    <t-form-item label="房间名" name="name">
+      <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="房租" name="rental">
+      <t-input-number theme="normal" v-model="formData.rental" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="租期" name="lease_type">
+      <t-radio-group v-model="formData.lease_type">
+        <t-radio value="1">1个月</t-radio>
+        <t-radio value="2">2个月</t-radio>
+        <t-radio value="3">3个月</t-radio>
+        <t-radio value="6">6个月</t-radio>
+        <t-radio value="12">12个月</t-radio>
+      </t-radio-group>
+    </t-form-item>
+    <t-form-item label="押金" name="deposit">
+      <t-input-number theme="normal" v-model="formData.deposit" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="管理费" name="management">
+      <t-input-number v-model="formData.management" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="卫生费" name="garbage_fee">
+      <t-input-number v-model="formData.garbage_fee" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="逾期日租金" name="daily_rent">
+      <t-input-number v-model="formData.daily_rent" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="水费单价" name="water_price">
+      <t-input-number v-model="formData.water_price" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="电费单价" name="electricity_price">
+      <t-input-number v-model="formData.electricity_price" :style="{ width: '480px' }" theme="normal"
+        placeholder="请输入" />
+    </t-form-item>
+    <t-form-item style="float: right">
+      <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px;">取消</t-button>
+      <t-button theme="primary" type="submit">确定</t-button>
+    </t-form-item>
+  </t-form>
+</t-dialog>
+
+<!-- 入住表单 -->
+<t-dialog v-model:visible="checkInVisible" :header="formHeader" :width="680" :footer="false" top="5px">
+  <t-form ref="checkInForm" :data="formData" :rules="checkInRules" :label-width="100" @submit="checkIn">
+    <t-form-item label="房产名" name="house_property_name">
+      <t-input v-model="formData.house_property_name" :style="{ width: '480px' }" readonly />
+    </t-form-item>
+    <t-form-item label="房间名" name="house_number_name">
+      <t-input v-model="formData.house_number_name" :style="{ width: '480px' }" readonly />
+    </t-form-item>
+    <t-form-item label="入住日期" name="checkin_time">
+      <t-date-picker v-model="formData.checkin_time" mode="date" :style="{ width: '480px' }" clearable />
+    </t-form-item>
+    <t-form-item label="租客姓名" name="name">
+      <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="性别" name="sex">
+      <t-radio-group v-model="formData.sex">
+        <t-radio value="M">男</t-radio>
+        <t-radio value="F">女</t-radio>
+      </t-radio-group>
+    </t-form-item>
+    <t-form-item label="手机号码" name="phone">
+      <t-input-number v-model="formData.phone" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="身份证号码" name="id_card_number">
+      <t-input v-model="formData.id_card_number" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="籍贯" name="native_place">
+      <t-input v-model="formData.native_place" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="工作单位" name="work_units">
+      <t-input v-model="formData.work_units" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item style="float: right">
+      <t-button variant="outline" @click="checkInVisible = false" style="margin-right: 5px;">取消</t-button>
+      <t-button theme="primary" type="submit">确定</t-button>
+    </t-form-item>
+  </t-form>
+</t-dialog>
+
+<!-- 退房表单 -->
+<t-dialog v-model:visible="checkOutVisible" :header="formHeader" :width="680" :footer="false">
+  <t-form ref="checkOutForm" :data="formData" :rules="checkOutRules" :label-width="100" @submit="checkOut">
+    <t-form-item label="房产名" name="house_property_name">
+      <t-input v-model="formData.house_property_name" :style="{ width: '480px' }" readonly />
+    </t-form-item>
+    <t-form-item label="房间名" name="house_number_name">
+      <t-input v-model="formData.house_number_name" :style="{ width: '480px' }" readonly />
+    </t-form-item>
+    <t-form-item label="退房日期" name="leave_time">
+      <t-date-picker v-model="formData.leave_time" mode="date" :style="{ width: '480px' }" clearable />
+    </t-form-item>
+    <t-form-item style="float: right">
+      <t-button variant="outline" @click="checkOutVisible = false" style="margin-right: 5px;">取消</t-button>
+      <t-button theme="primary" type="submit">确定</t-button>
+    </t-form-item>
+  </t-form>
+</t-dialog>
+{/block}
+
+{block name="script"}
+<script>
+  const data = {
+    tableData: [],
+    tableLoading: false,
+    // 分页
+    pagination: {
+      defaultPageSize: 10,
+      total: 10,
+      defaultCurrent: 1,
+    },
+    columns: [
+      { title: '房产名', colKey: 'property_name', width: 80, align: 'left', fixed: 'left', },
+      { title: '房间名', colKey: 'name', width: 80 },
+      { title: '房间状态', colKey: 'state', width: 80 },
+      { title: '收租日期', colKey: 'rent_date', width: 80 },
+      { title: '房租', colKey: 'rental', width: 80 },
+      { title: '押金', colKey: 'deposit', width: 80 },
+      { title: '租期', colKey: 'lease_type', width: 80 },
+      { title: '操作', colKey: 'op', width: 160, align: 'left', fixed: 'right', },
+    ],
+    dialogVisible: false,
+    formData: {},
+    formHeader: '',
+    rules: {
+      name: [{ required: true, message: '必填', trigger: 'blur' }],
+      rental: [{ required: true, message: '必填', trigger: 'blur' }],
+      lease_type: [{ required: true, message: '必填' }],
+      deposit: [{ required: true, message: '必填', trigger: 'blur' }],
+      management: [{ required: true, message: '必填', trigger: 'blur' }],
+      garbage_fee: [{ required: true, message: '必填', trigger: 'blur' }],
+      daily_rent: [{ required: true, message: '必填', trigger: 'blur' }],
+      water_price: [{ required: true, message: '必填', trigger: 'blur' }],
+      electricity_price: [{ required: true, message: '必填', trigger: 'blur' }],
+    },
+    // 入住
+    checkInVisible: false,
+    checkInRules: {
+      name: [{ required: true, message: '必填', trigger: 'blur' }],
+      checkin_time: [{ required: true, message: '必填' }],
+      phone: [{ telnumber: true, message: '格式错误', trigger: 'blur' }],
+      id_card_number: [{ idcard: true, message: '格式错误', trigger: 'blur' }],
+    },
+    // 退房
+    checkOutVisible: false,
+    checkOutRules: {
+      leave_time: [{ required: true, message: '必填' }],
+    },
+  };
+
+  function f() {
+    return {
+      init: function () {
+        this.tableLoading = true;
+        axiosGet("{:url('query')}").then(response => {
+          if (response.code == 1) {
+            this.tableData = response.data;
+            this.pagination.total = response.count;
+          } else {
+            this.$message.error('系统出错了!!!');
+          }
+          this.tableLoading = false;
+        });
+      },
+      // 新增
+      handleAdd() {
+        this.$refs.numberForm.reset();
+        this.formData = { 'house_property_id': this.houseDef };
+        this.formHeader = this.houseName + ' - 新增房间';
+        this.dialogVisible = true;
+      },
+      // 修改
+      handleEdit(row) {
+        this.$refs.numberForm.reset();
+        this.formData = { ...row };
+        this.formHeader = this.houseName + ' - 修改房间';
+        this.dialogVisible = true;
+      },
+      // 保存
+      handleSave() {
+        this.$refs.numberForm.validate().then((valid) => {
+          if (valid == true) {
+            axiosPost("{:url('save')}", this.formData).then(response => {
+              if (response.state == 'success') {
+                this.$message.success(response.msg);
+                this.dialogVisible = false;
+                this.init();
+              } else if (response.state == 'warning') {
+                this.$message.warning(response.msg);
+              } else {
+                this.$message.error(response.msg);
+              }
+            });
+          }
+        });
+      },
+      // 删除
+      handleDelete(row) {
+        axiosPost("{:url('delete')}", row).then(response => {
+          if (response.state == 'success') {
+            this.$message.success(response.msg);
+            this.init();
+          } else if (response.state == 'warning') {
+            this.$message.warning(response.msg);
+          } else {
+            this.$message.error(response.msg);
+          }
+        });
+      },
+      // 入住
+      handleCheckIn(row) {
+        this.$refs.checkInForm.reset();
+        this.formHeader = '租客入住';
+        this.checkInVisible = true;
+        this.formData = {
+          'house_property_id': this.houseDef, 'house_property_name': row.property_name,
+          'house_number_id': row.id, 'house_number_name': row.name,
+        };
+      },
+      checkIn() {
+        this.$refs.checkInForm.validate().then((valid) => {
+          if (valid == true) {
+            axiosPost("{:url('checkin')}", this.formData).then(response => {
+              if (response.state == 'success') {
+                this.$message.success(response.msg);
+                this.checkInVisible = false;
+                this.init();
+              } else if (response.state == 'warning') {
+                this.$message.warning(response.msg);
+              } else {
+                this.$message.error(response.msg);
+              }
+            });
+          }
+        });
+      },
+      // 退房
+      handleCheckOut(row) {
+        this.$refs.checkOutForm.reset();
+        this.formHeader = '租客退房';
+        this.checkOutVisible = true;
+        this.formData = {
+          'id': row.id,
+          'leave_time': getCurrentDateString(),
+          'house_number_name': row.name,
+          'house_property_name': row.property_name,
+        };
+      },
+      checkOut() {
+        this.$refs.checkOutForm.validate().then((valid) => {
+          if (valid == true) {
+            axiosPost("{:url('checkout')}", this.formData).then(response => {
+              if (response.state == 'success') {
+                this.$message.success(response.msg);
+                this.checkOutVisible = false;
+                this.init();
+              } else if (response.state == 'warning') {
+                this.$message.warning(response.msg);
+              } else {
+                this.$message.error(response.msg);
+              }
+            });
+          }
+        });
+      },
+      // 合同
+      handleContract(row) {
+        axiosDownload("{:url('contract')}", { id: row.id });
+      },
+    }
+  }
+</script>
+{/block}

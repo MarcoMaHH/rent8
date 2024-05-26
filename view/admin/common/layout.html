@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>rent7-最常用出租屋管理系统</title>
+  <!-- 导入 Vue3 -->
+  <script src="__CDN__/vue/3.4.19/vue.global.js"></script>
+  <!-- 引入Vue Router -->
+  <script src="__CDN__/vue-router/4.3.0/vue-router.global.js"></script>
+  <!-- axios -->
+  <script src="__STATIC__/js/axios.min.js"></script>
+  <!-- 导入 TDesign 组件库 -->
+  <script src="__CDN__/tdesign/1.9.4/tdesign.min.js"></script>
+  <link rel="stylesheet" href="__CDN__/tdesign/1.9.4/tdesign.min.css" />
+  <!-- 导入 TDesign icon -->
+  <script src="__CDN__/tdesign-icons/0.2.2/index.js"></script>
+  <link rel="stylesheet" href="__CDN__/tdesign-icons/0.2.2/index.css" />
+  <!-- 导入antv g2 -->
+  <script src="__CDN__/antv/g2.min.js"></script>
+  <!-- 导入printJS -->
+  <script src="__CDN__/print/print.js"></script>
+  <link rel="stylesheet" href="__CDN__/print/print.css" type="text/css">
+  <!-- 导入自封装JS -->
+  <script type="text/javascript"
+    src="__STATIC__/js/main.js?{if $Think.env.app_debug}_={:time()}{else /}v={$Think.config.tpadmin.version}{/if}"></script>
+</head>
+
+<body>
+  <div id="app" v-cloak>
+    <t-layout>
+      <t-header>{include file="common/pub/header" /}</t-header>
+      <t-layout style="border-top: 1px solid #eeeeee;">
+        <t-aside :width="isCollapse ? '70px' : '240px'">{include file="common/pub/aside" /}</t-aside>
+        <t-content style="margin: 15px;"> {block name="main"}{/block}</t-content>
+      </t-layout>
+    </t-layout>
+  </div>
+  {block name="script"}{/block}
+  <script>
+    this.token = '{$layout_token}';
+    const common_data = {
+      isCollapse: false,
+      houseDef: null,
+      houseName: '',
+      houseList: [],
+      loading: false,
+      passwordVisible: false,
+      passwordData: {},
+      passwordRules: {
+        password: [
+          { required: true, message: '密码必填', type: 'error' },
+          { min: 6, message: '密码最少6位数', type: 'error', trigger: 'blur' },
+        ],
+        password2: [
+          { required: true, message: '密码必填', type: 'error' },
+          { min: 6, message: '密码最少6位数', type: 'error', trigger: 'blur' },
+        ],
+      },
+      expanded: ["{$current_route['pid']}"],
+    }
+
+    function common_f() {
+      return {
+        changeCollapsed: function () {
+          this.isCollapse = !this.isCollapse;
+        },
+        onLogout: function () {
+          let that = this;
+          axiosPost('{:url("Index/logout")}', {}).then(response => {
+            if (response.state == 'success') {
+              that.$message.success(response.msg);
+              window.location.href = '{:url("index/login")}';
+            } else {
+              that.$message({
+                message: response.msg, type: response.state
+              });
+            }
+          });
+        },
+        changePassword: function () {
+          this.passwordVisible = true;
+          this.$refs.passwordForm.reset();
+        },
+        passwordSave: function () {
+          this.$refs.passwordForm.validate().then((valid) => {
+            if (valid == true) {
+              if (this.passwordData.password === this.passwordData.password2) {
+                axiosPost('{:url("Index/password")}', this.passwordData).then(response => {
+                  if (response.state == 'success') {
+                    this.$message.success(response.msg);
+                    this.passwordVisible = false;
+                  } else if (response.state == 'warning') {
+                    this.$message.warning(response.msg);
+                  } else {
+                    this.$message.error(response.msg);
+                  }
+                });
+              } else {
+                this.$message.warning('两次输入的密码不一致');
+              }
+            }
+          });
+        },
+        queryHouse: function () {
+          axiosGet("{:url('house.property/query')}").then(response => {
+            if (response.code == 1) {
+              this.houseList = response.data;
+              for (let index = 0; index < this.houseList.length; index++) {
+                if (this.houseList[index].firstly == 'Y') {
+                  this.houseDef = this.houseList[index].id;
+                  this.houseName = this.houseList[index].name;
+                  break;
+                }
+              }
+            } else {
+              this.$message.error('系统出错了!!!');
+            }
+          });
+        },
+        changeHouse: function (val) {
+          this.loading = true;
+          axiosPost("{:url('house.property/sort')}", { 'id': val }).then(response => {
+            if (response.state == 'success') {
+              this.$message.success(response.msg)
+              location.reload();
+            } else {
+              this.$message({
+                message: response.msg, type: response.state
+              });
+            }
+          });
+        },
+      }
+    }
+
+    const App = {
+      data: function () {
+        return Object.assign(common_data, data);
+      },
+      methods: Object.assign(common_f(), f()),
+      mounted: function () {
+        this.init();
+        this.queryHouse();
+        this.loading = false;
+      }
+    };
+
+    const app = Vue.createApp(App);
+    app.use(TDesign);
+    const router = VueRouter.createRouter({
+      history: VueRouter.createWebHistory(''),
+      routes: [],
+    });
+    app.use(router);
+    app.mount("#app");
+  </script>
+</body>
+
+</html>

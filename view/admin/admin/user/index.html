@@ -1,0 +1,151 @@
+{extend name="common/layout" /}
+{block name="main"}
+<t-card class="list-card-container" :bordered="false">
+  <t-button theme="primary" style="margin-bottom: 10px;" @click="handleAdd">
+    <template #icon><t-icon name="add" /></template>
+    新建
+  </t-button>
+  <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
+    active-row-type="single" :hover="true" :loading="tableLoading">
+    <template #op="slotProps">
+      <t-space>
+        <t-button size="small" @click="handleEdit(slotProps.row)">修改</t-button>
+        <t-popconfirm theme="danger" content="确认删除?" @confirm="handleDelete(slotProps.row)">
+          <t-button theme="danger" size="small">删除</t-button>
+        </t-popconfirm>
+      </t-space>
+    </template>
+  </t-table>
+</t-card>
+
+<!-- 新增FORM -->
+<t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false">
+  <t-form ref="userForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
+    <t-form-item label="所属角色" name="admin_role_id">
+      <t-select v-model="formData.admin_role_id" class="demo-select-base" filterable :style="{ width: '480px' }">
+        <t-option v-for="(item, index) in roleData" :key="index" :value="item.id" :label="item.name">
+          {{ item.name }}
+        </t-option>
+      </t-select>
+    </t-form-item>
+    <t-form-item label="用户名" name="username">
+      <t-input v-model="formData.username" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="密码" name="password">
+      <t-input v-model="formData.password" type="password" :style="{ width: '480px' }" clearable placeholder="请输入密码" />
+    </t-form-item>
+    <t-form-item label="失效日期" name="expiration_date">
+      <t-date-picker v-model="formData.expiration_date" mode="date" :style="{ width: '480px' }" clearable />
+    </t-form-item>
+    <t-form-item style="float: right">
+      <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px;">取消</t-button>
+      <t-button theme="primary" type="submit">确定</t-button>
+    </t-form-item>
+  </t-form>
+</t-dialog>
+{/block}
+
+{block name="script"}
+<script>
+  const data = {
+    tableData: [],
+    tableLoading: false,
+    columns: [
+      { title: '用户名', colKey: 'username', width: 60, fixed: 'left', },
+      { title: '所属角色', colKey: 'role_name', width: 60 },
+      { title: '失效日期', colKey: 'expiration_date', width: 80 },
+      { title: '最后一次登录日期', colKey: 'login_date', width: 120 },
+      { title: '创建日期', colKey: 'create_time', width: 80 },
+      { title: '更新日期', colKey: 'update_time', width: 80 },
+      { title: '操作', colKey: 'op', width: 160, fixed: 'right', },
+    ],
+    // // 分页
+    // pagination: {
+    //   defaultPageSize: 10,
+    //   total: 10,
+    //   defaultCurrent: 1,
+    //   current: 1,
+    // },
+    dialogVisible: false,
+    formData: {},
+    formHeader: '',
+    rules: {
+      username: [{ required: true, message: '必填', trigger: 'blur' }],
+      admin_role_id: [{ required: true, message: '必填' }],
+      password: [{ required: true, message: '必填' }],
+      expiration_date: [{ required: true, message: '必填' }],
+    },
+    roleData: [],
+  };
+  function f() {
+    return {
+      init: function () {
+        axiosGet("{:url('admin.role/queryRole')}", { 'admin_role_id': this.role_id })
+          .then(response => {
+            if (response.code == 1) {
+              this.roleData = response.data;
+            } else {
+              this.$message.error('系统出错了!!!');
+            }
+          });
+        this.queryTable();
+      },
+      queryTable: function () {
+        this.tableLoading = true;
+        axiosGet("{:url('query')}").then(response => {
+          if (response.code == 1) {
+            this.tableData = response.data;
+            // this.pagination.total = response.count;
+          } else {
+            this.$message.error('系统出错了!!!');
+          }
+          this.tableLoading = false;
+        });
+      },
+      handleAdd() {
+        this.rules.password = [{ required: true, message: '必填' }];
+        this.$refs.userForm.reset();
+        this.formData = {};
+        this.formHeader = '新增用户';
+        this.dialogVisible = true;
+      },
+      handleSave() {
+        this.$refs.userForm.validate().then((valid) => {
+          if (valid == true) {
+            axiosPost("{:url('save')}", this.formData).then(response => {
+              if (response.state == 'success') {
+                this.$message.success(response.msg);
+                this.dialogVisible = false;
+                this.queryTable();
+              } else if (response.state == 'warning') {
+                this.$message.warning(response.msg);
+              } else {
+                this.$message.error(response.msg);
+              }
+            });
+          }
+        });
+      },
+      handleEdit(row) {
+        delete this.rules.password;
+        this.$refs.userForm.reset();
+        this.formData = { ...row };
+        this.formHeader = '修改用户';
+        this.dialogVisible = true;
+      },
+      handleDelete(row) {
+        axiosPost("{:url('delete')}", row).then(response => {
+          if (response.state == 'success') {
+            this.$message.success(response.msg);
+            this.queryTable();
+          } else if (response.state == 'warning') {
+            this.$message.warning(response.msg);
+          } else {
+            this.$message.error(response.msg);
+          }
+        });
+      },
+    }
+  }
+</script>
+{/block}

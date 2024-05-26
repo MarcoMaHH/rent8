@@ -1,0 +1,128 @@
+{extend name="common/layout" /}
+{block name="main"}
+<t-card class="list-card-container" :bordered="false">
+  <t-enhanced-table ref="tableRef" row-key="id" :data="tableData" :columns="columns" :tree="treeConfig" size="small"
+    :bordered="true" :column-controller="columnController" @expanded-tree-nodes-change="onExpandedTreeNodesChange">
+    <template #op="slotProps">
+      <t-space>
+        <t-button size="small" @click="handleEdit(slotProps.row)">修改</t-button>
+        <t-popconfirm theme="danger" content="确认删除?" @confirm="handleDelete(slotProps.row)">
+          <t-button theme="danger" size="small">删除</t-button>
+        </t-popconfirm>
+      </t-space>
+    </template>
+  </t-enhanced-table>
+</t-card>
+
+<!-- 新增FORM -->
+<t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false">
+  <t-form ref="menuForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
+    <t-form-item label="名称" name="name">
+      <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="上级菜单" name="pid">
+      <t-select v-model="formData.pid" class="demo-select-base" filterable :style="{ width: '480px' }">
+        <t-option v-for="(item, index) in menu" :key="index" :value="item.id" :label="item.name">
+          {{ item.name }}
+        </t-option>
+      </t-select>
+    </t-form-item>
+    <t-form-item label="图标" name="icon">
+      <t-input v-model="formData.icon" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="路由" name="controller">
+      <t-input v-model="formData.controller" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item style="float: right">
+      <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px;">取消</t-button>
+      <t-button theme="primary" type="submit">确定</t-button>
+    </t-form-item>
+  </t-form>
+</t-dialog>
+{/block}
+
+{block name="script"}
+<script>
+  const data = {
+    tableData: [],
+    tableLoading: false,
+    columns: [
+      { title: '序号', colKey: 'sort', width: 80, fixed: 'left', },
+      { title: '名称', colKey: 'name', width: 80 },
+      { title: '图标', colKey: 'icon', width: 80 },
+      { title: '路由', colKey: 'controller', width: 80 },
+      { title: '操作', colKey: 'op', width: 160, fixed: 'right', },
+    ],
+    dialogVisible: false,
+    formData: {},
+    formHeader: '',
+    rules: {
+      name: [{ required: true, message: '必填', trigger: 'blur' }],
+      pid: [{ required: true, message: '必填' }],
+      controller: [{ required: true, message: '必填' }],
+    },
+    treeConfig: {
+      childrenKey: 'children',
+      treeNodeColumnIndex: 0,
+      indent: 50,
+      expandTreeNodeOnClick: false,
+    },
+    menu: [],
+  };
+  function f() {
+    return {
+      init: function () {
+        this.queryTable();
+      },
+      queryTable: function () {
+        this.tableLoading = true;
+        axiosGet("{:url('query')}").then(response => {
+          if (response.code == 1) {
+            this.tableData = response.data;
+            this.menu = JSON.parse(JSON.stringify(response.data));
+            this.menu.push({ "name": "---", "id": 0 });
+          } else {
+            this.$message.error('系统出错了!!!');
+          }
+          this.tableLoading = false;
+        });
+      },
+      handleEdit(row) {
+        this.$refs.menuForm.reset();
+        this.formData = { ...row };
+        this.formHeader = '修改菜单';
+        this.dialogVisible = true;
+      },
+      handleSave() {
+        this.$refs.menuForm.validate().then((valid) => {
+          if (valid == true) {
+            axiosPost("{:url('save')}", this.formData).then(response => {
+              if (response.state == 'success') {
+                this.$message.success(response.msg);
+                this.dialogVisible = false;
+                this.queryTable();
+              } else if (response.state == 'warning') {
+                this.$message.warning(response.msg);
+              } else {
+                this.$message.error(response.msg);
+              }
+            });
+          }
+        });
+      },
+      handleDelete(row) {
+        axiosPost("{:url('delete')}", row).then(response => {
+          if (response.state == 'success') {
+            this.$message.success(response.msg);
+            this.queryTable();
+          } else if (response.state == 'warning') {
+            this.$message.warning(response.msg);
+          } else {
+            this.$message.error(response.msg);
+          }
+        });
+      },
+    }
+  }
+</script>
+{/block}

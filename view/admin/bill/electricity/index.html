@@ -1,0 +1,168 @@
+{extend name="common/layout" /}
+{block name="main"}
+<t-card class="list-card-container" :bordered="false">
+  <div style="margin-bottom: 10px;">
+    <t-button theme="primary" style="margin-right: 10px;" @click="handleAdd" :disabled="buttonDisabled">
+      <template #icon><t-icon name="add" /></template>
+      新建
+    </t-button>
+    <t-select v-model="meter_id" placeholder="请选择电表" clearable style="width: 150px;display: inline-block;"
+      @change="meterChange">
+      <t-option v-for="(item, index) in meterData" :key="index" :value="item.id" :label="item.name">
+        {{ item.name }}
+      </t-option>
+    </t-select>
+  </div>
+  <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
+    active-row-type="single" :hover="true" :loading="tableLoading" :pagination="pagination">
+    <template #op="slotProps">
+      <t-space>
+        <t-button v-if="slotProps.row.accounting_date == null" size="small"
+          @click="handleEdit(slotProps.row)">修改</t-button>
+        <t-popconfirm v-if="slotProps.row.accounting_date == null" theme="danger" content="确认到账?"
+          @confirm="handleAccount(slotProps.row)">
+          <t-button theme="warning" size="small">到账</t-button>
+        </t-popconfirm>
+      </t-space>
+    </template>
+  </t-table>
+</t-card>
+
+<!-- 新增FORM -->
+<t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false">
+  <t-form ref="electricityForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
+    <t-form-item label="开始日期" name="start_month">
+      <t-date-picker v-model="formData.start_month" mode="date" :style="{ width: '480px' }" clearable />
+    </t-form-item>
+    <t-form-item label="结束日期" name="end_month">
+      <t-date-picker v-model="formData.end_month" mode="date" :style="{ width: '480px' }" clearable />
+    </t-form-item>
+    <t-form-item label="总用量" name="master_dosage">
+      <t-input-number v-model="formData.master_dosage" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="总金额" name="master_sum">
+      <t-input-number v-model="formData.master_sum" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item style="float: right">
+      <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px;">取消</t-button>
+      <t-button theme="primary" type="submit">确定</t-button>
+    </t-form-item>
+  </t-form>
+</t-dialog>
+{/block}
+
+{block name="script"}
+<script>
+  const data = {
+    tableData: [],
+    tableLoading: false,
+    columns: [
+      { title: '表名', colKey: 'electricity_name', width: 90 },
+      { title: '开始日期', colKey: 'start_month', width: 120 },
+      { title: '结束日期', colKey: 'end_month', width: 120 },
+      { title: '总表金额', colKey: 'master_sum', width: 80 },
+      { title: '分表金额', colKey: 'detail_sum', width: 80 },
+      { title: '总表用量', colKey: 'master_dosage', width: 80 },
+      { title: '分表用量', colKey: 'detail_dosage', width: 80 },
+      { title: '操作', colKey: 'op', width: 160, align: 'left', fixed: 'right', },
+    ],
+    // 分页
+    pagination: {
+      defaultPageSize: 13,
+      pageSizeOptions: [13, 20],
+      total: 10,
+      defaultCurrent: 1,
+      current: 1,
+    },
+    // 电表选项
+    meterData: [],
+    meter_id: '',
+    dialogVisible: false,
+    formData: {},
+    formHeader: '',
+    rules: {
+      start_month: [{ required: true, message: '必填' }],
+      end_month: [{ required: true, message: '必填' }],
+      master_dosage: [{ required: true, message: '必填' }],
+      master_sum: [{ required: true, message: '必填' }],
+    },
+    // 新增按钮
+    buttonDisabled: true,
+  };
+  function f() {
+    return {
+      init: function () {
+        axiosGet("{:url('queryMeter')}").then(response => {
+          if (response.code == 1) {
+            this.meterData = response.data;
+            this.meter_id = response.data[0].id
+            this.queryTable();
+          } else {
+            this.$message.error('系统出错了!!!');
+          }
+        });
+      },
+      queryTable: function () {
+        axiosGet("{:url('queryElectricity')}", { 'meter_id': this.meter_id }).then(response => {
+          if (response.code == 1) {
+            this.tableData = response.data;
+            this.pagination.total = response.count;
+            if (this.tableData.length) {
+              this.buttonDisabled = true;
+            } else {
+              this.buttonDisabled = false;
+            }
+          } else {
+            this.$message.error('系统出错了!!!');
+          }
+        });
+      },
+      handleAdd() {
+        this.$refs.electricityForm.reset();
+        this.formData = { 'meter_id': this.meter_id };
+        this.formHeader = this.houseName + '电表 - 新增电费';;
+        this.dialogVisible = true;
+      },
+      handleSave() {
+        this.$refs.electricityForm.validate().then((valid) => {
+          if (valid == true) {
+            axiosPost("{:url('save')}", this.formData).then(response => {
+              if (response.state == 'success') {
+                this.$message.success(response.msg);
+                this.dialogVisible = false;
+                this.queryTable();
+              } else if (response.state == 'warning') {
+                this.$message.warning(response.msg);
+              } else {
+                this.$message.error(response.msg);
+              }
+            });
+          }
+        });
+      },
+      meterChange(val) {
+        this.meter_id = val;
+        this.queryTable();
+      },
+      handleEdit(row) {
+        this.$refs.electricityForm.reset();
+        this.formData = { ...row };
+        this.formHeader = '修改总电费';
+        this.dialogVisible = true;
+      },
+      handleAccount(row) {
+        axiosPost("{:url('account')}", { id: row.id }).then(response => {
+          if (response.state == 'success') {
+            this.$message.success(response.msg);
+            this.queryTable();
+          } else if (response.state == 'warning') {
+            this.$message.warning(response.msg);
+          } else {
+            this.$message.error(response.msg);
+          }
+        });
+      },
+    }
+  }
+</script>
+{/block}

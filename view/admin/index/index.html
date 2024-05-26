@@ -1,0 +1,162 @@
+{extend name="common/layout" /}
+{block name="main"}
+<t-space direction="vertical" style="width: 100%;">
+  <t-card bordered>
+    欢迎：<span style="color: #0052d9;">{$layout_login_user.username}</span>！
+    您的账号于<span style="color: #0052d9;">{$layout_login_user.expiration_date|date='Y-m-d'}</span>到期。
+  </t-card>
+</t-space>
+
+<t-space style="width: 100%; margin-top: 10px;">
+  <t-row justify="space-between">
+    <t-col :flex="2" style="margin-right: 10px;">
+      <t-card bordered header style="background-color: #0052d9;">
+        <t-row>
+          <t-col :flex="2">
+            <div style="margin-bottom: 15px; color: white;">本月利润</div>
+            <div style="font-size: 24px; font-weight: bold; color: white;">{{cardData.profit}}</div>
+          </t-col>
+          <t-col :flex="2" style="margin: 10px 0px 10px 70px;">
+            <t-icon name="money" style="color: white" size="3em" />
+          </t-col>
+        </t-row>
+      </t-card>
+    </t-col>
+    <t-col :flex="2" style="margin-right: 10px;">
+      <t-card bordered header>
+        <t-row>
+          <t-col :flex="2">
+            <div style="margin-bottom: 15px;">闲置房间</div>
+            <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.empty_count}}</div>
+          </t-col>
+          <t-col :flex="2" style="margin: 10px 0px 10px 70px;">
+            <t-icon name="window-1" style="color: #0052d9" size="3em" />
+          </t-col>
+        </t-row>
+      </t-card>
+    </t-col>
+    <t-col :flex="2" style="margin-right: 10px;">
+      <t-card bordered header>
+        <t-row>
+          <t-col :flex="2">
+            <div style="margin-bottom: 15px;">入住率</div>
+            <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.occupancy}}</div>
+          </t-col>
+          <t-col :flex="2" style="margin: 10px 0px 10px 70px;">
+            <t-icon name="calculator-1" style="color: #0052d9" size="3em" />
+          </t-col>
+        </t-row>
+      </t-card>
+    </t-col>
+    <t-col :flex="2" style="margin-right: 10px;">
+      <t-card bordered header>
+        <t-row>
+          <t-col :flex="2">
+            <div style="margin-bottom: 15px;">总房产数</div>
+            <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.property_count}}</div>
+          </t-col>
+          <t-col :flex="2" style="margin: 10px 0px 10px 70px;">
+            <t-icon name="houses-2" style="color: #0052d9" size="3em" />
+          </t-col>
+        </t-row>
+      </t-card>
+    </t-col>
+    <t-col :flex="2">
+      <t-card bordered header>
+        <t-row>
+          <t-col :flex="2">
+            <div style="margin-bottom: 15px;">总房间数</div>
+            <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.number_count}}</div>
+          </t-col>
+          <t-col :flex="2" style="margin: 10px 0px 10px 70px;">
+            <t-icon name="window" style="color: #0052d9" size="3em" />
+          </t-col>
+        </t-row>
+      </t-card>
+    </t-col>
+  </t-row>
+</t-space>
+
+<t-space direction="vertical" style="width: 100%; margin-top: 10px;">
+  <t-card bordered>
+    <div style="margin-bottom: 20px;">
+      年度财务收支走势
+    </div>
+    <div id="c1"></div>
+  </t-card>
+</t-space>
+
+{/block}
+
+{block name="script"}
+<script>
+  const data = {
+    cardData: {},
+  };
+  function f() {
+    return {
+      init: function () {
+        let that = this
+        axiosGet("{:url('queryHouse')}").then(response => {
+          if (response.code == 1) {
+            that.cardData = response.data;
+          } else {
+            that.$message.error('系统出错了!!!');
+          }
+        });
+
+        axiosGet("{:url('echar')}").then(response => {
+          if (response.code == 1) {
+            const data = response.data
+            // Step 1: 创建 Chart 对象
+            const chart = new G2.Chart({
+              container: 'c1', // 指定图表容器 ID
+              autoFit: true,
+              height: 350,
+            });
+            chart.data(data);
+            chart.scale({
+              month: {
+                range: [0, 1],
+              },
+              money: {
+                nice: true,
+              },
+            });
+
+            chart.tooltip({
+              showCrosshairs: true,
+              shared: true,
+            });
+
+            chart.axis('money', {
+              label: {
+                formatter: (val) => {
+                  // return val + ' °C';
+                  return val;
+                },
+              },
+            });
+
+            chart
+              .line()
+              .position('month*money')
+              .color('project')
+              .shape('smooth');
+
+            chart
+              .point()
+              .position('month*money')
+              .color('project')
+              .shape('circle');
+
+            chart.render();
+          } else {
+            that.$message.error('系统出错了!!!');
+          }
+        });
+      }
+    }
+  }
+</script>
+{/block}

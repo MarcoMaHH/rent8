@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>rent7-最常用出租屋管理系统</title>
+  <meta name="renderer" content="webkit|ie-comp|ie-stand">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport"
+    content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <!-- 导入 axios -->
+  <script src="__STATIC__/js/axios.min.js"></script>
+  <!-- 导入 Vue3 -->
+  <script src="__CDN__/vue/3.4.19/vue.global.js"></script>
+  <!-- 导入 TDesign 组件库 -->
+  <script src="__CDN__/tdesign/1.9.4/tdesign.min.js"></script>
+  <link rel="stylesheet" href="__CDN__/tdesign/1.9.4/tdesign.min.css" />
+  <!-- 导入 TDesign icon -->
+  <script src="__CDN__/tdesign-icons/0.2.2/index.js"></script>
+  <link rel="stylesheet" href="__CDN__/tdesign-icons/0.2.2/index.css" />
+  <!-- 导入 login css -->
+  <link rel="stylesheet" href="__STATIC__/css/login.css">
+</head>
+
+<body>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background-image: url("__STATIC__/images/login-bg.png");
+      background-size: 100% 100%;
+    }
+  </style>
+  <div id="app">
+
+    <div class="login-wrapper">
+      <!-- <login-header /> -->
+
+      <div class="login-container">
+        <div class="title-container">
+          <h1 class="title margin-no">登录到</h1>
+          <h1 class="title">最常用出租屋管理系统</h1>
+        </div>
+
+        <!-- <login /> -->
+        <div style="width: 350px">
+          <t-form ref="form" :data="formData" :rules="FORM_RULES" :colon="true" :label-width="0" @submit="onSubmit">
+            <t-form-item name="username">
+              <t-input v-model="formData.username" clearable placeholder="请输入账户名">
+                <template #prefix-icon>
+                  <t-icon name="user" />
+                </template>
+              </t-input>
+            </t-form-item>
+
+            <t-form-item name="password">
+              <t-input v-model="formData.password" type="password" clearable placeholder="请输入密码">
+                <template #prefix-icon>
+                  <t-icon name="lock-on" />
+                </template>
+              </t-input>
+            </t-form-item>
+
+            <t-form-item>
+              <t-button theme="primary" type="submit" block size="medium">登录</t-button>
+            </t-form-item>
+          </t-form>
+        </div>
+      </div>
+
+      <footer class="copyright">Copyright @ 2024-{{ new Date().getFullYear() }} 最常用 All Rights Reserved</footer>
+    </div>
+  </div>
+
+
+  <script>
+    const App = {
+      data() {
+        return {
+          formData: {
+            username: '',
+            password: '',
+          },
+          FORM_RULES: {
+            username: [{ required: true, message: '账号必填', type: 'error' }],
+            password: [{ required: true, message: '密码必填', type: 'error' },
+            { min: 6, message: '密码最少6位数', type: 'error', trigger: 'blur' },],
+          },
+        };
+      },
+      methods: {
+        onSubmit() {
+          this.$refs.form.validate().then((valid) => {
+            if (valid == true) {
+              this.login();
+            }
+          });
+        },
+
+        async login() {
+          try {
+            const response = await axios.post("{:url('Index/login')}", this.formData, {
+              headers: {
+                'X-CSRF-TOKEN': '{$token}',
+              },
+            });
+            if (response.status == 200) {
+              if (response.data.code) {
+                this.$message.success({
+                  content: response.data.msg,
+                  duration: 1500,
+                });
+                location.href = "{:url('Index/index')}";
+              } else {
+                this.$message.error({
+                  content: response.data.msg,
+                  duration: 1500,
+                });
+              }
+            }
+          } catch (error) {
+            this.$message.error({
+              content: '系统出错',
+              duration: 1500,
+            });
+            console.error('请求失败：', error);
+          }
+        }
+      }
+    };
+    const app = Vue.createApp(App);
+    app.use(TDesign);
+    app.mount("#app");
+  </script>
+</body>
+
+</html>

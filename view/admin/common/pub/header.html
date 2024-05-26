@@ -1,0 +1,52 @@
+<t-head-menu value="item1" height="120px">
+  <template #logo>
+    <a style="color: #0052d9; text-decoration: none;font-size: 150%;" href="{:url('/admin/index/index')}">最常用出租屋管理系统</a>
+  </template>
+  <t-button theme="default" shape="square" variant="text" @click="changeCollapsed">
+    <t-icon class="collapsed-icon" name="view-list" />
+  </t-button>
+  <div style="margin:0 0 0 15px;">
+    <t-select v-model="houseDef" label="房产：" placeholder="请选择房产" auto-width @change="changeHouse">
+      <t-option v-for="item in houseList" :key="item.id" :value="item.id" :label="item.name"></t-option>
+    </t-select>
+  </div>
+  <template #operations>
+
+    <t-dropdown trigger="click">
+      <template #dropdown>
+        <t-dropdown-menu>
+          <t-dropdown-item class="operations-dropdown-container-item" @click="changePassword">
+            修改密码
+          </t-dropdown-item>
+          <t-dropdown-item class="operations-dropdown-container-item" @click="onLogout">
+            退出登录
+          </t-dropdown-item>
+        </t-dropdown-menu>
+      </template>
+      <t-button class="header-user-btn" theme="default" variant="text">
+        <template #icon>
+          <t-icon class="header-user-avatar" name="user-circle" />
+        </template>
+        <div class="header-user-account">{$layout_login_user.username}</div>
+        <template #suffix><t-icon name="chevron-down" /></template>
+      </t-button>
+    </t-dropdown>
+
+  </template>
+</t-head-menu>
+
+<t-dialog v-model:visible="passwordVisible" header="修改密码" width="40%" :confirm-on-enter="true"
+  :on-confirm="passwordSave">
+  <t-space direction="vertical" style="width: 100%">
+    <t-form ref="passwordForm" :data="passwordData" :rules="passwordRules" reset-type="empty">
+      <t-form-item label="新密码" name="password">
+        <t-input placeholder="请输入新密码" v-model="passwordData.password" type="password" />
+      </t-form-item>
+      <t-form-item label="再次输入密码" name="password2">
+        <t-input placeholder="请输入新密码" v-model="passwordData.password2" type="password" />
+      </t-form-item>
+    </t-form>
+  </t-space>
+</t-dialog>
+
+<t-loading :loading="loading" text="加载中..." fullscreen />

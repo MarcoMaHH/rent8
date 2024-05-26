@@ -1,0 +1,131 @@
+{extend name="common/layout" /}
+{block name="main"}
+<t-card class="list-card-container" :bordered="false">
+  <div style="margin-bottom: 10px;">
+    <t-select placeholder="请选择房间名" clearable style="width: 140px;display: inline-block;" @change="changeDate">
+      <t-option v-for="(item, index) in numberData" :key="index" :value="item.id" :label="item.name">
+        {{ item.name }}
+      </t-option>
+    </t-select>
+    今日到账总金额：{{sum}}
+    <t-button theme="primary" style="float: right;" @click="handleFilter">
+      <template #icon><t-icon name="filter" /></template> 列筛选
+    </t-button>
+  </div>
+
+  <div style="width: 100%; max-width: 1205px">
+    <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
+      active-row-type="single" :hover="true" :loading="tableLoading" :pagination="pagination"
+      @page-change="onPageChange">
+    </t-table>
+  </div>
+</t-card>
+{/block}
+
+{block name="script"}
+<script>
+  const data = {
+    tableData: [],
+    tableLoading: false,
+    cloumnsFlag: false,
+    columns: [],
+    columns1: [
+      { title: '房产名', colKey: 'property_name', width: 90, fixed: 'left' },
+      { title: '房间名', colKey: 'number_name', width: 60, fixed: 'left' },
+      { title: '租期', colKey: 'lease', width: 190, fixed: 'left' },
+      { title: '电费', colKey: 'electricity', width: 50 },
+      { title: '水费', colKey: 'water', width: 50 },
+      { title: '租金', colKey: 'rental', width: 50 },
+      { title: '总金额', colKey: 'total_money', width: 80 },
+      { title: '到账日期', colKey: 'accounting_date', width: 100, fixed: 'right' },
+    ],
+    columns2: [
+      { title: '房产名', colKey: 'property_name', width: 90, fixed: 'left' },
+      { title: '房间名', colKey: 'number_name', width: 60, fixed: 'left' },
+      { title: '租期', colKey: 'lease', width: 190, fixed: 'left' },
+      { title: '电表度数', colKey: 'electricity_meter_this_month', width: 75 },
+      { title: '用电量', colKey: 'electricity_consumption', width: 60 },
+      { title: '电费', colKey: 'electricity', width: 50 },
+      { title: '水表度数', colKey: 'water_meter_this_month', width: 75 },
+      { title: '用水量', colKey: 'water_consumption', width: 60 },
+      { title: '水费', colKey: 'water', width: 50 },
+      { title: '租金', colKey: 'rental', width: 50 },
+      { title: '押金', colKey: 'deposit', width: 50 },
+      { title: '卫生费', colKey: 'garbage_fee', width: 60 },
+      { title: '其他费用', colKey: 'other_charges', width: 75 },
+      { title: '总金额', colKey: 'total_money', width: 80 },
+      { title: '备注', colKey: 'note', width: 180, ellipsis: true },
+      { title: '到账日期', colKey: 'accounting_date', width: 100, fixed: 'right' },
+    ],
+    sum: 0,
+    numberData: [],
+    house_number_id: '',
+    // 分页
+    pagination: {
+      defaultPageSize: 10,
+      total: 10,
+      defaultCurrent: 1,
+      pageSize: 10,
+      // current: 1,
+    },
+  };
+  function f() {
+    return {
+      init: function () {
+        this.columns = this.columns1;
+        this.queryTable();
+        axiosGet("{:url('house.number/queryNumberId')}").then(response => {
+          if (response.code == 1) {
+            this.numberData = response.data;
+          } else {
+            this.$message.error('系统出错了!!!');
+          }
+        });
+        axiosGet("{:url('sum')}").then(response => {
+          if (response.code == 1) {
+            this.sum = response.msg;
+          } else {
+            this.$message.error('系统出错了!!!');
+          }
+        });
+      },
+      queryTable: function () {
+        this.tableLoading = true;
+        let params = {
+          'house_number_id': this.house_number_id,
+          'limit': this.pagination.pageSize,
+          'page': this.pagination.current
+        };
+        axiosGet("{:url('query')}", params).then(response => {
+          if (response.code == 1) {
+            this.tableData = response.data;
+            this.pagination.total = response.count;
+            this.pagination.current = 1;
+          } else {
+            this.$message.error('系统出错了!!!');
+          }
+          this.tableLoading = false;
+        });
+      },
+      onPageChange: function (pageInfo) {
+        this.pagination.current = pageInfo.current;
+        this.pagination.pageSize = pageInfo.pageSize;
+        this.queryTable();
+      },
+      handleFilter: function () {
+        if (this.cloumnsFlag) {
+          this.columns = this.columns1;
+        } else {
+          this.columns = this.columns2;
+        }
+        this.cloumnsFlag = !this.cloumnsFlag;
+      },
+      // 切换房间
+      changeDate(val) {
+        this.house_number_id = val;
+        this.queryTable();
+      },
+    }
+  }
+</script>
+{/block}

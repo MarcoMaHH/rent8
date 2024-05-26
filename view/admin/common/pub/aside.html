@@ -1,0 +1,19 @@
+<div style="height:638px">
+  <t-menu theme="light" value="{$current_route['id']}" :default-expanded="expanded" :collapsed="isCollapse" expand-mutex>
+    {foreach $layout_menu as $v}
+    <t-submenu value="{$v.id}" mode="popup">
+      <template #icon>
+        <t-icon name="{$v.icon}" />
+      </template>
+      <template #title>
+        <span>{$v.name}</span>
+      </template>
+      {if $v.sub}
+      {foreach $v.sub as $vv}
+      <t-menu-item value="{$vv.id}" href="/admin/{$vv.controller}/index">{$vv.name}</t-menu-item>
+      {/foreach}
+      {/if}
+    </t-submenu>
+    {/foreach}
+  </t-menu>
+</div>
