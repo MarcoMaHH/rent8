@@ -1,20 +1,14 @@
-# 最常用出租屋管理系统
+# rent8-最常用出租屋管理系统
 
-自家用的出租屋管理系统。本系统基于thinphp6+elementUI开发，前后端**不**分离，这是**最后的倔强**！！！
-
-[最常用出租屋管理系统rent4-微信小程序端](https://gitee.com/MarcoMaHH/rent4_wechat)
+自家用的出租屋管理系统。本系统基于ThinkPHP8(PHP8)+TDesign开发，前后端**不**分离，这是**最最后的倔强**！！！
 
 ---
 
-出租屋管理系统微信小程序版，免费使用，适合白嫖党！
+下面是出租屋管理系统微信小程序版，免费使用，适合白嫖党，小白党！
 
 ![最常用房东助手](https://gitee.com/MarcoMaHH/picture/raw/master/project.jpg)
 
 ---
-
-请使用Edge或Chrome浏览器，Firefox的“打印功能”体验不好。
-
-[最常用出租屋管理系统安装记录-腾讯云宝塔版 For小小白,大神请忽略](https://blog.csdn.net/m0_61078449/article/details/131347945)
 
 **其他版本**：
 
@@ -24,9 +18,11 @@
 
 [最常用出租屋管理系统rent6前后端分离版-thinkphp8+TDesign](https://gitee.com/MarcoMaHH/rent6)
 
+[最常用出租屋管理系统rent8混编版-thinkphp8+TDesignI](https://gitee.com/MarcoMaHH/rent8)
+
 ### 系统环境
 
-- PHP = 7.4.28
+- PHP = 8.1.22
 
 - Apache = 2.4.41
 
@@ -34,7 +30,7 @@
 
 ### 技术栈
 
-- thinkphp6
+- thinkphp8
 - vue3
 - element UI
 - variant form 3
