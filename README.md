@@ -31,17 +31,15 @@
 ### 技术栈
 
 - thinkphp8
-- vue3
-- element UI
-- variant form 3
+- TDesign（Vue Next for Web）
 - antV G2
 - printJS
 
-另外，分享tp5.1升级到tp6遇到的问题。
-
-[thinkphp5.1升级thinkphp6遇到的坑](https://blog.csdn.net/m0_61078449/article/details/126403204)
-
 ### 界面及功能展示
+
+登录页面
+
+
 
 主页面
 
