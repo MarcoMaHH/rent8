@@ -39,45 +39,44 @@
 
 登录页面
 
-
+![登录页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/login.jpg)
 
 主页面
 
-![index.jpg (1920×889) (gitee.com)](https://gitee.com/MarcoMaHH/rent4/raw/master/picture/index.jpg)
+![主页面](https://gitee.com/MarcoMaHH/rent4/raw/master/picture/index.jpg)
 
 房号管理-页面
 
-![number.jpg (1920×889) (gitee.com)](https://gitee.com/MarcoMaHH/rent4/raw/master/picture/number.jpg)
+![房号管理-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/number.jpg)
 
 租聘合同-展示
 
-![number.jpg (1920×889) (gitee.com)](https://gitee.com/MarcoMaHH/rent4/raw/master/picture/contract.png)
+![租聘合同-展示](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/contract.png)
 
 未收账单-页面
 
-![uncollect.jpg (1920×889) (gitee.com)](https://gitee.com/MarcoMaHH/rent4/raw/master/picture/uncollect.jpg)
+![未收账单-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/uncollect.jpg)
 
 收据单-展示
 
-![rent](https://gitee.com/MarcoMaHH/rent4/raw/master/picture/rent.jpg)
+![收据单-展示](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/rent.jpg)
 
 到账账单-页面
 
-![collect.jpg (1920×889) (gitee.com)](https://gitee.com/MarcoMaHH/rent4/raw/master/picture/collect.jpg)
+![到账账单-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/collect.jpg)
 
 菜单管理-页面
 
-![menu.jpg (1920×889) (gitee.com)](https://gitee.com/MarcoMaHH/rent4/raw/master/picture/menu.jpg)
+![菜单管理-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/menu.jpg)
 
 ### 安装步骤
 
-1. 建立数据库`zcy`
-2. `git clone https://gitee.com/MarcoMaHH/rent4.git`
+1. 建立数据库`rent8`
+2. `git clone https://gitee.com/MarcoMaHH/rent8.git`
 3. 将.example.env改为.env，并修改为自己的数据
 4. 在根目录执行`composer install`
 5. `php think migrate:run`
 6. `php think seed:run`
-7. 执行SQL文件：zcy_detail_electricity.sql
 
 ### 原始账号密码
 
