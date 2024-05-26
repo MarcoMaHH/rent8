@@ -1,79 +1,92 @@
-![](https://www.thinkphp.cn/uploads/images/20230630/300c856765af4d8ae758c503185f8739.png)
+# 最常用出租屋管理系统
 
-ThinkPHP 8.0
-===============
+自家用的出租屋管理系统。本系统基于thinphp6+elementUI开发，前后端**不**分离，这是**最后的倔强**！！！
 
-## 特性
+[最常用出租屋管理系统rent4-微信小程序端](https://gitee.com/MarcoMaHH/rent4_wechat)
 
-* 基于PHP`8.0+`重构
-* 升级`PSR`依赖
-* 依赖`think-orm`3.0版本
-* `6.0`/`6.1`无缝升级
+---
 
+出租屋管理系统微信小程序版，免费使用，适合白嫖党！
 
-> ThinkPHP8.0的运行环境要求PHP8.0.0+
+![最常用房东助手](https://gitee.com/MarcoMaHH/picture/raw/master/project.jpg)
 
-现在开始，你可以使用官方提供的[ThinkChat](https://chat.topthink.com/)，让你在学习ThinkPHP的旅途中享受私人AI助理服务！
+---
 
-![](https://www.topthink.com/uploads/assistant/20230630/4d1a3f0ad2958b49bb8189b7ef824cb0.png)
+请使用Edge或Chrome浏览器，Firefox的“打印功能”体验不好。
 
-## 文档
+[最常用出租屋管理系统安装记录-腾讯云宝塔版 For小小白,大神请忽略](https://blog.csdn.net/m0_61078449/article/details/131347945)
 
-[完全开发手册](https://doc.thinkphp.cn)
+**其他版本**：
 
-## 服务
+[最常用出租屋管理系统rent2混编版-thinkph5.1+layUi](https://gitee.com/MarcoMaHH/rent2)
 
-ThinkPHP生态服务由[顶想云](https://www.topthink.com)（TOPThink Cloud）提供，为生态提供专业的开发者服务和价值之选。
+[最常用出租屋管理系统rent4混编版-thinkphp6+elementUI](https://gitee.com/MarcoMaHH/rent4)
 
-## 赞助
-全新的[赞助计划](https://www.thinkphp.cn/sponsor)可以让你通过我们的网站、手册、欢迎页及GIT仓库获得巨大曝光，同时提升企业的品牌声誉，也更好保障ThinkPHP的可持续发展。
+[最常用出租屋管理系统rent6前后端分离版-thinkphp8+TDesign](https://gitee.com/MarcoMaHH/rent6)
 
-[![](https://www.thinkphp.cn/uploads/images/20230630/48396092a0515886a3da6bd268131c8f.png)](http://github.crmeb.net/u/TPSY)
+### 系统环境
 
-[![](https://www.thinkphp.cn/uploads/images/20230630/a12bd248beee0e7491dd0f79dc4dd5e9.png)](https://www.thinkphp.cn/sponsor)
+- PHP = 7.4.28
 
-[![](https://www.thinkphp.cn/uploads/images/20230630/e7f48d909d41dd5ebaf4a5aa982d0455.png)](https://www.thinkphp.cn/sponsor)
+- Apache = 2.4.41
 
-## 安装
+- MySQL = 5.7.28
 
-~~~
-composer create-project topthink/think tp
-~~~
+### 技术栈
 
-启动服务
+- thinkphp6
+- vue3
+- element UI
+- variant form 3
+- antV G2
+- printJS
 
-~~~
-cd tp
-php think run
-~~~
+另外，分享tp5.1升级到tp6遇到的问题。
 
-然后就可以在浏览器中访问
+[thinkphp5.1升级thinkphp6遇到的坑](https://blog.csdn.net/m0_61078449/article/details/126403204)
 
-~~~
-http://localhost:8000
-~~~
+### 界面及功能展示
 
-如果需要更新框架使用
-~~~
-composer update topthink/framework
-~~~
+主页面
 
-## 命名规范
+![index.jpg (1920×889) (gitee.com)](https://gitee.com/MarcoMaHH/rent4/raw/master/picture/index.jpg)
 
-`ThinkPHP`遵循PSR-2命名规范和PSR-4自动加载规范。
+房号管理-页面
 
-## 参与开发
+![number.jpg (1920×889) (gitee.com)](https://gitee.com/MarcoMaHH/rent4/raw/master/picture/number.jpg)
 
-直接提交PR或者Issue即可
+租聘合同-展示
 
-## 版权信息
+![number.jpg (1920×889) (gitee.com)](https://gitee.com/MarcoMaHH/rent4/raw/master/picture/contract.png)
 
-ThinkPHP遵循Apache2开源协议发布，并提供免费使用。
+未收账单-页面
 
-本项目包含的第三方源码和二进制文件之版权信息另行标注。
+![uncollect.jpg (1920×889) (gitee.com)](https://gitee.com/MarcoMaHH/rent4/raw/master/picture/uncollect.jpg)
 
-版权所有Copyright © 2006-2023 by ThinkPHP (http://thinkphp.cn) All rights reserved。
+收据单-展示
 
-ThinkPHP® 商标和著作权所有者为上海顶想信息科技有限公司。
+![rent](https://gitee.com/MarcoMaHH/rent4/raw/master/picture/rent.jpg)
 
-更多细节参阅 [LICENSE.txt](LICENSE.txt)
+到账账单-页面
+
+![collect.jpg (1920×889) (gitee.com)](https://gitee.com/MarcoMaHH/rent4/raw/master/picture/collect.jpg)
+
+菜单管理-页面
+
+![menu.jpg (1920×889) (gitee.com)](https://gitee.com/MarcoMaHH/rent4/raw/master/picture/menu.jpg)
+
+### 安装步骤
+
+1. 建立数据库`zcy`
+2. `git clone https://gitee.com/MarcoMaHH/rent4.git`
+3. 将.example.env改为.env，并修改为自己的数据
+4. 在根目录执行`composer install`
+5. `php think migrate:run`
+6. `php think seed:run`
+7. 执行SQL文件：zcy_detail_electricity.sql
+
+### 原始账号密码
+
+账号：admin  密码：123456
+
+账号：user     密码：123456
