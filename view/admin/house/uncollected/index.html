@@ -85,7 +85,7 @@
 <!-- 收据页面 -->
 <t-dialog v-model:visible="receiptVisible" :width="630" :footer="false" :header="false" :close-Btn="false" top="50px">
   <!-- 表单内容 -->
-  <div class="setBorder">
+  <div id="printJS-form333" class="setBorder">
     <div class="setHeader">房 租 收 据 单</div>
     <div class="container">
       <div class="box">房间:{{ formData.property_name + '-' + formData.name }}</div>
@@ -162,50 +162,6 @@
         <td>囗</td>
       </tr>
     </table>
-  </div>
-  <div id="printJS-form333" class="setBorder">
-    <div class="setHeader">房 租 收 据 单</div>
-    <div class="container">
-      <div class="box">房间:{{ formData.property_name + '-' + formData.name }}</div>
-      <div class="box2">收款租期:{{ formData.start_time }}</div>
-      <div class="box3">抄表日期:{{ formData.meter_reading_time }}</div>
-    </div>
-    <table class="setTable">
-      <tr>
-        <th class="setTh">表类</th>
-        <th class="setTh">表度数</th>
-        <th class="setTh">用量</th>
-        <th class="setTh">单价</th>
-        <th class="setTh">金额</th>
-      </tr>
-      <tr>
-        <td class="setTd">电费</td>
-        <td class="setTd">{{ formData.electricity_meter_this_month + '-' + formData.electricity_meter_last_month }}
-        </td>
-        <td class="setTd">{{ formData.electricity_consumption }}度</td>
-        <td class="setTd">{{ formData.electricity_price }}元/度</td>
-        <td class="setTd">{{ formData.electricity }}元</td>
-      </tr>
-      <tr>
-        <td class="setTd">水费</td>
-        <td class="setTd">{{ formData.water_meter_this_month + '-' + formData.water_meter_last_month }}</td>
-        <td class="setTd">{{ formData.water_consumption }}吨</td>
-        <td class="setTd">{{ formData.water_price }}元/吨</td>
-        <td class="setTd">{{ formData.water }}元</td>
-      </tr>
-    </table>
-    <div class="container">
-      <div class="box">租金：{{ formData.rental }}元</div>
-      <div class="box">押金：{{ formData.deposit }}元</div>
-      <div class="box">垃圾费：{{ formData.garbage_fee }}元</div>
-    </div>
-    <div class="container">
-      <div class="box">管理费：{{ formData.management }}元</div>
-      <div class="box">其他费用：{{ formData.other_charges }}元</div>
-      <div class="box"></div>
-    </div>
-    <div class="container">合计：{{ formData.total_money }}元</div>
-    <div class="container">备注：{{ formData.note }}</div>
   </div>
 </t-dialog>
 
