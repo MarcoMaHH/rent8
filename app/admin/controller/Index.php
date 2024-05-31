@@ -91,9 +91,12 @@ class Index extends Common
         $result = array_map(function ($item) {
             return $item['id'];
         }, $property);
+        $currentDate = new \DateTime();
+        $currentDate->modify('first day of this month');
         $charData = array();
         for ($i = 12; $i >= 0; $i--) {
-            $setDate = date("Y-m", strtotime("-$i Months"));
+            $month = clone $currentDate;
+            $setDate = $month->modify("-{$i} month")->format('Y-m');
             $income = SumModel::where('house_property_id', 'in', $result)
             ->where('type', TYPE_INCOME)
             ->where('accounting_date', $setDate)

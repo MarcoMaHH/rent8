@@ -49,9 +49,12 @@ class Report extends Common
     {
         $loginUser = $this->auth->getLoginUser();
         $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
+        $currentDate = new \DateTime();
+        $currentDate->modify('first day of this month');
         $charData = array();
         for ($i = 12; $i >= 0; $i--) {
-            $accounting_month = date('Y-m', strtotime("-$i month"));
+            $month = clone $currentDate;
+            $accounting_month = $month->modify("-{$i} month")->format('Y-m');
             $income = SumModel::where('house_property_id', $house_property_id)
             ->where('accounting_date', $accounting_month)
             ->where('type', TYPE_INCOME)

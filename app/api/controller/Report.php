@@ -37,4 +37,41 @@ class Report extends Common
         ];
         return $this->returnWechat($house_info);
     }
+
+    public function echar()
+    {
+        $loginUser = $this->auth->getLoginUser();
+        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
+        $monthData = array();
+        $incomeData = array();
+        $spendingData = array();
+        $profitData = array();
+        $currentDate = new \DateTime();
+        $currentDate->modify('first day of this month');
+        for ($i = 6; $i >= 0; $i--) {
+            $month = clone $currentDate;
+            $accounting_month = $month->modify("-{$i} month")->format('Y-m');
+            array_push($monthData, $accounting_month);
+            $income = SumModel::where('house_property_id', $house_property_id)
+            ->where('accounting_date', $accounting_month)
+            ->where('type', TYPE_INCOME)
+            ->sum('amount');
+            $spending = SumModel::where('house_property_id', $house_property_id)
+            ->where('accounting_date', $accounting_month)
+            ->where('type', TYPE_EXPENDITURE)
+            ->sum('amount');
+            array_push($incomeData, $income);
+            array_push($spendingData, intval($spending));
+            array_push($profitData, $income - intval($spending));
+        }
+        $resultData = [
+            'series' => [
+                ['name' => '收入', 'type' => 'line', 'smooth' => true, 'data' => $incomeData],
+                ['name' => '支出', 'type' => 'line', 'smooth' => true, 'data' => $spendingData],
+                ['name' => '利润', 'type' => 'line', 'smooth' => true, 'data' => $profitData],
+            ],
+            'month' => $monthData,
+        ];
+        return $this->returnWechat($resultData);
+    }
 }
