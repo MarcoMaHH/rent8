@@ -38,6 +38,7 @@ class Uncollected extends Common
         ->join('HouseProperty c', 'c.id = a.house_property_id')
         ->distinct(true)
         ->field('a.meter_reading_time')
+        ->order('a.meter_reading_time', 'asc')
         ->select();
         $data = [];
         foreach ($datas as $value) {
