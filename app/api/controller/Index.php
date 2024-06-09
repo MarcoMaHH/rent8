@@ -33,6 +33,7 @@ class Index extends Common
             'income' => $income - intval($spending),
             'empty_count' => $empty_count,
             'occupancy' => $occupancy,
+            'expiration_date' => \substr($loginUser['expiration_date'], 0, 10),
         ];
         return $this->returnWechat($house_info);
     }

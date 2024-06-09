@@ -63,7 +63,6 @@ class Auth
             'id' => $user->id,
             'name' => $user->username,
             'role' => $user->admin_role_id,
-            'expiration_date' => $user->expiration_date,
         ];
     }
 
@@ -84,7 +83,6 @@ class Auth
             'id' => $user->id,
             'name' => $user->username,
             'role' => $user->admin_role_id,
-            'expiration_date' => $user->expiration_date,
         ];
     }
 
