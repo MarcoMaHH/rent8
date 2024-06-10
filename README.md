@@ -12,9 +12,9 @@
 
 **其他版本**：
 
-[最常用出租屋管理系统rent2混编版-thinkph5.1+layUi](https://gitee.com/MarcoMaHH/rent2)
+[最常用出租屋管理系统rent2混编版-thinkph5.1+layUI](https://gitee.com/MarcoMaHH/rent2)
 
-[最常用出租屋管理系统rent4混编版-thinkphp6+elementUI](https://gitee.com/MarcoMaHH/rent4)
+[最常用出租屋管理系统rent4混编版-thinkphp6+ElementUI](https://gitee.com/MarcoMaHH/rent4)
 
 [最常用出租屋管理系统rent6前后端分离版-thinkphp8+TDesign](https://gitee.com/MarcoMaHH/rent6)
 
@@ -82,4 +82,4 @@
 
 账号：admin  密码：123456
 
-账号：user   密码：123456
+账号：user      密码：123456
