@@ -80,7 +80,7 @@ class Uncollected extends Common
     {
         $id = $this->request->param('id/d', 0);
         if (!$billing_data = BillingModel::find($id)) {
-            return $this->returnError('记录不存在。');
+            return $this->returnError('账单不存在');
         }
         $number_data = NumberModel::find($billing_data->house_number_id);
         $property_data = PropertyModel::find($billing_data->house_property_id);
