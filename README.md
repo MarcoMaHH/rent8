@@ -43,7 +43,7 @@
 
 主页面
 
-![主页面](https://gitee.com/MarcoMaHH/rent4/raw/master/picture/index.jpg)
+![主页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/index.jpg)
 
 房号管理-页面
 
