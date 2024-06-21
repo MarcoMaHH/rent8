@@ -41,12 +41,22 @@ class Index extends Common
         ->where('type', TYPE_EXPENDITURE)
         ->where('accounting_date', $accounting_month)
         ->sum('amount');
+        $overdue_todo = $user->houseBilling->where('accounting_date', null)
+        ->where('meter_reading_time', '=', '')
+        ->where('start_time', '<', date('Y-m-d H:i:s', time()))
+        ->count();
+        $overdue_uncollected = $user->houseBilling->where('accounting_date', null)
+        ->where('meter_reading_time', '!=', '')
+        ->where('start_time', '<', date('Y-m-d H:i:s', time()))
+        ->count();
         $house_info = [
             'property_count' => $property_count,
             'number_count' => $number_count,
             'empty_count' => $empty_count,
             'occupancy' => $occupancy,
             'profit' => $income - intval($spending),
+            'overdue_todo' => $overdue_todo,
+            'overdue_uncollected' => $overdue_uncollected,
         ];
         return $this->returnElement($house_info);
     }

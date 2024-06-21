@@ -1,10 +1,19 @@
 {extend name="common/layout" /}
 {block name="main"}
 <t-space direction="vertical" style="width: 100%;">
-  <t-card bordered>
-    欢迎：<span style="color: #0052d9;">{$layout_login_user.username}</span>！
-    您的账号于<span style="color: #0052d9;">{$layout_login_user.expiration_date|date='Y-m-d'}</span>到期。
-  </t-card>
+  <t-row justify="space-between">
+    <t-col :flex="2" style="margin-right: 10px;">
+      <t-card bordered>
+        欢迎：<span style="color: #0052d9;">{$layout_login_user.username}</span>！
+        您的账号于<span style="color: #0052d9;">{$layout_login_user.expiration_date|date='Y-m-d'}</span>到期。
+      </t-card>
+    </t-col>
+    <t-col :flex="2">
+      <t-card bordered>
+        目前，待处理 {{cardData.overdue_todo}} 间、待收 {{cardData.overdue_uncollected}} 间。
+      </t-card>
+    </t-col>
+  </t-row>
 </t-space>
 
 <t-space style="width: 100%; margin-top: 10px;">
