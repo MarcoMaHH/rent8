@@ -90,6 +90,9 @@ class Uncollected extends Common
             if ($value['end_time']) {
                 $value['end_time'] = \substr($value['end_time'], 0, 10);
             }
+            if ($value['total_money']) {
+                $value['total_money2'] = Property::convert_case_number($value['total_money']);
+            }
         }
         return $this->returnElement($datas, $count);
     }

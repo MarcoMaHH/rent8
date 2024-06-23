@@ -8,7 +8,7 @@
         您的账号于<span style="color: #0052d9;">{$layout_login_user.expiration_date|date='Y-m-d'}</span>到期。
       </t-card>
     </t-col>
-    <t-col :flex="3">
+    <t-col :flex="2">
       <t-card bordered>
         目前，待处理 {{cardData.overdue_todo}} 间、待收款 {{cardData.overdue_uncollected}} 间。
         3天内到期 {{cardData.remind3}} 间、7天内到期 {{cardData.remind7}} 间。
