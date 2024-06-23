@@ -41,13 +41,27 @@ class Index extends Common
         ->where('type', TYPE_EXPENDITURE)
         ->where('accounting_date', $accounting_month)
         ->sum('amount');
+        $currentDate = new \DateTime();
+        $format = $currentDate->format('Y-m-d H:i:s');
         $overdue_todo = $user->houseBilling->where('accounting_date', null)
         ->where('meter_reading_time', '=', '')
-        ->where('start_time', '<', date('Y-m-d H:i:s', time()))
+        ->where('start_time', '<', $format)
         ->count();
         $overdue_uncollected = $user->houseBilling->where('accounting_date', null)
         ->where('meter_reading_time', '!=', '')
-        ->where('start_time', '<', date('Y-m-d H:i:s', time()))
+        ->where('start_time', '<', $format)
+        ->count();
+        $currentDate->modify('+3 day');
+        $format = $currentDate->format('Y-m-d H:i:s');
+        $remind3 = $user->houseBilling->where('accounting_date', null)
+        ->where('meter_reading_time', '=', '')
+        ->where('start_time', '<', $format)
+        ->count();
+        $currentDate->modify('+4 day');
+        $format = $currentDate->format('Y-m-d H:i:s');
+        $remind7 = $user->houseBilling->where('accounting_date', null)
+        ->where('meter_reading_time', '=', '')
+        ->where('start_time', '<', $format)
         ->count();
         $house_info = [
             'property_count' => $property_count,
@@ -57,6 +71,8 @@ class Index extends Common
             'profit' => $income - intval($spending),
             'overdue_todo' => $overdue_todo,
             'overdue_uncollected' => $overdue_uncollected,
+            'remind3' => $remind3 - $overdue_todo,
+            'remind7' => $remind7 - $overdue_todo,
         ];
         return $this->returnElement($house_info);
     }
