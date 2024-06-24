@@ -13,7 +13,7 @@ class Property
     {
         $result = 0;
         if ($user) {
-            $properties = PropertyModel::where('admin_user_id', $user)->order(['firstly'=>'desc', 'id'])->find();
+            $properties = PropertyModel::where('admin_user_id', $user)->order(['firstly' => 'desc', 'id'])->find();
             if ($properties) {
                 $result = $properties['id'];
             }
@@ -28,15 +28,16 @@ class Property
      */
     public static function convert_case_number($num)
     {
+        //判断$num是否存在
+        if(!$num) {
+            return '零元整';
+        }
         $flag = false;
         if ($num < 0) {
             $num = abs($num);
             $flag = true;
         }
-        //判断$num是否存在
-        if(!$num) {
-            return '零元';
-        }
+
         //保留小数点后两位
         $num = round($num, 2);
         //将浮点转换为整数
