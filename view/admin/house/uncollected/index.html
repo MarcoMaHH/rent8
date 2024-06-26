@@ -130,7 +130,7 @@
       <div class="box">其他费用：{{ formData.other_charges }}元</div>
       <div class="box"></div>
     </div>
-<div class="container">合计人民币(大写)：{{ formData.total_money2 }} (¥：{{ formData.total_money }} 元)</div>
+    <div class="container">合计人民币(大写)：{{ formData.total_money2 }} (¥：{{ formData.total_money }} 元)</div>
     <div class="container">备注：{{ formData.note }}</div>
   </div>
   <div style="float: right; padding: 8px;">
@@ -221,8 +221,16 @@
     formData: {},
     formHeader: '',
     rules: {
-      name: [{ required: true, message: '房产名不能为空', trigger: 'blur' }],
-      address: [{ required: true, message: '地址不能为空', trigger: 'blur' }],
+      electricity_meter_last_month: [{ required: true, message: '上月电表度数不能为空', trigger: 'blur' }],
+      water_meter_last_month: [{ required: true, message: '上月水表度数不能为空', trigger: 'blur' }],
+      meter_reading_time: [{ required: true, message: '抄表日期不能为空', trigger: 'blur' }],
+      electricity_meter_this_month: [{ required: true, message: '本月电表度数不能为空', trigger: 'blur' }],
+      water_meter_this_month: [{ required: true, message: '本月水表度数不能为空', trigger: 'blur' }],
+      rental: [{ required: true, message: '租金不能为空', trigger: 'blur' }],
+      deposit: [{ required: true, message: '押金不能为空', trigger: 'blur' }],
+      garbage_fee: [{ required: true, message: '卫生费不能为空', trigger: 'blur' }],
+      management: [{ required: true, message: '管理费不能为空', trigger: 'blur' }],
+      other_charges: [{ required: true, message: '其他费用不能为空', trigger: 'blur' }],
     },
     // 收据
     receiptVisible: false,
