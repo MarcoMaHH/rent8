@@ -117,7 +117,7 @@ class HouseBilling extends Migrator
         )
         ->addColumn(
             'total_money',
-            'float',
+            'double',
             ['null' => false, 'default' => 0.0, 'comment' => '总金额']
         )
         ->addColumn(
