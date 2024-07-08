@@ -36,6 +36,9 @@
     }
   </style>
   <div id="app">
+    <t-space direction="vertical">
+      <t-loading :loading="loading" text="登录中..." fullscreen />
+    </t-space>
 
     <div class="login-wrapper">
       <!-- <login-header /> -->
@@ -81,6 +84,7 @@
     const App = {
       data() {
         return {
+          loading: false,
           formData: {
             username: '',
             password: '',
@@ -103,6 +107,7 @@
 
         async login() {
           try {
+            this.loading = true;
             const response = await axios.post("{:url('Index/login')}", this.formData, {
               headers: {
                 'X-CSRF-TOKEN': '{$token}',
@@ -129,6 +134,7 @@
             });
             console.error('请求失败：', error);
           }
+          this.loading = false;
         }
       }
     };
