@@ -226,11 +226,29 @@
       meter_reading_time: [{ required: true, message: '抄表日期不能为空', trigger: 'blur' }],
       electricity_meter_this_month: [{ required: true, message: '本月电表度数不能为空', trigger: 'blur' }],
       water_meter_this_month: [{ required: true, message: '本月水表度数不能为空', trigger: 'blur' }],
-      rental: [{ required: true, message: '租金不能为空', trigger: 'blur' }],
-      deposit: [{ required: true, message: '押金不能为空', trigger: 'blur' }],
-      garbage_fee: [{ required: true, message: '卫生费不能为空', trigger: 'blur' }],
-      management: [{ required: true, message: '管理费不能为空', trigger: 'blur' }],
-      other_charges: [{ required: true, message: '其他费用不能为空', trigger: 'blur' }],
+      rental: [
+        { required: true, message: '租金不能为空', trigger: 'blur' },
+        { min: 0, message: '输入字数应在0到99999999之间', type: 'error', trigger: 'blur' },
+        { max: 99999999, message: '输入字数应在0到99999999之间', type: 'error', trigger: 'blur' },
+      ],
+      deposit: [
+        { required: true, message: '押金不能为空', trigger: 'blur' },
+        { max: 99999999, message: '最大值为99999999', type: 'error', trigger: 'blur' },
+      ],
+      garbage_fee: [
+        { required: true, message: '卫生费不能为空', trigger: 'blur' },
+        { min: 0, message: '输入字数应在0到99999999之间', type: 'error', trigger: 'blur' },
+        { max: 99999999, message: '输入字数应在0到99999999之间', type: 'error', trigger: 'blur' },
+      ],
+      management: [
+        { required: true, message: '管理费不能为空', trigger: 'blur' },
+        { min: 0, message: '输入字数应在0到99999999之间', type: 'error', trigger: 'blur' },
+        { max: 99999999, message: '输入字数应在0到99999999之间', type: 'error', trigger: 'blur' },
+      ],
+      other_charges: [
+        { required: true, message: '其他费用不能为空', trigger: 'blur' },
+        { max: 99999999, message: '最大值为99999999', type: 'error', trigger: 'blur' },
+      ],
     },
     // 收据
     receiptVisible: false,
