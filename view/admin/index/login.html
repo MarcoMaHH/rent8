@@ -115,11 +115,11 @@
             });
             if (response.status == 200) {
               if (response.data.code) {
+                location.href = "{:url('Index/index')}";
                 this.$message.success({
                   content: response.data.msg,
                   duration: 1500,
                 });
-                location.href = "{:url('Index/index')}";
               } else {
                 this.$message.error({
                   content: response.data.msg,
