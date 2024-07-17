@@ -126,15 +126,16 @@
                   duration: 1500,
                 });
               }
+              this.loading = false;
             }
           } catch (error) {
+            this.loading = false;
             this.$message.error({
               content: '系统出错',
               duration: 1500,
             });
             console.error('请求失败：', error);
           }
-          this.loading = false;
         }
       }
     };
