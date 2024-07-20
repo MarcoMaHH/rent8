@@ -40,43 +40,38 @@
       <t-loading :loading="loading" text="登录中..." fullscreen />
     </t-space>
 
-    <div class="login-wrapper">
-      <!-- <login-header /> -->
-
-      <div class="login-container">
-        <div class="title-container">
-          <h1 class="title margin-no">登录到</h1>
-          <h1 class="title">最常用出租屋管理系统</h1>
-        </div>
-
-        <!-- <login /> -->
-        <div style="width: 350px">
-          <t-form ref="form" :data="formData" :rules="FORM_RULES" :colon="true" :label-width="0" @submit="onSubmit">
-            <t-form-item name="username">
-              <t-input v-model="formData.username" clearable placeholder="请输入账户名">
-                <template #prefix-icon>
-                  <t-icon name="user" />
-                </template>
-              </t-input>
-            </t-form-item>
-
-            <t-form-item name="password">
-              <t-input v-model="formData.password" type="password" clearable placeholder="请输入密码">
-                <template #prefix-icon>
-                  <t-icon name="lock-on" />
-                </template>
-              </t-input>
-            </t-form-item>
-
-            <t-form-item>
-              <t-button theme="primary" type="submit" block size="medium">登录</t-button>
-            </t-form-item>
-          </t-form>
-        </div>
+    <div class="login-container">
+      <div class="title-container">
+        <h1 class="title margin-no">登录到</h1>
+        <h1 class="title">最常用出租屋管理系统</h1>
       </div>
 
-      <footer class="copyright">Copyright @ 2024-{{ new Date().getFullYear() }} 最常用 All Rights Reserved</footer>
+      <div style="width: 350px">
+        <t-form ref="form" :data="formData" :rules="FORM_RULES" :colon="true" :label-width="0" @submit="onSubmit">
+          <t-form-item name="username">
+            <t-input v-model="formData.username" clearable placeholder="请输入账户名">
+              <template #prefix-icon>
+                <t-icon name="user" />
+              </template>
+            </t-input>
+          </t-form-item>
+
+          <t-form-item name="password">
+            <t-input v-model="formData.password" type="password" clearable placeholder="请输入密码">
+              <template #prefix-icon>
+                <t-icon name="lock-on" />
+              </template>
+            </t-input>
+          </t-form-item>
+
+          <t-form-item>
+            <t-button theme="primary" type="submit" block size="medium">登录</t-button>
+          </t-form-item>
+        </t-form>
+      </div>
     </div>
+
+    <footer class="copyright">Copyright @ 2024-{{ new Date().getFullYear() }} 最常用 All Rights Reserved</footer>
   </div>
 
 
