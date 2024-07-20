@@ -13,12 +13,9 @@
     </t-button>
   </div>
 
-  <div style="width: 100%; max-width: 1205px">
-    <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
-      active-row-type="single" :hover="true" :loading="tableLoading" :pagination="pagination"
-      @page-change="onPageChange">
-    </t-table>
-  </div>
+  <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
+    active-row-type="single" :hover="true" :loading="tableLoading" :pagination="pagination" @page-change="onPageChange">
+  </t-table>
 </t-card>
 {/block}
 
@@ -36,26 +33,31 @@
       { title: '电费', colKey: 'electricity', width: 50 },
       { title: '水费', colKey: 'water', width: 50 },
       { title: '租金', colKey: 'rental', width: 50 },
+      { title: '押金', colKey: 'deposit', width: 50 },
+      { title: '卫生费', colKey: 'garbage_fee', width: 60 },
+      { title: '管理费', colKey: 'management', width: 60 },
+      { title: '其他费用', colKey: 'other_charges', width: 75 },
       { title: '总金额', colKey: 'total_money', width: 80 },
       { title: '到账日期', colKey: 'accounting_date', width: 100, fixed: 'right' },
     ],
     columns2: [
-      { title: '房产名', colKey: 'property_name', width: 90, fixed: 'left' },
-      { title: '房间名', colKey: 'number_name', width: 60, fixed: 'left' },
-      { title: '租期', colKey: 'lease', width: 190, fixed: 'left' },
-      { title: '电表度数', colKey: 'electricity_meter_this_month', width: 75 },
+      { title: '房产名', colKey: 'property_name', width: 87, fixed: 'left' },
+      { title: '房间名', colKey: 'number_name', width: 80, fixed: 'left' },
+      { title: '租期', colKey: 'lease', width: 110, fixed: 'left', ellipsis: true },
+      { title: '电表度数', colKey: 'electricity_meter_this_month', width: 73 },
       { title: '用电量', colKey: 'electricity_consumption', width: 60 },
       { title: '电费', colKey: 'electricity', width: 60 },
-      { title: '水表度数', colKey: 'water_meter_this_month', width: 75 },
+      { title: '水表度数', colKey: 'water_meter_this_month', width: 73 },
       { title: '用水量', colKey: 'water_consumption', width: 60 },
       { title: '水费', colKey: 'water', width: 50 },
       { title: '租金', colKey: 'rental', width: 50 },
       { title: '押金', colKey: 'deposit', width: 50 },
-      { title: '卫生费', colKey: 'garbage_fee', width: 60 },
+      { title: '卫生费', colKey: 'garbage_fee', width: 59 },
+      { title: '管理费', colKey: 'management', width: 59 },
       { title: '其他费用', colKey: 'other_charges', width: 75 },
-      { title: '总金额', colKey: 'total_money', width: 80 },
-      { title: '备注', colKey: 'note', width: 180, ellipsis: true },
-      { title: '到账日期', colKey: 'accounting_date', width: 100, fixed: 'right' },
+      { title: '总金额', colKey: 'total_money', width: 59 },
+      { title: '备注', colKey: 'note', width: 100, ellipsis: true },
+      { title: '到账日期', colKey: 'accounting_date', width: 95, fixed: 'right' },
     ],
     sum: 0,
     numberData: [],
@@ -113,6 +115,7 @@
         this.queryTable();
       },
       handleFilter: function () {
+        this.isCollapse = !this.isCollapse;
         if (this.cloumnsFlag) {
           this.columns = this.columns1;
         } else {
@@ -128,4 +131,5 @@
     }
   }
 </script>
+
 {/block}
