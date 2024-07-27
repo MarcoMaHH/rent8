@@ -7,6 +7,10 @@
   </t-button>
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
     active-row-type="single" :hover="true" :loading="tableLoading" :pagination="pagination" @page-change="onPageChange">
+    <template #state="{ row }">
+      <t-tag v-if="row.state === 'Y'" theme="success" variant="light"> 正常 </t-tag>
+      <t-tag v-if="row.state === 'N'" theme="danger" variant="light"> 停用 </t-tag>
+    </template>
     <template #op="slotProps">
       <t-space>
         <t-button size="small" @click="handleEdit(slotProps.row)">修改</t-button>
@@ -52,6 +56,7 @@
     tableLoading: false,
     columns: [
       { title: '用户名', colKey: 'username', width: 80, fixed: 'left', },
+      { title: '状态', colKey: 'state', width: 80 },
       { title: '所属角色', colKey: 'role_name', width: 60 },
       { title: '最后一次登录日期', colKey: 'login_date', width: 120 },
       { title: '失效日期', colKey: 'expiration_date', width: 80 },

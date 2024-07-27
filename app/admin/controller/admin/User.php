@@ -28,6 +28,7 @@ class User extends Common
                 'expiration_date' => $item["expiration_date"] ? \substr($item["expiration_date"], 0, 10) : '',
                 'create_time' =>  \substr($item["create_time"], 0, 10),
                 'update_time' => $item["update_time"] ? \substr($item["update_time"], 0, 10) : '',
+                'state' => strtotime($item["expiration_date"]) > time() ? 'Y' : 'N',
             );
         }, $user);
         return $this->returnElement($user);
