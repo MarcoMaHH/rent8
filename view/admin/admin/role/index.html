@@ -8,8 +8,8 @@
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
     active-row-type="single" :hover="true" :loading="tableLoading">
     <template #state="{ row }">
-      <t-tag v-if="row.state === 'Y'" theme="danger" variant="light"> 开启 </t-tag>
-      <t-tag v-if="row.state === 'N'" theme="success" variant="light"> 停用 </t-tag>
+      <t-tag v-if="row.state === 'Y'" theme="success" variant="light"> 开启 </t-tag>
+      <t-tag v-if="row.state === 'N'" theme="danger" variant="light"> 停用 </t-tag>
     </template>
     <template #op="slotProps">
       <t-space>
