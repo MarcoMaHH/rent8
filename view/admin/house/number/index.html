@@ -5,6 +5,15 @@
     <template #icon><t-icon name="add" /></template>
     新建
   </t-button>
+
+  <div style="width: 300px; float: right;">
+    <t-input v-model="searchValue" placeholder="请输入房号" clearable>
+      <template #suffix-icon>
+        <t-icon name="search" />
+      </template>
+    </t-input>
+  </div>
+
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
     active-row-type="single" :hover="true" :pagination="pagination" :loading="tableLoading">
     <template #state="{ row }">
@@ -182,6 +191,7 @@
     checkOutRules: {
       leave_time: [{ required: true, message: '必填' }],
     },
+    searchValue: '',  // 搜索
   };
 
   function f() {
