@@ -25,7 +25,14 @@ class Number extends Common
     {
         $loginUser = $this->auth->getLoginUser();
         $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
-        $numbers = NumberModel::where('a.house_property_id', $house_property_id)
+        $name = $this->request->param('name/s', '', 'trim');
+        $conditions = array(
+            ['a.house_property_id', '=', $house_property_id],
+        );
+        if ($name != '') {
+            \array_push($conditions, ['a.name', 'like', '%' . $name . '%']);
+        }
+        $numbers = NumberModel::where($conditions)
         ->alias('a')
         ->join('HouseProperty b', 'a.house_property_id = b.id')
         ->field('a.*,b.name as property_name')
