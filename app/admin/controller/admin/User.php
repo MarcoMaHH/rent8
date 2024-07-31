@@ -7,6 +7,7 @@ use app\admin\model\AdminUser as UserModel;
 use app\admin\model\AdminRole as RoleModel;
 use app\admin\validate\AdminUser as UserValidate;
 use think\facade\View;
+use think\facade\Db;
 
 class User extends Common
 {
@@ -70,7 +71,21 @@ class User extends Common
         if (!$user = UserModel::find($id)) {
             $this->error('删除失败，记录不存在。');
         }
-        $user->delete();
-        $this->success('删除成功。');
+        $transFlag = true;
+        Db::startTrans();
+        try {
+            $user->delete();
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            $transFlag = false;
+            // 回滚事务
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+        if ($transFlag) {
+            $this->success('删除成功。');
+        }
     }
 }
