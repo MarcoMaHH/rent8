@@ -5,6 +5,12 @@ namespace app\admin\controller\admin;
 use app\admin\controller\Common;
 use app\admin\model\AdminUser as UserModel;
 use app\admin\model\AdminRole as RoleModel;
+use app\admin\model\HouseProperty as PropertyModel;
+use app\admin\model\BillMeter as MeterModel;
+use app\admin\model\BillSum as SumModel;
+use app\admin\model\HouseTenant as TenantModel;
+use app\admin\model\HouseBilling as BillingModel;
+use app\admin\model\HouseNumber as NumberModel;
 use app\admin\validate\AdminUser as UserValidate;
 use think\facade\View;
 use think\facade\Db;
@@ -75,7 +81,16 @@ class User extends Common
         Db::startTrans();
         try {
             $user->delete();
-
+            $property = PropertyModel::where('admin_user_id', $id)->select();
+            $length = \count($property);
+            for ($i = 0; $i < $length; $i++) {
+                MeterModel::where('house_property_id', $property[$i]['id'])->delete();
+                SumModel::where('house_property_id', $property[$i]['id'])->delete();
+                TenantModel::where('house_property_id', $property[$i]['id'])->delete();
+                BillingModel::where('house_property_id', $property[$i]['id'])->delete();
+                NumberModel::where('house_property_id', $property[$i]['id'])->delete();
+            }
+            $property->delete();
             // 提交事务
             Db::commit();
         } catch (\Exception $e) {
