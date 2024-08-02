@@ -8,6 +8,7 @@ use app\admin\model\HouseNumber as NumberModel;
 use app\admin\model\HouseTenant as TenantModel;
 use app\admin\model\HouseBilling as BillingModel;
 use app\admin\model\BillMeter as MeterModel;
+use app\admin\model\AdminUser as UserModel;
 use app\admin\validate\HouseNumber as NumberValidate;
 use app\admin\library\Property;
 use app\admin\library\Date;
@@ -44,6 +45,22 @@ class Number extends Common
             }
         }
         return $this->returnElement($numbers);
+    }
+
+    public function getMessage()
+    {
+        $loginUser = $this->auth->getLoginUser();
+        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
+        $user = UserModel::find($loginUser['id']);
+        $number_count =  $user->houseNumber->where('house_property_id', $house_property_id)->count();
+        $empty_count =  $user->houseNumber->where('rent_mark', 'N')->where('house_property_id', $house_property_id)->count();
+        $occupancy = $number_count == 0 ? '0%' : round((($number_count - $empty_count) / $number_count) * 100).'%';
+        $number_info = [
+            'occupancy' => $occupancy,
+            'rented' => $number_count - $empty_count,
+            'empty' => $empty_count,
+        ];
+        return $this->returnElement($number_info);
     }
 
     public function save()

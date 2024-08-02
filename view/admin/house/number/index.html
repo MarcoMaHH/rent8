@@ -7,6 +7,7 @@
       <template #icon><t-icon name="add" /></template>
       新建
     </t-button>
+      已租房间: {{numberMessage.rented}}， 空闲房间: {{numberMessage.empty}}， 入住率: {{numberMessage.occupancy}}
 
     <!-- 搜索输入框和搜索按钮位于右侧，被包裹在另一个flex容器中 -->
     <div style="display: flex; justify-content: flex-end; width: 300px; /* 可根据需要调整宽度 */">
@@ -197,6 +198,7 @@
       leave_time: [{ required: true, message: '必填' }],
     },
     searchValue: '',  // 搜索
+    numberMessage: {},
   };
 
   function f() {
@@ -211,6 +213,13 @@
             this.$message.error('系统出错了!!!');
           }
           this.tableLoading = false;
+        });
+        axiosGet("{:url('getMessage')}").then(response => {
+          if (response.code == 1) {
+            this.numberMessage = response.data;
+          } else {
+            console.log('getMessage error');
+          }
         });
       },
       // 查询
