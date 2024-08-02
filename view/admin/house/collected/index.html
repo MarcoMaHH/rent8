@@ -115,10 +115,11 @@
         this.queryTable();
       },
       handleFilter: function () {
-        this.isCollapse = !this.isCollapse;
         if (this.cloumnsFlag) {
+          this.isCollapse = false;
           this.columns = this.columns1;
         } else {
+          this.isCollapse = true;
           this.columns = this.columns2;
         }
         this.cloumnsFlag = !this.cloumnsFlag;
