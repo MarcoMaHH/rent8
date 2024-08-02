@@ -219,10 +219,14 @@
       },
       // 新增
       handleAdd() {
-        this.$refs.numberForm.reset();
-        this.formData = { 'house_property_id': this.houseDef };
-        this.formHeader = this.houseName + ' - 新增房间';
-        this.dialogVisible = true;
+        if (!this.houseDef) {
+          this.$message.warning('请先新增房产');
+        } else {
+          this.$refs.numberForm.reset();
+          this.formData = { 'house_property_id': this.houseDef };
+          this.formHeader = this.houseName + ' - 新增房间';
+          this.dialogVisible = true;
+        }
       },
       // 修改
       handleEdit(row) {
