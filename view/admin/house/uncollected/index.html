@@ -15,7 +15,7 @@
       </t-option>
     </t-select>
     <t-button theme="primary" style="float: right;" @click="handlePrintAll">
-      <template #icon><t-icon name="print" /></template> 打印
+      <template #icon><t-icon name="print" /></template> 打印列表
     </t-button>
   </div>
 
@@ -154,12 +154,14 @@
     <table>
       <tr>
         <th></th>
+        <th>序号</th>
         <th>房间名</th>
         <th>金额</th>
         <th></th>
       </tr>
-      <tr v-for="item in tableData" :key="item.id">
+      <tr v-for="(item, index) in tableData" :key="item.id">
         <td>囗</td>
+        <td>{{ index + 1 }}</td>
         <td>{{ item.name }}</td>
         <td>{{ item.total_money }}</td>
         <td>囗</td>
