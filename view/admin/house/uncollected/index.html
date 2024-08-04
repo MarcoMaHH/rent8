@@ -439,6 +439,7 @@
               this.$message.success(response.msg);
               this.concentratedVisible = false;
               this.queryTable();
+              this.queryReadingTime();
             } else if (response.state == 'warning') {
               this.$message.warning(response.msg);
             } else {
