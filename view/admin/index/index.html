@@ -1,23 +1,7 @@
 {extend name="common/layout" /}
 {block name="main"}
-<t-space direction="vertical" style="width: 100%;">
-  <t-row justify="space-between">
-    <t-col :flex="2" style="margin-right: 10px;">
-      <t-card bordered>
-        欢迎：<span style="color: #0052d9;">{$layout_login_user.username}</span>！
-        您的账号于<span style="color: #0052d9;">{$layout_login_user.expiration_date|date='Y-m-d'}</span>到期。
-      </t-card>
-    </t-col>
-    <t-col :flex="2">
-      <t-card bordered>
-        目前，待处理 {{cardData.overdue_todo}} 间、待收款 {{cardData.overdue_uncollected}} 间。
-        3天内到期 {{cardData.remind3}} 间、7天内到期 {{cardData.remind7}} 间。
-      </t-card>
-    </t-col>
-  </t-row>
-</t-space>
 
-<t-space style="width: 100%; margin-top: 10px;">
+<t-space style="width: 100%;">
   <t-row justify="space-between">
     <t-col :flex="2" style="margin-right: 10px;">
       <t-card bordered header style="background-color: #0052d9;">
@@ -26,7 +10,7 @@
             <div style="margin-bottom: 15px; color: white;">本月利润</div>
             <div style="font-size: 24px; font-weight: bold; color: white;">{{cardData.profit}}</div>
           </t-col>
-          <t-col :flex="2" style="margin: 10px 0px 10px 70px;">
+          <t-col :flex="2" style="margin: 10px 0px 10px 10px;">
             <t-icon name="money" style="color: white" size="3em" />
           </t-col>
         </t-row>
@@ -39,7 +23,7 @@
             <div style="margin-bottom: 15px;">闲置房间</div>
             <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.empty_count}}</div>
           </t-col>
-          <t-col :flex="2" style="margin: 10px 0px 10px 70px;">
+          <t-col :flex="2" style="margin: 10px 0px 10px 10px;">
             <t-icon name="window-1" style="color: #0052d9" size="3em" />
           </t-col>
         </t-row>
@@ -52,7 +36,7 @@
             <div style="margin-bottom: 15px;">入住率</div>
             <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.occupancy}}</div>
           </t-col>
-          <t-col :flex="2" style="margin: 10px 0px 10px 70px;">
+          <t-col :flex="2" style="margin: 10px 0px 10px 10px;">
             <t-icon name="calculator-1" style="color: #0052d9" size="3em" />
           </t-col>
         </t-row>
@@ -65,8 +49,21 @@
             <div style="margin-bottom: 15px;">总房产数</div>
             <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.property_count}}</div>
           </t-col>
-          <t-col :flex="2" style="margin: 10px 0px 10px 70px;">
+          <t-col :flex="2" style="margin: 10px 0px 10px 10px;">
             <t-icon name="houses-2" style="color: #0052d9" size="3em" />
+          </t-col>
+        </t-row>
+      </t-card>
+    </t-col>
+    <t-col :flex="2" style="margin-right: 10px;">
+      <t-card bordered header>
+        <t-row>
+          <t-col :flex="2">
+            <div style="margin-bottom: 15px;">总房间数</div>
+            <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.number_count}}</div>
+          </t-col>
+          <t-col :flex="2" style="margin: 10px 0px 10px 10px;">
+            <t-icon name="window" style="color: #0052d9" size="3em" />
           </t-col>
         </t-row>
       </t-card>
@@ -74,12 +71,10 @@
     <t-col :flex="2">
       <t-card bordered header>
         <t-row>
-          <t-col :flex="2">
-            <div style="margin-bottom: 15px;">总房间数</div>
-            <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.number_count}}</div>
-          </t-col>
-          <t-col :flex="2" style="margin: 10px 0px 10px 70px;">
-            <t-icon name="window" style="color: #0052d9" size="3em" />
+          <t-col :flex="1">
+            <div style="margin-bottom: 15px;">账号截止日期</div>
+            <div style="font-size: 24px; font-weight: bold; color: #0052d9;">
+              {$layout_login_user.expiration_date|date='Y-m-d'}</div>
           </t-col>
         </t-row>
       </t-card>
@@ -88,12 +83,22 @@
 </t-space>
 
 <t-space direction="vertical" style="width: 100%; margin-top: 10px;">
-  <t-card bordered>
-    <div style="margin-bottom: 20px;">
-      年度财务收支走势
-    </div>
-    <div id="c1"></div>
-  </t-card>
+  <t-row justify="space-between">
+    <t-col :flex="9" style="margin-right: 10px;">
+      <t-card bordered>
+        <div style="margin-bottom: 20px;">
+          年度财务收支走势
+        </div>
+        <div id="c1"></div>
+      </t-card>
+    </t-col>
+    <t-col :flex="3">
+      <t-card bordered>
+        目前，待处理 {{cardData.overdue_todo}} 间、待收款 {{cardData.overdue_uncollected}} 间。
+        3天内到期 {{cardData.remind3}} 间、7天内到期 {{cardData.remind7}} 间。
+      </t-card>
+    </t-col>
+  </t-row>
 </t-space>
 
 {/block}
@@ -122,7 +127,7 @@
             const chart = new G2.Chart({
               container: 'c1', // 指定图表容器 ID
               autoFit: true,
-              height: 350,
+              height: 430,
             });
             chart.data(data);
             chart.scale({
