@@ -84,7 +84,7 @@
 
 <t-space direction="vertical" style="width: 100%; margin-top: 10px;">
   <t-row justify="space-between">
-    <t-col :flex="9" style="margin-right: 10px;">
+    <t-col :flex="10" style="margin-right: 10px;">
       <t-card bordered>
         <div style="margin-bottom: 20px;">
           年度财务收支走势
@@ -92,10 +92,14 @@
         <div id="c1"></div>
       </t-card>
     </t-col>
-    <t-col :flex="3">
+    <t-col :flex="4">
       <t-card bordered>
-        目前，待处理 {{cardData.overdue_todo}} 间、待收款 {{cardData.overdue_uncollected}} 间。
-        3天内到期 {{cardData.remind3}} 间、7天内到期 {{cardData.remind7}} 间。
+        <div style="margin-bottom: 10px;">
+          收租提醒
+        </div>
+        <t-table :data="remindData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
+          :show-header="false">
+        </t-table>
       </t-card>
     </t-col>
   </t-row>
@@ -107,16 +111,29 @@
 <script>
   const data = {
     cardData: {},
+    remindData: [],
+    columns: [
+      { colKey: 'start_time', },
+      { colKey: 'property_name', },
+      { colKey: 'number_name', },
+    ],
   };
   function f() {
     return {
       init: function () {
-        let that = this
         axiosGet("{:url('queryHouse')}").then(response => {
           if (response.code == 1) {
-            that.cardData = response.data;
+            this.cardData = response.data;
           } else {
-            that.$message.error('系统出错了!!!');
+            this.$message.error('系统出错了!!!');
+          }
+        });
+
+        axiosGet("{:url('queryRemind')}").then(response => {
+          if (response.code == 1) {
+            this.remindData = response.data;
+          } else {
+            this.$message.error('系统出错了!!!');
           }
         });
 
@@ -167,7 +184,7 @@
 
             chart.render();
           } else {
-            that.$message.error('系统出错了!!!');
+            this.$message.error('系统出错了!!!');
           }
         });
       }

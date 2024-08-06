@@ -51,18 +51,6 @@ class Index extends Common
         ->where('meter_reading_time', '!=', '')
         ->where('start_time', '<', $format)
         ->count();
-        $currentDate->modify('+3 day');
-        $format = $currentDate->format('Y-m-d H:i:s');
-        $remind3 = $user->houseBilling->where('accounting_date', null)
-        ->where('meter_reading_time', '=', '')
-        ->where('start_time', '<', $format)
-        ->count();
-        $currentDate->modify('+4 day');
-        $format = $currentDate->format('Y-m-d H:i:s');
-        $remind7 = $user->houseBilling->where('accounting_date', null)
-        ->where('meter_reading_time', '=', '')
-        ->where('start_time', '<', $format)
-        ->count();
         $house_info = [
             'property_count' => $property_count,
             'number_count' => $number_count,
@@ -71,10 +59,35 @@ class Index extends Common
             'profit' => $income - intval($spending),
             'overdue_todo' => $overdue_todo,
             'overdue_uncollected' => $overdue_uncollected,
-            'remind3' => $remind3 - $overdue_todo,
-            'remind7' => $remind7 - $overdue_todo,
         ];
         return $this->returnElement($house_info);
+    }
+
+    public function queryRemind()
+    {
+        $loginUser = $this->auth->getLoginUser();
+        $property = PropertyModel::where('admin_user_id', $loginUser['id'])->select()->toArray();
+        $result = array_map(function ($item) {
+            return $item['id'];
+        }, $property);
+        $conditions = array(
+            ['a.house_property_id', 'in', $result],
+            ['a.start_time', '< time', 'today+7 days'],
+            ['a.accounting_date', 'null', ''],
+        );
+        $remind = BillingModel::where($conditions)
+        ->alias('a')
+        ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
+        ->join('HouseProperty c', 'c.id = a.house_property_id')
+        ->field('a.id, a.start_time, b.name as number_name, c.name as property_name')
+        ->order(['a.start_time' => 'asc'])
+        ->select();
+        foreach ($remind as $value) {
+            if ($value['start_time']) {
+                $value['start_time'] = \substr($value['start_time'], 0, 10);
+            }
+        }
+        return $this->returnElement($remind);
     }
 
     public function login()
