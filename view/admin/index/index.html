@@ -113,7 +113,22 @@
     cardData: {},
     remindData: [],
     columns: [
-      { colKey: 'start_time', },
+      {
+        colKey: 'start_time',
+        className: ({ row }) => {
+          const startDate = new Date(row.start_time);
+          const today = new Date();
+          const threeDaysLater = new Date(today);
+          threeDaysLater.setDate(today.getDate() + 3);
+          if (startDate < threeDaysLater && startDate > today) {
+            return 'cell-orange';
+          }
+          if (startDate <= today) {
+            return 'cell-red';
+          }
+          return '';
+        },
+      },
       { colKey: 'property_name', },
       { colKey: 'number_name', },
     ],
@@ -191,4 +206,13 @@
     }
   }
 </script>
+<style>
+  td.cell-red {
+    color: red;
+  }
+
+  td.cell-orange {
+    color: orange;
+  }
+</style>
 {/block}
