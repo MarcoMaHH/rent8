@@ -98,7 +98,7 @@
           收租提醒
         </div>
         <t-table :data="remindData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
-          :show-header="false">
+          :show-header="false" @row-click="onRowClick">
         </t-table>
       </t-card>
     </t-col>
@@ -202,7 +202,20 @@
             this.$message.error('系统出错了!!!');
           }
         });
-      }
+      },
+      onRowClick: function (data) {
+        if (data.row.house_property_id != this.houseDef) {
+          axiosPost("{:url('house.property/sort')}", { 'id': data.row.house_property_id }).then(response => {
+            if (response.state == 'success') {
+              location.href = "{:url('house.uncollected/index')}";
+            } else {
+              console.log('房产切换失败');
+            }
+          });
+        } else {
+          location.href = "{:url('house.uncollected/index')}";
+        }
+      },
     }
   }
 </script>

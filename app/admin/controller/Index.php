@@ -79,7 +79,7 @@ class Index extends Common
         ->alias('a')
         ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
         ->join('HouseProperty c', 'c.id = a.house_property_id')
-        ->field('a.id, a.start_time, b.name as number_name, c.name as property_name')
+        ->field('a.id, a.house_property_id, a.start_time, b.name as number_name, c.name as property_name')
         ->order(['a.start_time' => 'asc'])
         ->select();
         foreach ($remind as $value) {
