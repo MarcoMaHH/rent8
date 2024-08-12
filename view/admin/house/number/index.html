@@ -7,7 +7,7 @@
       <template #icon><t-icon name="add" /></template>
       新建
     </t-button>
-      已租房间: {{numberMessage.rented}}， 空闲房间: {{numberMessage.empty}}， 入住率: {{numberMessage.occupancy}}
+    已租房间: {{numberMessage.rented}}， 空闲房间: {{numberMessage.empty}}， 入住率: {{numberMessage.occupancy}}
 
     <!-- 搜索输入框和搜索按钮位于右侧，被包裹在另一个flex容器中 -->
     <div style="display: flex; justify-content: flex-end; width: 300px; /* 可根据需要调整宽度 */">
@@ -232,7 +232,7 @@
           this.$message.warning('请先新增房产');
         } else {
           this.$refs.numberForm.reset();
-          this.formData = { 'house_property_id': this.houseDef };
+          this.formData = { 'house_property_id': this.houseDef, 'management': 0, 'garbage_fee': 0, 'lease_type': '1' };
           this.formHeader = this.houseName + ' - 新增房间';
           this.dialogVisible = true;
         }
