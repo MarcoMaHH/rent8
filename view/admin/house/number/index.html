@@ -3,10 +3,15 @@
 <t-card class="list-card-container" :bordered="false">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
     <!-- 新建按钮位于左侧 -->
-    <t-button theme="primary" @click="handleAdd">
-      <template #icon><t-icon name="add" /></template>
-      新建
-    </t-button>
+    <div>
+      <t-button theme="primary" @click="handleAdd">
+        <template #icon><t-icon name="add" /></template>
+        新建
+      </t-button>
+      <t-button theme="primary" @click="handleAddMore" style="margin-left: 10px;">
+        批量新建
+      </t-button>
+    </div>
     已租房间: {{numberMessage.rented}}， 空闲房间: {{numberMessage.empty}}， 入住率: {{numberMessage.occupancy}}
 
     <!-- 搜索输入框和搜索按钮位于右侧，被包裹在另一个flex容器中 -->
@@ -84,6 +89,61 @@
     </t-form-item>
     <t-form-item style="float: right">
       <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px;">取消</t-button>
+      <t-button theme="primary" type="submit">确定</t-button>
+    </t-form-item>
+  </t-form>
+</t-dialog>
+
+<!-- 批量新增房间 -->
+<t-dialog v-model:visible="addMoreVisible" :header="formHeader" :width="680" :footer="false" top="5px">
+  <t-form v-show="activeForm === 0" ref="addMoreForm1" :data="formData" :rules="rules" :label-width="100"
+    @submit="handleSave">
+    <t-form-item label="房间名" name="name">
+      <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="房租" name="rental">
+      <t-input-number theme="normal" v-model="formData.rental" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="租期" name="lease_type">
+      <t-radio-group v-model="formData.lease_type">
+        <t-radio value="1">1个月</t-radio>
+        <t-radio value="2">2个月</t-radio>
+        <t-radio value="3">3个月</t-radio>
+        <t-radio value="6">6个月</t-radio>
+        <t-radio value="12">12个月</t-radio>
+      </t-radio-group>
+    </t-form-item>
+    <t-form-item label="押金" name="deposit">
+      <t-input-number theme="normal" v-model="formData.deposit" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="管理费" name="management">
+      <t-input-number v-model="formData.management" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="卫生费" name="garbage_fee">
+      <t-input-number v-model="formData.garbage_fee" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="逾期日租金" name="daily_rent">
+      <t-input-number v-model="formData.daily_rent" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="水费单价" name="water_price">
+      <t-input-number v-model="formData.water_price" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="电费单价" name="electricity_price">
+      <t-input-number v-model="formData.electricity_price" :style="{ width: '480px' }" theme="normal"
+        placeholder="请输入" />
+    </t-form-item>
+    <t-form-item style="float: right">
+      <t-button variant="outline" @click="addMoreVisible = false" style="margin-right: 5px;">取消</t-button>
+      <t-button theme="primary" type="submit">确定</t-button>
+    </t-form-item>
+  </t-form>
+  <t-form v-show="activeForm === 1" ref="addMoreForm2" :data="formData" :rules="rules" :label-width="100"
+    @submit="handleSave">
+    <t-form-item label="房间名" name="name">
+      <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item style="float: right">
+      <t-button variant="outline" @click="addMoreVisible = false" style="margin-right: 5px;">取消</t-button>
       <t-button theme="primary" type="submit">确定</t-button>
     </t-form-item>
   </t-form>
@@ -197,8 +257,12 @@
     checkOutRules: {
       leave_time: [{ required: true, message: '必填' }],
     },
-    searchValue: '',  // 搜索
+    // 搜索
+    searchValue: '',
     numberMessage: {},
+    // 批量新增
+    addMoreVisible: false,
+    activeForm: 0,
   };
 
   function f() {
@@ -237,6 +301,19 @@
           this.dialogVisible = true;
         }
       },
+      // 批量新增
+      handleAddMore() {
+        if (!this.houseDef) {
+          this.$message.warning('请先新增房产');
+        } else {
+          this.$refs.addMoreForm1.reset();
+          this.$refs.addMoreForm2.reset();
+          this.formData = { 'house_property_id': this.houseDef, 'management': 0, 'garbage_fee': 0, 'lease_type': '1' };
+          this.formHeader = this.houseName + ' - 批量新增房间';
+          this.activeForm = 0;
+          this.addMoreVisible = true;
+        }
+      },
       // 修改
       handleEdit(row) {
         this.$refs.numberForm.reset();
@@ -261,6 +338,10 @@
             });
           }
         });
+      },
+      // 批量新增-下一步
+      handleSave() {
+        this.activeForm = 1;
       },
       // 删除
       handleDelete(row) {
