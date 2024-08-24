@@ -24,14 +24,14 @@
     <template #op="slotProps">
       <t-space>
         <t-button size="small" @click="handleEdit(slotProps.row)">抄表</t-button>
-        <t-button size="small" v-if="slotProps.row.note != '借贷平衡'" theme="success"
+        <t-button size="small" v-if="slotProps.row.note != '延期'" theme="success"
           @click="handlePrint(slotProps.row)">收据</t-button>
         <t-popconfirm theme="danger" content="确认到账?" @confirm="handleAccount(slotProps.row)">
           <t-button theme="warning" size="small">到账</t-button>
         </t-popconfirm>
-        <t-popconfirm v-if="slotProps.row.end_time != null" theme="danger" content="确认借贷?"
+        <t-popconfirm v-if="slotProps.row.end_time != null" theme="danger" content="确认延期?"
           @confirm="handleBalance(slotProps.row)">
-          <t-button theme="danger" size="small">借贷</t-button>
+          <t-button theme="danger" size="small">延期</t-button>
         </t-popconfirm>
       </t-space>
     </template>
@@ -387,7 +387,7 @@
           css: '__STATIC__/css/table.css',
         })
       },
-      // 借贷
+      // 延期
       handleBalance(row) {
         axiosPost("{:url('balance')}", { id: row.id }).then(response => {
           if (response.state == 'success') {

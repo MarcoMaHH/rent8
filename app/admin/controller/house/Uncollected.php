@@ -322,21 +322,21 @@ class Uncollected extends Common
         $this->success('修改成功');
     }
 
-    // 借贷平衡
+    // 延期
     public function balance()
     {
         $id = $this->request->param('id/d', 0);
         if (!$billing_data = BillingModel::find($id)) {
             $this->error('记录不存在。');
         }
-        // 新增借贷账单
+        // 新增延期账单
         $data_debit = [
             'house_property_id' => $billing_data['house_property_id'],
             'house_number_id' => $billing_data['house_number_id'],
             'start_time' =>  $billing_data['start_time'],
             'other_charges' => $billing_data['total_money'],
             'total_money' => $billing_data['total_money'],
-            'note' => '借贷平衡',
+            'note' => '延期',
         ];
         $data_crebit = [
             'house_property_id' => $billing_data['house_property_id'],
@@ -344,7 +344,7 @@ class Uncollected extends Common
             'start_time' =>  $billing_data['start_time'],
             'other_charges' => 0 - $billing_data['total_money'],
             'total_money' => 0 - $billing_data['total_money'],
-            'note' => '借贷平衡',
+            'note' => '延期',
             'accounting_date' => date('Y-m-d', time()),
         ];
         $transFlag = true;
@@ -378,7 +378,7 @@ class Uncollected extends Common
             $number_data->save($number_update);
             // 更新旧账单
             $billing_data->save($billing_update);
-            // 新增借贷账单
+            // 新增延期账单
             BillingModel::create($data_debit);
             BillingModel::create($data_crebit);
             // 提交事务
