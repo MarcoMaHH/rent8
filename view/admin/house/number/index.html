@@ -141,9 +141,11 @@
   <!-- 第二部 -->
   <t-form v-show="activeForm === 1" ref="addMoreForm2" :data="formData" :rules="rules" :label-width="100"
     @submit="handleSave">
+
     <t-form-item label="房间名" name="name">
       <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" />
     </t-form-item>
+    
     <t-form-item style="float: right">
       <t-button variant="outline" @click="handleBack" style="margin-right: 5px;">上一步</t-button>
       <t-button theme="primary" type="submit">确定</t-button>
@@ -269,6 +271,7 @@
     // 批量新增
     addMoreVisible: false,
     activeForm: 0,
+    numberData: {},
   };
 
   function f() {
