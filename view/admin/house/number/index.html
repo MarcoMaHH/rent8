@@ -98,8 +98,9 @@
 <t-dialog v-model:visible="addMoreVisible" :header="formHeader" :width="680" :footer="false" top="5px">
   <t-form v-show="activeForm === 0" ref="addMoreForm1" :data="formData" :rules="rules" :label-width="100"
     @submit="handleSave">
-    <t-form-item label="房间名" name="name">
-      <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" />
+    <t-form-item label="房间数量" name="quantity">
+      <t-input-number v-model="formData.quantity" :style="{ width: '480px' }" :min="2" :step="1" :max="10" suffix="间"
+        placeholder="请输入" />
     </t-form-item>
     <t-form-item label="房租" name="rental">
       <t-input-number theme="normal" v-model="formData.rental" :style="{ width: '480px' }" placeholder="请输入" />
@@ -134,7 +135,7 @@
     </t-form-item>
     <t-form-item style="float: right">
       <t-button variant="outline" @click="addMoreVisible = false" style="margin-right: 5px;">取消</t-button>
-      <t-button theme="primary" type="submit">确定</t-button>
+      <t-button theme="primary" type="submit">下一步</t-button>
     </t-form-item>
   </t-form>
   <t-form v-show="activeForm === 1" ref="addMoreForm2" :data="formData" :rules="rules" :label-width="100"
@@ -151,7 +152,7 @@
 
 <!-- 入住表单 -->
 <t-dialog v-model:visible="checkInVisible" :header="formHeader" :width="680" :footer="false" top="5px">
-  <t-form ref="checkInForm" :data="formData" :rules="checkInRules" :label-width="100" @submit="checkIn">
+  <t-form ref="checkInForm" :data="formData" :rules="checkRules" :label-width="100" @submit="checkIn">
     <t-form-item label="房产名" name="house_property_name">
       <t-input v-model="formData.house_property_name" :style="{ width: '480px' }" readonly />
     </t-form-item>
@@ -191,7 +192,7 @@
 
 <!-- 退房表单 -->
 <t-dialog v-model:visible="checkOutVisible" :header="formHeader" :width="680" :footer="false">
-  <t-form ref="checkOutForm" :data="formData" :rules="checkOutRules" :label-width="100" @submit="checkOut">
+  <t-form ref="checkOutForm" :data="formData" :rules="checkRules" :label-width="100" @submit="checkOut">
     <t-form-item label="房产名" name="house_property_name">
       <t-input v-model="formData.house_property_name" :style="{ width: '480px' }" readonly />
     </t-form-item>
@@ -234,6 +235,11 @@
     formData: {},
     formHeader: '',
     rules: {
+      quantity: [
+        { required: true, message: '必填', trigger: 'blur' },
+        { min: 2, message: '最小值为2', type: 'error', trigger: 'blur' },
+        { max: 10, message: '最大值为10', type: 'error', trigger: 'blur' },
+      ],
       name: [{ required: true, message: '必填', trigger: 'blur' }],
       rental: [{ required: true, message: '必填', trigger: 'blur' }],
       lease_type: [{ required: true, message: '必填' }],
@@ -246,17 +252,16 @@
     },
     // 入住
     checkInVisible: false,
-    checkInRules: {
+    checkRules: {
       name: [{ required: true, message: '必填', trigger: 'blur' }],
       checkin_time: [{ required: true, message: '必填' }],
       phone: [{ telnumber: true, message: '格式错误', trigger: 'blur' }],
       id_card_number: [{ idcard: true, message: '格式错误', trigger: 'blur' }],
+      // 退房验证
+      leave_time: [{ required: true, message: '必填' }],
     },
     // 退房
     checkOutVisible: false,
-    checkOutRules: {
-      leave_time: [{ required: true, message: '必填' }],
-    },
     // 搜索
     searchValue: '',
     numberMessage: {},
@@ -308,7 +313,7 @@
         } else {
           this.$refs.addMoreForm1.reset();
           this.$refs.addMoreForm2.reset();
-          this.formData = { 'house_property_id': this.houseDef, 'management': 0, 'garbage_fee': 0, 'lease_type': '1' };
+          this.formData = { 'house_property_id': this.houseDef, 'quantity': 2, 'management': 0, 'garbage_fee': 0, 'lease_type': '1' };
           this.formHeader = this.houseName + ' - 批量新增房间';
           this.activeForm = 0;
           this.addMoreVisible = true;
