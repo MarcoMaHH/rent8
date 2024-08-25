@@ -97,7 +97,7 @@
 <!-- 批量新增房间 -->
 <t-dialog v-model:visible="addMoreVisible" :header="formHeader" :width="680" :footer="false" top="5px">
   <t-form v-show="activeForm === 0" ref="addMoreForm1" :data="formData" :rules="rules" :label-width="100"
-    @submit="handleSave">
+    @submit="handleNext">
     <t-form-item label="房间数量" name="quantity">
       <t-input-number v-model="formData.quantity" :style="{ width: '480px' }" :min="2" :step="1" :max="10" suffix="间"
         placeholder="请输入" />
@@ -138,13 +138,14 @@
       <t-button theme="primary" type="submit">下一步</t-button>
     </t-form-item>
   </t-form>
+  <!-- 第二部 -->
   <t-form v-show="activeForm === 1" ref="addMoreForm2" :data="formData" :rules="rules" :label-width="100"
     @submit="handleSave">
     <t-form-item label="房间名" name="name">
       <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" />
     </t-form-item>
     <t-form-item style="float: right">
-      <t-button variant="outline" @click="addMoreVisible = false" style="margin-right: 5px;">取消</t-button>
+      <t-button variant="outline" @click="handleBack" style="margin-right: 5px;">上一步</t-button>
       <t-button theme="primary" type="submit">确定</t-button>
     </t-form-item>
   </t-form>
@@ -345,8 +346,16 @@
         });
       },
       // 批量新增-下一步
-      handleSave() {
-        this.activeForm = 1;
+      handleNext() {
+        this.$refs.addMoreForm1.validate().then((valid) => {
+          if (valid == true) {
+            this.activeForm = 1;
+          }
+        });
+      },
+      // 批量新增-上一步
+      handleBack() {
+        this.activeForm = 0;
       },
       // 删除
       handleDelete(row) {
