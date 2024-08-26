@@ -352,18 +352,14 @@
       },
       // 批量新增-下一步
       handleNext() {
-        for (let i = 0; i < this.formData.quantity; i++) {
-          this.numberData['name' + i] = '';
-        }
-        this.activeForm = 1;
-        // this.$refs.addMoreForm1.validate().then((valid) => {
-        //   if (valid == true) {
-        //     for (let i = 0; i < this.formData.quantity; i++) {
-        //       this.numberData['name' + i] = '';
-        //     }
-        //     this.activeForm = 1;
-        //   }
-        // });
+        this.$refs.addMoreForm1.validate().then((valid) => {
+          if (valid == true) {
+            for (let i = 0; i < this.formData.quantity; i++) {
+              this.numberData['name' + i] = '';
+            }
+            this.activeForm = 1;
+          }
+        });
       },
       // 批量新增-上一步
       handleBack() {

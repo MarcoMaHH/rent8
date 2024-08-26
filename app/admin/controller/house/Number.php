@@ -142,6 +142,11 @@ class Number extends Common
             $this->success('添加成功');
         }
     }
+    
+    public function addMore()
+    {
+        
+    }
 
     public function delete()
     {
