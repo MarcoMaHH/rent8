@@ -373,7 +373,7 @@
           roomData['name'] = this.numberData['name' + i];
           sendData.push(roomData);
         }
-        axiosPost("{:url('savemore')}", sendData).then(response => {
+        axiosPost("{:url('saveMore')}", sendData).then(response => {
           if (response.state == 'success') {
             this.$message.success(response.msg);
             this.addMoreVisible = false;

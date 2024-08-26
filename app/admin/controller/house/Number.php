@@ -143,9 +143,9 @@ class Number extends Common
         }
     }
     
-    public function addMore()
+    public function saveMore()
     {
-        
+
     }
 
     public function delete()
