@@ -369,8 +369,25 @@
       handleBack() {
         this.activeForm = 0;
       },
+      // 批量新增-保存
       handleSaveMore() {
-        console.log(this.numberData);
+        let sendData = [];
+        for (let i = 0; i < this.formData.quantity; i++) {
+          let roomData = { ...this.formData };
+          roomData['name'] = this.numberData['name' + i];
+          sendData.push(roomData);
+        }
+        axiosPost("{:url('savemore')}", sendData).then(response => {
+          if (response.state == 'success') {
+            this.$message.success(response.msg);
+            this.addMoreVisible = false;
+            this.init();
+          } else if (response.state == 'warning') {
+            this.$message.warning(response.msg);
+          } else {
+            this.$message.error(response.msg);
+          }
+        });
       },
       // 删除
       handleDelete(row) {
