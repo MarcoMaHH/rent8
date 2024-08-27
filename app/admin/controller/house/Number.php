@@ -148,27 +148,24 @@ class Number extends Common
         $numbdrData = $this->request->post();
         $validate = new NumberValidate();
         $length = count($numbdrData);
-        // $data = [
-        //     'house_property_id' => $numbdrData[0]['house_property_id'],
-        //     'name' => $numbdrData[0]['name'],
-        //     'rental' => $numbdrData[0]['rental'],
-        //     'deposit' => $numbdrData[0]['deposit'],
-        //     'lease_type' => $numbdrData[0]['lease_type'],
-        //     'management' => $numbdrData[0]['management'],
-        //     'garbage_fee' => $numbdrData[0]['garbage_fee'],
-        //     'daily_rent' => $numbdrData[0]['daily_rent'],
-        //     'water_price' => $numbdrData[0]['water_price'],
-        //     'electricity_price' => $numbdrData[0]['electricity_price'],
-        // ];
-        // if (!$validate->scene('insert')->check($data)) {
-        //     $this->error('添加失败，' . $validate->getError() . '。');
-        // }
-        for ($i = 0; $i < $length; $i++) {
-            if (!$validate->scene('insert')->check($numbdrData[$i])) {
-                $this->error('添加失败，' . $validate->getError() . '。');
+
+        // 开始事务
+        Db::startTrans();
+        try {
+            for ($i = 0; $i < $length; $i++) {
+                if (!$validate->scene('insert')->check($numbdrData[$i])) {
+                    throw new \Exception('添加失败，' . $validate->getError());
+                }
+                NumberModel::create($numbdrData[$i]);
             }
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            // 回滚事务
+            Db::rollback();
+            $this->error($e->getMessage());
         }
-        // $this->success('添加成功');
+        $this->success('新建成功');
     }
 
     public function delete()
