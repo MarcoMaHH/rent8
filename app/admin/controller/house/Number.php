@@ -146,26 +146,30 @@ class Number extends Common
     public function saveMore()
     {
         $numbdrData = $this->request->post();
-        $validate = new NumberValidate();
-        $length = count($numbdrData);
 
         // 开始事务
+        $transFlag = true;
         Db::startTrans();
         try {
-            for ($i = 0; $i < $length; $i++) {
-                if (!$validate->scene('insert')->check($numbdrData[$i])) {
-                    throw new \Exception('添加失败，' . $validate->getError());
+            foreach ($numbdrData as $item) {
+                if (NumberModel::where('name', $item['name'])
+                    ->where('house_property_id', $item['house_property_id'])
+                    ->find()) {
+                    throw new \Exception('该房间已存在，请勿重复添加');
                 }
-                NumberModel::create($numbdrData[$i]);
+                NumberModel::create($item);
             }
             // 提交事务
             Db::commit();
         } catch (\Exception $e) {
+            $transFlag = false;
             // 回滚事务
             Db::rollback();
             $this->error($e->getMessage());
         }
-        $this->success('新建成功');
+        if ($transFlag) {
+            $this->success('新建成功');
+        }
     }
 
     public function delete()
