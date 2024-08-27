@@ -16,7 +16,7 @@ class HouseNumber extends Validate
 
     public function sceneInsert()
     {
-        return $this->append('house_property_id', 'checkHouseNumber');
+        return $this->append('name', 'checkHouseNumber');
     }
 
     public function sceneUpdate()
@@ -34,7 +34,7 @@ class HouseNumber extends Validate
 
     public function checkHouseNumber($value)
     {
-        if (NumberModel::where('house_property_id', $value)->find()) {
+        if (NumberModel::where('name', $value)->find()) {
             return '房间名已存在';
         }
         return true;
