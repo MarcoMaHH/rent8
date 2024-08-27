@@ -142,10 +142,36 @@ class Number extends Common
             $this->success('添加成功');
         }
     }
-    
+
     public function saveMore()
     {
-
+        $numbdrData = $this->request->post();
+        $validate = new NumberValidate();
+        $length = count($numbdrData);
+        $data = [
+            'house_property_id' => $numbdrData[0]['house_property_id'],
+            'name' => $numbdrData[0]['name'],
+            'rental' => $numbdrData[0]['rental'],
+            'deposit' => $numbdrData[0]['deposit'],
+            'lease_type' => $numbdrData[0]['lease_type'],
+            'management' => $numbdrData[0]['management'],
+            'garbage_fee' => $numbdrData[0]['garbage_fee'],
+            'daily_rent' => $numbdrData[0]['daily_rent'],
+            'water_price' => $numbdrData[0]['water_price'],
+            'electricity_price' => $numbdrData[0]['electricity_price'],
+        ];
+        var_dump($data);
+        if (!$validate->scene('insert')->check($data)) {
+            $this->error('添加失败，' . $validate->getError() . '。');
+        }
+        // for ($i = 0; $i < $length; $i++) {
+        //     NumberModel::where('name', $numbdrData[$i]['name'])->select();
+        //     if (!$validate->scene('insert')->check($numbdrData[$i])) {
+        //         var_dump($numbdrData[$i]);
+        //         $this->error('添加失败，' . $validate->getError() . '。');
+        //     }
+        // }
+        // $this->success('添加成功');
     }
 
     public function delete()
