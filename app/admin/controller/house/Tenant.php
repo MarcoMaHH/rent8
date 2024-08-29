@@ -6,6 +6,7 @@ use app\admin\controller\Common;
 use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseTenant as TenantModel;
 use app\admin\model\HouseNumber as NumberModel;
+use app\admin\model\TenantPhoto as PhotoModel;
 use app\admin\validate\HouseTenant as TenantValidate;
 use app\admin\library\Property;
 use think\facade\View;
@@ -94,6 +95,50 @@ class Tenant extends Common
             $this->error('删除失败，记录不存在。');
         }
         $property->delete();
+        $this->success('删除成功。');
+    }
+
+    // 上传照片信息
+    public function upload()
+    {
+        $way = $this->request->post('way/s', '', 'trim');
+        // 获取表单上传文件 例如上传了001.jpg
+        $file = request()->file('file');
+        $name = $file->getOriginalName();
+        // 上传到本地服务器
+        $savename = \think\facade\Filesystem::disk('public')->putFileAs($way, $file, time().substr(strrchr($name, '.'), 0));
+        $loginUser = $this->auth->getLoginUser();
+        $house_property_id = Property::getProperty($loginUser['id']);
+        $data = [
+            'house_property_id' => $house_property_id,
+            'tenant_id' => $way,
+            'url' => '/storage/' . $savename
+        ];
+        PhotoModel::create($data);
+    }
+
+    // 查询照片信息
+    public function queryPhoto()
+    {
+        $id = $this->request->param('id/d', 0);
+        $photo = PhotoModel::where('tenant_id', $id)->select();
+        foreach($photo as $value) {
+            $value['name'] = $value['url'];
+        }
+        return $this->returnElement($photo);
+    }
+
+    // 删除照片
+    public function deletePhoto()
+    {
+        $id = $this->request->post('id/d', 0);
+        if (!$photo = PhotoModel::find($id)) {
+            $this->error('删除失败，记录不存在。');
+        }
+        $photo->delete();
+        $photoName = explode('/', $photo['url']);
+        $photoUrl =  app()->getRootPath();
+        unlink($photoUrl . '\public\storage\\' . $photoName[2] . '\\' . $photoName[3]);
         $this->success('删除成功。');
     }
 }

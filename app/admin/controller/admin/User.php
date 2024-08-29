@@ -11,6 +11,7 @@ use app\admin\model\BillSum as SumModel;
 use app\admin\model\HouseTenant as TenantModel;
 use app\admin\model\HouseBilling as BillingModel;
 use app\admin\model\HouseNumber as NumberModel;
+use app\admin\model\TenantPhoto as PhotoModel;
 use app\admin\validate\AdminUser as UserValidate;
 use think\facade\View;
 use think\facade\Db;
@@ -87,6 +88,7 @@ class User extends Common
                 MeterModel::where('house_property_id', $property[$i]['id'])->delete();
                 SumModel::where('house_property_id', $property[$i]['id'])->delete();
                 TenantModel::where('house_property_id', $property[$i]['id'])->delete();
+                PhotoModel::where('house_property_id', $property[$i]['id'])->delete();
                 BillingModel::where('house_property_id', $property[$i]['id'])->delete();
                 NumberModel::where('house_property_id', $property[$i]['id'])->delete();
             }

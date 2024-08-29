@@ -5,11 +5,19 @@
     active-row-type="single" :hover="true" :loading="tableLoading" :pagination="pagination">
     <template #op="slotProps">
       <t-space>
+        <t-button size="small" theme="warning" @click="handlePhoto(slotProps.row)">证件照片</t-button>
         <t-button size="small" @click="handleEdit(slotProps.row)">修改</t-button>
       </t-space>
     </template>
   </t-table>
 </t-card>
+
+<!-- 新增FORM -->
+<t-dialog v-model:visible="photoVisible" :header="formHeader" :width="680" :footer="false" top="30px">
+  <t-upload ref="uploadRef2" v-model="fileList" :data="uploadData" :headers="upheaders"
+    action="upload" theme="image" accept="image/*"
+    auto-upload="true" :format-response="formatImgResponse" @fail="handleFail"></t-upload>
+</t-dialog>
 
 <!-- 新增FORM -->
 <t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false" top="30px">
@@ -63,7 +71,7 @@
       { title: '联系电话', colKey: 'phone', width: 95 },
       { title: '入住日期', colKey: 'checkin_time', width: 80 },
       { title: '离开日期', colKey: 'leave_time', width: 80 },
-      { title: '操作', colKey: 'op', width: 50, fixed: 'right', },
+      { title: '操作', colKey: 'op', width: 95, fixed: 'right', },
     ],
     // 分页
     pagination: {
@@ -81,6 +89,11 @@
       phone: [{ telnumber: true, message: '格式错误', trigger: 'blur' }],
       id_card_number: [{ idcard: true, message: '格式错误', trigger: 'blur' }],
     },
+    // 证件照片
+    photoVisible: false,
+    upheaders: { 'X-CSRF-TOKEN': '{$layout_token}' },
+    uploadData: {},
+    fileList: [],
   };
   function f() {
     return {
@@ -120,7 +133,23 @@
             });
           }
         });
-      }
+      },
+      // 证件照片
+      handlePhoto(row) {
+        this.queryPhoto(row.id);
+        this.formHeader = row.property_name + '-' + row.number_name + '-' + row.name;
+        this.uploadData = { way: row.id }
+        this.photoVisible = true;
+      },
+      queryPhoto(id) {
+        axiosGet("{:url('queryPhoto')}", { id: id }).then(response => {
+          if (response.code == 1) {
+            this.fileList = response.data;
+          } else {
+            that.$message.error('系统出错了!!!');
+          }
+        });
+      },
     }
   }
 </script>
