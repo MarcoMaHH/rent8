@@ -14,9 +14,8 @@
 
 <!-- 新增FORM -->
 <t-dialog v-model:visible="photoVisible" :header="formHeader" :width="680" :footer="false" top="30px">
-  <t-upload ref="uploadRef2" v-model="fileList" :data="uploadData" :headers="upheaders"
-    action="upload" theme="image" accept="image/*"
-    auto-upload="true" :format-response="formatImgResponse" @fail="handleFail"></t-upload>
+  <t-upload ref="uploadRef2" v-model="fileList" :data="uploadData" :headers="upheaders" action="upload" theme="image"
+    accept="image/*" :auto-upload="true"></t-upload>
 </t-dialog>
 
 <!-- 新增FORM -->
