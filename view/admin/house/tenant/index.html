@@ -151,9 +151,7 @@
       },
       removePhoto(file) {
         axiosPost("{:url('deletePhoto')}", file.file).then(response => {
-          if (response.state == 'success') {
-            this.queryPhoto(this.tenantId)
-          } else {
+          if (!response.state == 'success') {
             this.$message({
               message: response.msg, type: response.state
             });
