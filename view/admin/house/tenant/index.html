@@ -15,7 +15,7 @@
 <!-- 新增FORM -->
 <t-dialog v-model:visible="photoVisible" :header="formHeader" :width="680" :footer="false" top="30px">
   <t-upload ref="uploadRef2" v-model="fileList" :data="uploadData" :headers="upheaders" action="upload" theme="image"
-    accept="image/*" :auto-upload="true"></t-upload>
+    accept="image/*" :auto-upload="true" @remove="removePhoto"></t-upload>
 </t-dialog>
 
 <!-- 新增FORM -->
@@ -149,6 +149,17 @@
           }
         });
       },
+      removePhoto(file) {
+        axiosPost("{:url('deletePhoto')}", file.file).then(response => {
+          if (response.state == 'success') {
+            this.queryPhoto(this.tenantId)
+          } else {
+            this.$message({
+              message: response.msg, type: response.state
+            });
+          }
+        });
+      }
     }
   }
 </script>
