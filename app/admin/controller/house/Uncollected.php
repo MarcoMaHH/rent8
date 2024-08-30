@@ -124,8 +124,8 @@ class Uncollected extends Common
         $data['electricity'] = $data['electricity_consumption'] * $number_data->electricity_price;
         $data['water_consumption'] = $data['water_meter_this_month'] - $data['water_meter_last_month'];
         $data['water'] = $data['water_consumption'] * $number_data->water_price;
-        $data['total_money'] = intval($data['water'] + $data['electricity'] + $data['rental'] + $data['deposit']
-             + $data['other_charges'] + $data['garbage_fee'] + $data['management']);
+        $data['total_money'] = round($data['water'] + $data['electricity'] + $data['rental'] + $data['deposit']
+             + $data['other_charges'] + $data['garbage_fee'] + $data['management'], 2);
         $billing_data->save($data);
         $this->success('修改成功');
     }
@@ -306,15 +306,15 @@ class Uncollected extends Common
                     $data['electricity_meter_this_month'] = $value;
                     $data['electricity_consumption'] = $value - $billing['electricity_meter_last_month'];
                     $data['electricity'] = $data['electricity_consumption'] * $number_data->electricity_price;
-                    $data['total_money'] = intval($billing['water'] + $data['electricity'] + $billing['rental']
-                        + $billing['deposit'] + $billing['other_charges'] + $billing['management'] + $billing['garbage_fee']);
+                    $data['total_money'] = round($billing['water'] + $data['electricity'] + $billing['rental']
+                        + $billing['deposit'] + $billing['other_charges'] + $billing['management'] + $billing['garbage_fee'], 2);
                     $billing->save($data);
                 } elseif ($type == 'w') {
                     $data['water_meter_this_month'] = $value;
                     $data['water_consumption'] = $value - $billing['water_meter_last_month'];
                     $data['water'] = $data['water_consumption'] * $number_data->water_price;
-                    $data['total_money'] = intval($data['water'] + $billing['electricity'] + $billing['rental']
-                        + $billing['deposit'] + $billing['other_charges'] + $billing['management'] + $billing['garbage_fee']);
+                    $data['total_money'] = round($data['water'] + $billing['electricity'] + $billing['rental']
+                        + $billing['deposit'] + $billing['other_charges'] + $billing['management'] + $billing['garbage_fee'], 2);
                     $billing->save($data);
                 }
             }
