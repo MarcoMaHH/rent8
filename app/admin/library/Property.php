@@ -30,7 +30,7 @@ class Property
     {
         //判断$num是否存在
         if(!$num) {
-            return '零元整';
+            return '零元';
         }
         $flag = false;
         if ($num < 0) {
@@ -108,7 +108,6 @@ class Property
             $daxie_len -= 3;
         }
 
-        $daxie = $daxie . '整';
         if ($flag) {
             $daxie = '负' . $daxie;
         }
