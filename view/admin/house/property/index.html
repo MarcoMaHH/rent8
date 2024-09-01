@@ -27,6 +27,15 @@
     <t-form-item label="详细地址" name="address">
       <t-input v-model="formData.address" :style="{ width: '480px' }" placeholder="请输入" />
     </t-form-item>
+    <t-form-item label="房东名称" name="landlord">
+      <t-input v-model="formData.landlord" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="房东手机" name="phone">
+      <t-input v-model="formData.phone" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="房东身份证" name="id_card">
+      <t-input v-model="formData.id_card" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
     <t-form-item style="float: right">
       <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px;">取消</t-button>
       <t-button theme="primary" type="submit">确定</t-button>
@@ -41,8 +50,11 @@
     tableData: [],
     tableLoading: false,
     columns: [
-      { title: '房产名', colKey: 'name', width: 80, align: 'left', fixed: 'left', },
+      { title: '房产名', colKey: 'name', width: 100, align: 'left', fixed: 'left', },
       { title: '详细地址', colKey: 'address', width: 160 },
+      { title: '房东名称', colKey: 'landlord', width: 100 },
+      { title: '房东手机', colKey: 'phone', width: 160 },
+      { title: '房东身份证', colKey: 'id_card', width: 160 },
       { title: '操作', colKey: 'op', width: 160, align: 'left', fixed: 'right', },
     ],
     dialogVisible: false,
