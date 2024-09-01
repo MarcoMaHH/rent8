@@ -25,16 +25,16 @@
       <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="详细地址" name="address">
-      <t-input v-model="formData.address" :style="{ width: '480px' }" placeholder="请输入" />
+      <t-input v-model="formData.address" :style="{ width: '480px' }" placeholder="请输入（PS:用于合同展示）" />
     </t-form-item>
     <t-form-item label="房东名称" name="landlord">
-      <t-input v-model="formData.landlord" :style="{ width: '480px' }" placeholder="请输入" />
+      <t-input v-model="formData.landlord" :style="{ width: '480px' }" placeholder="请输入（PS:用于合同展示）" />
     </t-form-item>
     <t-form-item label="房东手机" name="phone">
-      <t-input v-model="formData.phone" :style="{ width: '480px' }" placeholder="请输入" />
+      <t-input v-model="formData.phone" :style="{ width: '480px' }" placeholder="请输入（PS:用于合同展示）" />
     </t-form-item>
     <t-form-item label="房东身份证" name="id_card">
-      <t-input v-model="formData.id_card" :style="{ width: '480px' }" placeholder="请输入" />
+      <t-input v-model="formData.id_card" :style="{ width: '480px' }" placeholder="请输入（PS:用于合同展示）" />
     </t-form-item>
     <t-form-item style="float: right">
       <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px;">取消</t-button>
@@ -62,6 +62,8 @@
     formHeader: '',
     rules: {
       name: [{ required: true, message: '房产名不能为空', trigger: 'blur' }],
+      phone: [{ telnumber: true, message: '请输入正确的手机号码', trigger: 'blur' }],
+      id_card: [{ idcard: true, message: '请输入正确的身份证号码', trigger: 'blur' }],
     },
   };
 
