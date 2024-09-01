@@ -39,7 +39,7 @@ class Number extends Common
         ->field('a.*,b.name as property_name')
         ->order('a.name')
         ->select();
-        foreach ($numbers as  $value) {
+        foreach ($numbers as $value) {
             if ($value['lease']) {
                 $value['rent_date'] = Date::getLease($value['checkin_time'], $value['lease'] - $value['lease_type'])[0];
             }
@@ -101,7 +101,7 @@ class Number extends Common
                 ['house_property_id' => $data['house_property_id'],
                 'type' => TYPE_ELECTRICITY]
             )->find();
-            if($electricity) {
+            if ($electricity) {
                 $meter = ['house_number_id' => $electricity->house_number_id . ',' . $result->id];
                 $electricity->save($meter);
             } else {
@@ -118,7 +118,7 @@ class Number extends Common
                 ['house_property_id' => $data['house_property_id'],
                 'type' => TYPE_WATER]
             )->find();
-            if($water) {
+            if ($water) {
                 $meter = ['house_number_id' => $water->house_number_id . ',' . $result->id];
                 $water->save($meter);
             } else {
@@ -318,15 +318,15 @@ class Number extends Common
         ->alias('a')
         ->join('HouseProperty b', 'a.house_property_id = b.id')
         ->leftJoin('HouseTenant c', 'a.tenant_id = c.id')
-        ->field('a.*,b.address, c.name as renter, c.id_card_number')
+        ->field('a.*,b.address, b.landlord, b.id_card as landlordId, c.name as renter, c.id_card_number')
         ->select()->toArray();
         if (!$number_data) {
             $this->error('修改失败，记录不存在');
         }
         // var_dump($number_data);
         $tmp = new \PhpOffice\PhpWord\TemplateProcessor('static/wordfile/contract.docx');//打开模板
-        $tmp->setValue('landlord', '            ');//替换变量name
-        $tmp->setValue('landlordId', '          ');//替换变量name
+        $tmp->setValue('landlord', $number_data[0]['landlord']);//替换变量name
+        $tmp->setValue('landlordId', $number_data[0]['landlordId']);//替换变量name
         $tmp->setValue('renter', $number_data[0]['renter']);
         $tmp->setValue('renterId', $number_data[0]['id_card_number']);
         $tmp->setValue('address', $number_data[0]['address'] . $number_data[0]['name']);
