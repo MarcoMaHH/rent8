@@ -45,7 +45,7 @@ class HouseProperty extends Migrator
         ->addColumn(
             'address',
             'string',
-            ['limit' => 255, 'null' => false, 'default' => '', 'comment' => '详细地址']
+            ['limit' => 255, 'null' => true, 'default' => '', 'comment' => '详细地址']
         )
         ->addColumn(
             'firstly',

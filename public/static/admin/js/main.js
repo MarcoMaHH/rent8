@@ -28,12 +28,12 @@ async function axiosPost(url, data) {
           result = { 'state': 'warning', 'msg': response.data.msg };
         }
       } else {
-        result = { 'state': 'error', 'msg': '未知错误' };
-        console.log('报错: ' + res);
+        result = { 'state': 'error', 'msg': '系统出错' };
+        console.log('系统出错: ' + res);
       }
     }).catch(function (res) {
       result = { 'state': 'error', 'msg': '未知错误' };
-      console.log('报错: ' + res);
+      console.log('未知错误: ' + res);
     });
   return result;
 }

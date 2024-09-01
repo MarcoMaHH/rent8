@@ -29,7 +29,7 @@ class Property extends Common
     {
         $id = $this->request->post('id/d', 0);
         $data = [
-            'name' => $this->request->post('name/s', '', 'trim'),
+            'name' => $this->request->post('name/s', null, 'trim'),
             'address' => $this->request->post('address/s', '', 'trim'),
         ];
         if ($id) {
