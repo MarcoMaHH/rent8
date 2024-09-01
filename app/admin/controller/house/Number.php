@@ -350,7 +350,7 @@ class Number extends Common
         header("Content-type: application/octet-stream");
         header("Accept-Ranges: bytes");
         header("Accept-Length: " . filesize($file_url));
-        header("Content-Disposition:attchment; filename=" . json_encode('合同.docx'));
+        header("Content-Disposition:attchment; filename=" . json_encode($number_data[0]['name'].'合同.docx'));
         //输出文件内容
         echo fread($file_type, filesize($file_url));
         fclose($file_type);
