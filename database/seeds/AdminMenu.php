@@ -12,7 +12,7 @@ class AdminMenu extends Seeder
      * More information on writing seeders is available here:
      * http://docs.phinx.org/en/latest/seeding.html
      */
-    public function run():void
+    public function run(): void
     {
         $this->table('admin_menu')->insert([
             ['id' => 1, 'pid' => 0, 'name' => '设置', 'icon' => 'system-setting',
@@ -25,27 +25,29 @@ class AdminMenu extends Seeder
              'controller' => 'admin.permission', 'sort' => 3],
             ['id' => 5, 'pid' => 1, 'name' => '用户管理', 'icon' => '',
              'controller' => 'admin.user', 'sort' => 4],
-            ['id' => 6, 'pid' => 0, 'name' => '房屋管理', 'icon' => 'houses',
+            ['id' => 10, 'pid' => 0, 'name' => '房屋管理', 'icon' => 'houses',
              'controller' => 'house', 'sort' => 1],
-            ['id' => 7, 'pid' => 6, 'name' => '房产管理', 'icon' => '',
+            ['id' => 11, 'pid' => 10, 'name' => '房产管理', 'icon' => '',
              'controller' => 'house.property', 'sort' => 1],
-            ['id' => 8, 'pid' => 6, 'name' => '房间管理', 'icon' => '',
+            ['id' => 12, 'pid' => 10, 'name' => '房间管理', 'icon' => '',
              'controller' => 'house.number', 'sort' => 2],
-            ['id' => 9, 'pid' => 6, 'name' => '未收账单', 'icon' => '',
+            ['id' => 13, 'pid' => 10, 'name' => '未收账单', 'icon' => '',
              'controller' => 'house.uncollected', 'sort' => 3],
-            ['id' => 10, 'pid' => 6, 'name' => '到账账单', 'icon' => '',
+            ['id' => 14, 'pid' => 10, 'name' => '到账账单', 'icon' => '',
              'controller' => 'house.collected', 'sort' => 4],
-            ['id' => 11, 'pid' => 6, 'name' => '租客档案', 'icon' => '',
+            ['id' => 15, 'pid' => 10, 'name' => '租客档案', 'icon' => '',
              'controller' => 'house.tenant', 'sort' => 5],
-            ['id' => 12, 'pid' => 0, 'name' => '我的账本', 'icon' => 'bill',
+            ['id' => 16, 'pid' => 10, 'name' => '水电总表', 'icon' => '',
+             'controller' => 'house.hydroelectricity', 'sort' => 6],
+            ['id' => 20, 'pid' => 0, 'name' => '我的账本', 'icon' => 'bill',
              'controller' => 'bill', 'sort' => 2],
-            ['id' => 13, 'pid' => 12, 'name' => '电费报表', 'icon' => '',
+            ['id' => 21, 'pid' => 20, 'name' => '电费报表', 'icon' => '',
              'controller' => 'bill.electricity', 'sort' => 1],
-            ['id' => 14, 'pid' => 12, 'name' => '水费报表', 'icon' => '',
+            ['id' => 22, 'pid' => 20, 'name' => '水费报表', 'icon' => '',
              'controller' => 'bill.water', 'sort' => 2],
-            ['id' => 15, 'pid' => 12, 'name' => '其他支出', 'icon' => '',
+            ['id' => 23, 'pid' => 20, 'name' => '其他支出', 'icon' => '',
              'controller' => 'bill.other', 'sort' => 3],
-            ['id' => 16, 'pid' => 12, 'name' => '房产报表', 'icon' => '',
+            ['id' => 24, 'pid' => 20, 'name' => '房产报表', 'icon' => '',
              'controller' => 'bill.report', 'sort' => 4]
         ])->save();
     }
