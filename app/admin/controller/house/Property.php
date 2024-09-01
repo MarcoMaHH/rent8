@@ -30,7 +30,7 @@ class Property extends Common
         $id = $this->request->post('id/d', 0);
         $data = [
             'name' => $this->request->post('name/s', null, 'trim'),
-            'address' => $this->request->post('address/s', '', 'trim'),
+            'address' => $this->request->post('address/s', null, 'trim'),
         ];
         if ($id) {
             if (!$role = PropertyModel::find($id)) {

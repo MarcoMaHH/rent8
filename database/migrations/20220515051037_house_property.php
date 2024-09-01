@@ -45,7 +45,22 @@ class HouseProperty extends Migrator
         ->addColumn(
             'address',
             'string',
-            ['limit' => 255, 'null' => true, 'default' => '', 'comment' => '详细地址']
+            ['limit' => 255, 'comment' => '详细地址']
+        )
+        ->addColumn(
+            'landlord',
+            'string',
+            ['limit' => 32, 'comment' => '房东名称']
+        )
+        ->addColumn(
+            'phone',
+            'string',
+            ['limit' => 32, 'comment' => '房东手机']
+        )
+        ->addColumn(
+            'id_card',
+            'string',
+            ['limit' => 32, 'comment' => '房东身份证']
         )
         ->addColumn(
             'firstly',
