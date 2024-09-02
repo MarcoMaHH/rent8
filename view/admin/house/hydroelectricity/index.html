@@ -7,6 +7,10 @@
   </t-button>
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
     active-row-type="single" :hover="true" :loading="tableLoading">
+    <template #state="{ row }">
+      <t-tag v-if="row.type === 'B'" theme="warning" variant="light"> 电表 </t-tag>
+      <t-tag v-if="row.type === 'C'" theme="primary" variant="light"> 水表 </t-tag>
+    </template>
     <template #op="slotProps">
       <t-space>
         <t-button size="small" @click="handleEdit(slotProps.row)">修改</t-button>
@@ -51,10 +55,9 @@
     tableLoading: false,
     columns: [
       { title: '总表名称', colKey: 'name', width: 100, align: 'left', fixed: 'left', },
-      { title: '详细地址', colKey: 'address', width: 160 },
-      { title: '房东名称', colKey: 'landlord', width: 100 },
-      { title: '房东手机', colKey: 'phone', width: 160 },
-      { title: '房东身份证', colKey: 'id_card', width: 160 },
+      { title: '类型', colKey: 'state', width: 160 },
+      { title: '关联房产', colKey: 'property_name', width: 100 },
+      { title: '关联房间', colKey: 'house_number_id', width: 160 },
       { title: '操作', colKey: 'op', width: 160, align: 'left', fixed: 'right', },
     ],
     dialogVisible: false,

@@ -5,7 +5,7 @@ namespace app\admin\controller\house;
 use app\admin\controller\Common;
 use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\BillMeter as MeterModel;
-// use app\admin\validate\HouseProperty as PropertyValidate;
+use app\admin\library\Property;
 use think\facade\View;
 use think\facade\Db;
 
@@ -19,10 +19,18 @@ class Hydroelectricity extends Common
     public function query()
     {
         $loginUser = $this->auth->getLoginUser();
-        $property = PropertyModel::where('admin_user_id', $loginUser['id'])
-        ->order('firstly')
+        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
+        $conditions = array(
+            ['a.house_property_id', '=', $house_property_id]
+        );
+        $count = MeterModel::where($conditions)->alias('a')->count();
+        $meters = MeterModel::where($conditions)->alias('a')
+        ->join('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
+        ->join('HouseProperty c', 'a.house_property_id = c.id')
+        ->field("a.*,b.name as number_name, c.name as property_name")
+        ->order(['house_property_id'])
         ->select();
-        return $this->returnElement($property);
+        return $this->returnElement($meters);
     }
 
     public function save()
