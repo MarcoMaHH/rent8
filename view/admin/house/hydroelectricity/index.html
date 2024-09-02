@@ -25,20 +25,20 @@
 <!-- 新增FORM -->
 <t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false">
   <t-form ref="propertyForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
-    <t-form-item label="房产名" name="name">
+    <t-form-item label="总表名称" name="name">
       <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" />
     </t-form-item>
-    <t-form-item label="详细地址" name="address">
-      <t-input v-model="formData.address" :style="{ width: '480px' }" placeholder="请输入（PS:用于合同展示）" />
+    <t-form-item label="类型" name="type">
+      <t-radio-group v-model="formData.type">
+        <t-radio value="B">电表</t-radio>
+        <t-radio value="C">水表</t-radio>
+      </t-radio-group>
     </t-form-item>
-    <t-form-item label="房东名称" name="landlord">
-      <t-input v-model="formData.landlord" :style="{ width: '480px' }" placeholder="请输入（PS:用于合同展示）" />
+    <t-form-item label="关联房间" name="landlord">
+      <t-input v-model="formData.landlord" :style="{ width: '480px' }" placeholder="请输入" />
     </t-form-item>
-    <t-form-item label="房东手机" name="phone">
-      <t-input v-model="formData.phone" :style="{ width: '480px' }" placeholder="请输入（PS:用于合同展示）" />
-    </t-form-item>
-    <t-form-item label="房东身份证" name="id_card">
-      <t-input v-model="formData.id_card" :style="{ width: '480px' }" placeholder="请输入（PS:用于合同展示）" />
+    <t-form-item label="关联房间" :name="`students[${index}].course`" :label-width="80">
+      <t-checkbox-group v-model="formData.students[index].course" :options="courseOptions"></t-checkbox-group>
     </t-form-item>
     <t-form-item style="float: right">
       <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px;">取消</t-button>
