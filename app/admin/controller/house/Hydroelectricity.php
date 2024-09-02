@@ -4,6 +4,7 @@ namespace app\admin\controller\house;
 
 use app\admin\controller\Common;
 use app\admin\model\HouseProperty as PropertyModel;
+use app\admin\model\HouseNumber as NumberModel;
 use app\admin\model\BillMeter as MeterModel;
 use app\admin\library\Property;
 use think\facade\View;
@@ -25,11 +26,22 @@ class Hydroelectricity extends Common
         );
         $count = MeterModel::where($conditions)->alias('a')->count();
         $meters = MeterModel::where($conditions)->alias('a')
-        ->join('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
         ->join('HouseProperty c', 'a.house_property_id = c.id')
-        ->field("a.*,b.name as number_name, c.name as property_name")
+        ->field("a.*, c.name as property_name")
         ->order(['house_property_id'])
         ->select();
+        foreach ($meters as $value) {
+            if ($value['house_number_id']) {
+                $value['number_name'] = '';
+                $array = explode(',', $value['house_number_id']);
+                foreach ($array as $value1) {
+                    $value['number_name'] .= NumberModel::find($value1)['name'] . ',';
+                }
+                if (strlen($value['number_name']) > 0) {
+                    $value['number_name'] = substr($value['number_name'], 0, -1);
+                }
+            }
+        }
         return $this->returnElement($meters);
     }
 
