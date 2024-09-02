@@ -38,6 +38,11 @@ class BillHydroelectricity extends Migrator
             ['null' => false, 'default' => 0,  'comment' => '总表id']
         )
         ->addColumn(
+            'house_property_id',
+            'integer',
+            ['limit' => 6, 'null' => false, 'default' => 0,  'comment' => '房产id']
+        )
+        ->addColumn(
             'type',
             'string',
             ['limit' => 2, 'null' => false, 'comment' => '类型：B电费,C水费']
