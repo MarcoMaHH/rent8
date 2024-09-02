@@ -1,0 +1,131 @@
+{extend name="common/layout" /}
+{block name="main"}
+<t-card class="list-card-container" :bordered="false">
+  <t-button theme="primary" style="margin-bottom: 10px;" @click="handleAdd">
+    <template #icon><t-icon name="add" /></template>
+    新建
+  </t-button>
+  <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
+    active-row-type="single" :hover="true" :loading="tableLoading">
+    <template #op="slotProps">
+      <t-space>
+        <t-button size="small" @click="handleEdit(slotProps.row)">修改</t-button>
+        <t-popconfirm theme="danger" content="确认删除?" @confirm="handleDelete(slotProps.row)">
+          <t-button theme="danger" size="small">删除</t-button>
+        </t-popconfirm>
+      </t-space>
+    </template>
+  </t-table>
+</t-card>
+
+<!-- 新增FORM -->
+<t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false">
+  <t-form ref="propertyForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
+    <t-form-item label="房产名" name="name">
+      <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="详细地址" name="address">
+      <t-input v-model="formData.address" :style="{ width: '480px' }" placeholder="请输入（PS:用于合同展示）" />
+    </t-form-item>
+    <t-form-item label="房东名称" name="landlord">
+      <t-input v-model="formData.landlord" :style="{ width: '480px' }" placeholder="请输入（PS:用于合同展示）" />
+    </t-form-item>
+    <t-form-item label="房东手机" name="phone">
+      <t-input v-model="formData.phone" :style="{ width: '480px' }" placeholder="请输入（PS:用于合同展示）" />
+    </t-form-item>
+    <t-form-item label="房东身份证" name="id_card">
+      <t-input v-model="formData.id_card" :style="{ width: '480px' }" placeholder="请输入（PS:用于合同展示）" />
+    </t-form-item>
+    <t-form-item style="float: right">
+      <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px;">取消</t-button>
+      <t-button theme="primary" type="submit">确定</t-button>
+    </t-form-item>
+  </t-form>
+</t-dialog>
+{/block}
+
+{block name="script"}
+<script>
+  const data = {
+    tableData: [],
+    tableLoading: false,
+    columns: [
+      { title: '房产名', colKey: 'name', width: 100, align: 'left', fixed: 'left', },
+      { title: '详细地址', colKey: 'address', width: 160 },
+      { title: '房东名称', colKey: 'landlord', width: 100 },
+      { title: '房东手机', colKey: 'phone', width: 160 },
+      { title: '房东身份证', colKey: 'id_card', width: 160 },
+      { title: '操作', colKey: 'op', width: 160, align: 'left', fixed: 'right', },
+    ],
+    dialogVisible: false,
+    formData: {},
+    formHeader: '',
+    rules: {
+      name: [{ required: true, message: '房产名不能为空', trigger: 'blur' }],
+      phone: [{ telnumber: true, message: '请输入正确的手机号码', trigger: 'blur' }],
+      id_card: [{ idcard: true, message: '请输入正确的身份证号码', trigger: 'blur' }],
+    },
+  };
+
+  function f() {
+    return {
+      init: function () {
+        this.tableLoading = true;
+        axiosGet("{:url('query')}").then(response => {
+          if (response.code == 1) {
+            this.tableData = response.data;
+          } else {
+            this.$message.error('系统出错了!!!');
+          }
+          this.tableLoading = false;
+        });
+      },
+      handleAdd() {
+        this.$refs.propertyForm.reset();
+        this.formData = {};
+        this.formHeader = '新增房产';
+        this.dialogVisible = true;
+      },
+      handleSave() {
+        this.$refs.propertyForm.validate().then((valid) => {
+          if (valid == true) {
+            axiosPost("{:url('save')}", this.formData).then(response => {
+              if (response.state == 'success') {
+                this.$message.success(response.msg);
+                this.dialogVisible = false;
+                this.init();
+              } else if (response.state == 'warning') {
+                this.$message.warning(response.msg);
+              } else {
+                this.$message.error(response.msg);
+              }
+            });
+          }
+        });
+      },
+      handleEdit(row) {
+        this.$refs.propertyForm.reset();
+        this.formData = { ...row };
+        this.formHeader = '修改房产';
+        this.dialogVisible = true;
+      },
+      handleDelete(row) {
+        if (this.tableData.length == 1) {
+          this.$message.warning('不能删除全部房产');
+        } else {
+          axiosPost("{:url('delete')}", row).then(response => {
+            if (response.state == 'success') {
+              this.$message.success(response.msg);
+              this.init();
+            } else if (response.state == 'warning') {
+              this.$message.warning(response.msg);
+            } else {
+              this.$message.error(response.msg);
+            }
+          });
+        }
+      },
+    }
+  }
+</script>
+{/block}
