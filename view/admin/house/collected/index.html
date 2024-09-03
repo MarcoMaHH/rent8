@@ -3,8 +3,8 @@
 <t-card class="list-card-container" :bordered="false">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
     <t-select placeholder="请选择房间名" clearable style="width: 140px;display: inline-block;" @change="changeDate">
-      <t-option v-for="(item, index) in numberData" :key="index" :value="item.id" :label="item.name">
-        {{ item.name }}
+      <t-option v-for="(item, index) in numberData" :key="index" :value="item.value" :label="item.label">
+        {{ item.label }}
       </t-option>
     </t-select>
     今日到账总金额：{{sum}}

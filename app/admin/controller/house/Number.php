@@ -305,6 +305,7 @@ class Number extends Common
         $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
         $number = NumberModel::where('house_property_id', $house_property_id)
         ->order('name')
+        ->field('id as value,name as label')
         ->select()
         ->toArray();
         return $this->returnElement($number);
