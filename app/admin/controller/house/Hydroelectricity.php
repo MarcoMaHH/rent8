@@ -47,7 +47,9 @@ class Hydroelectricity extends Common
     public function save()
     {
         $id = $this->request->post('id/d', 0);
+        $loginUser = $this->auth->getLoginUser();
         $data = [
+            'house_property_id' => Property::getProperty($loginUser['id']),
             'property_name' => $this->request->post('property_name/s', null, 'trim'),
             'type' => $this->request->post('type/s', null, 'trim'),
             'name' => $this->request->post('name/s', null, 'trim'),

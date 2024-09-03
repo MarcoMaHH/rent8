@@ -53,7 +53,7 @@
     columns: [
       { title: '总表名称', colKey: 'name', width: 100, align: 'left', fixed: 'left', },
       { title: '类型', colKey: 'state', width: 100 },
-      { title: '关联房产', colKey: 'property_name', width: 100 },
+      // { title: '关联房产', colKey: 'property_name', width: 100 },
       { title: '关联房间', colKey: 'number_name', width: 300 },
       { title: '操作', colKey: 'op', width: 160, align: 'left', fixed: 'right', },
     ],
@@ -93,8 +93,9 @@
       handleAdd() {
         this.$refs.meterForm.reset();
         this.formData = {};
-        this.formHeader = '新增房产';
+        this.formHeader = this.houseName + ' - 新增水电表';
         this.dialogVisible = true;
+        this.numberCheckbox = [];
       },
       handleSave() {
         this.$refs.meterForm.validate().then((valid) => {
@@ -117,7 +118,7 @@
       handleEdit(row) {
         this.$refs.meterForm.reset();
         this.formData = { ...row };
-        this.formHeader = '修改水电表';
+        this.formHeader = this.houseName + ' - 修改水电表';
         this.numberCheckbox = this.formData.house_number_id.split(',').map(Number);
         this.dialogVisible = true;
       },
