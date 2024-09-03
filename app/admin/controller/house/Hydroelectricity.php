@@ -8,7 +8,6 @@ use app\admin\model\HouseNumber as NumberModel;
 use app\admin\model\BillMeter as MeterModel;
 use app\admin\library\Property;
 use think\facade\View;
-use think\facade\Db;
 
 class Hydroelectricity extends Common
 {
@@ -49,48 +48,20 @@ class Hydroelectricity extends Common
     {
         $id = $this->request->post('id/d', 0);
         $data = [
+            'property_name' => $this->request->post('property_name/s', null, 'trim'),
+            'type' => $this->request->post('type/s', null, 'trim'),
             'name' => $this->request->post('name/s', null, 'trim'),
-            'address' => $this->request->post('address/s', null, 'trim'),
-            'landlord' => $this->request->post('landlord/s', null, 'trim'),
-            'phone' => $this->request->post('phone/s', null, 'trim'),
-            'id_card' => $this->request->post('id_card/s', null, 'trim'),
+            'house_number_id' => $this->request->post('house_number_id/s', null, 'trim'),
         ];
         if ($id) {
-            if (!$role = PropertyModel::find($id)) {
+            if (!$meter = MeterModel::find($id)) {
                 $this->error('修改失败，记录不存在。');
             }
-            $transFlag = true;
-            Db::startTrans();
-            try {
-                $role->save($data);
-                // 修改电表名称
-                MeterModel::where(
-                    ['house_property_id' => $id,
-                    'type' => TYPE_ELECTRICITY]
-                )->update(['name' => $data['name'] . '-电表']);
-                // 修改水表名称
-                $water = MeterModel::where(
-                    ['house_property_id' => $id,
-                    'type' => TYPE_WATER]
-                )->update(['name' => $data['name'] . '-水表']);
-                // 提交事务
-                Db::commit();
-            } catch (\Exception $e) {
-                $transFlag = false;
-                // 回滚事务
-                Db::rollback();
-                $this->error($e->getMessage());
-            }
-            if ($transFlag) {
-                $this->success('修改成功。');
-            }
+            $meter->save($data);
+            $this->success('修改成功');
         }
-        $loginUser = $this->auth->getLoginUser();
-        $data['admin_user_id'] = $loginUser['id'];
-        $data['firstly'] = 'Y';
-        PropertyModel::where('admin_user_id', $loginUser['id'])->update(['firstly' => 'N']);
-        PropertyModel::create($data);
-        $this->success('添加成功。');
+        MeterModel::create($data);
+        $this->success('添加成功');
     }
 
     public function delete()
