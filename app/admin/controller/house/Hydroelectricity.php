@@ -6,8 +6,10 @@ use app\admin\controller\Common;
 use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseNumber as NumberModel;
 use app\admin\model\BillMeter as MeterModel;
+use app\admin\model\BillHydroelectricity as HydroelectricityModel;
 use app\admin\library\Property;
 use think\facade\View;
+use think\facade\Db;
 
 class Hydroelectricity extends Common
 {
@@ -68,15 +70,25 @@ class Hydroelectricity extends Common
 
     public function delete()
     {
-        $id = $this->request->param('id/d', 0);
-        $validate = new PropertyValidate();
-        if (!$validate->scene('delete')->check(['id' => $id])) {
-            $this->error('删除失败，' . $validate->getError() . '。');
-        }
-        if (!$property = PropertyModel::find($id)) {
+        $id = $this->request->post('id/d', 0);
+        if (!$meter = MeterModel::find($id)) {
             $this->error('删除失败，记录不存在。');
         }
-        $property->delete();
-        $this->success('删除成功。');
+        $transFlag = true;
+        Db::startTrans();
+        try {
+            $meter->delete();
+            HydroelectricityModel::where('meter_id', $id)->delete();
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            $transFlag = false;
+            // 回滚事务
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+        if ($transFlag) {
+            $this->success('删除成功。');
+        }
     }
 }
