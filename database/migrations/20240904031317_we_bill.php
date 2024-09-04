@@ -3,7 +3,7 @@
 use think\migration\Migrator;
 use think\migration\db\Column;
 
-class BillOther extends Migrator
+class WeBill extends Migrator
 {
     /**
      * Change Method.
@@ -29,40 +29,32 @@ class BillOther extends Migrator
     public function change()
     {
         $table = $this->table(
-            'bill_other',
+            'we_bill',
             ['engine' => 'InnoDB', 'collation' => 'utf8mb4_general_ci']
         );
         $table->addColumn(
+            'bill_meter_id',
+            'integer',
+            ['null' => false, 'default' => 0,  'comment' => '总表id']
+        )
+        ->addColumn(
             'house_property_id',
             'integer',
-            ['null' => false, 'default' => 0,  'comment' => '房产id']
+            ['limit' => 6, 'null' => false, 'default' => 0,  'comment' => '房产id']
+        )
+        ->addColumn('accounting_date', 'string', ['limit' => 10, 'null' => true, 'comment' => '到账日期'])
+        ->addColumn('start_month', 'timestamp', ['null' => true, 'comment' => '开始月份'])
+        ->addColumn('end_month', 'timestamp', ['null' => true, 'comment' => '结束月份'])
+        ->addColumn(
+            'master_dosage',
+            'integer',
+            ['null' => false, 'default' => 0,  'comment' => '总表用量']
         )
         ->addColumn(
-            'type',
-            'string',
-            ['limit' => 4, 'null' => false, 'default' => '', 'comment' => '类型']
-        )
-        ->addColumn(
-            'total_money',
+            'master_sum',
             'float',
-            ['null' => false, 'default' => 0.0, 'comment' => '金额']
+            ['null' => false, 'default' => 0,  'comment' => '总表金额']
         )
-        ->addColumn(
-            'note',
-            'string',
-            ['limit' => 225, 'null' => true, 'default' => '', 'comment' => '备注']
-        )
-        ->addColumn(
-            'accout_mark',
-            'string',
-            ['limit' => 4, 'null' => false, 'default' => 'N', 'comment' => '是否到账']
-        )
-        ->addColumn(
-            'circulate_mark',
-            'string',
-            ['limit' => 4, 'null' => false, 'default' => 'N', 'comment' => '是否重复']
-        )
-        ->addColumn('accounting_date', 'timestamp', ['null' => true, 'comment' => '到账时间'])
         ->addTimestamps()
         ->create();
     }

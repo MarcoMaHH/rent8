@@ -3,7 +3,7 @@
 use think\migration\Migrator;
 use think\migration\db\Column;
 
-class BillHydroelectricity extends Migrator
+class WeDetail extends Migrator
 {
     /**
      * Change Method.
@@ -29,7 +29,7 @@ class BillHydroelectricity extends Migrator
     public function change()
     {
         $table = $this->table(
-            'bill_hydroelectricity',
+            'we_detail',
             ['engine' => 'InnoDB', 'collation' => 'utf8mb4_general_ci']
         );
         $table->addColumn(

@@ -3,7 +3,7 @@
 use think\migration\Migrator;
 use think\migration\db\Column;
 
-class BillTotal extends Migrator
+class BillAnnual extends Migrator
 {
     /**
      * Change Method.
@@ -29,32 +29,25 @@ class BillTotal extends Migrator
     public function change()
     {
         $table = $this->table(
-            'bill_total',
+            'bill_annual',
             ['engine' => 'InnoDB', 'collation' => 'utf8mb4_general_ci']
         );
         $table->addColumn(
-            'bill_meter_id',
-            'integer',
-            ['null' => false, 'default' => 0,  'comment' => '总表id']
-        )
-        ->addColumn(
             'house_property_id',
             'integer',
             ['limit' => 6, 'null' => false, 'default' => 0,  'comment' => '房产id']
         )
-        ->addColumn('accounting_date', 'string', ['limit' => 10, 'null' => true, 'comment' => '到账日期'])
-        ->addColumn('start_month', 'timestamp', ['null' => true, 'comment' => '开始月份'])
-        ->addColumn('end_month', 'timestamp', ['null' => true, 'comment' => '结束月份'])
         ->addColumn(
-            'master_dosage',
-            'integer',
-            ['null' => false, 'default' => 0,  'comment' => '总表用量']
+            'type',
+            'string',
+            ['limit' => 2, 'null' => false, 'comment' => '收支类型']
         )
         ->addColumn(
-            'master_sum',
+            'amount',
             'float',
-            ['null' => false, 'default' => 0,  'comment' => '总表金额']
+            ['null' => false, 'default' => 0.0, 'comment' => '金额']
         )
+        ->addColumn('annual', 'string', ['limit' => 6, 'null' => false, 'comment' => '年度'])
         ->addTimestamps()
         ->create();
     }
