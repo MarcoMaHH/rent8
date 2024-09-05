@@ -20,7 +20,7 @@ class Water extends Common
         return View::fetch();
     }
 
-    //查询电费
+    //查询水费
     public function query()
     {
         $loginUser = $this->auth->getLoginUser();
@@ -69,7 +69,7 @@ class Water extends Common
         return $this->returnElement($water, $count);
     }
 
-    // 查询电表
+    // 查询水表
     public function queryMeter()
     {
         $loginUser = $this->auth->getLoginUser();
@@ -81,13 +81,15 @@ class Water extends Common
         return $this->returnElement($electricity);
     }
 
-    // 保存电费
+    // 保存水费
     public function save()
     {
         $id = $this->request->post('id/d', 0);
         $meter_id = $this->request->param('meter_id/d', 0);
+        $loginUser = $this->auth->getLoginUser();
         $data = [
                 'meter_id' => $meter_id,
+                'house_property_id' => Property::getProperty($loginUser['id']),
                 'start_month' => $this->request->post('start_month/s', '', 'trim'),
                 'end_month' => $this->request->post('end_month/s', '', 'trim'),
                 'master_dosage' => $this->request->param('master_dosage/d', 0),

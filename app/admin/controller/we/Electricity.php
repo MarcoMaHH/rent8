@@ -44,7 +44,7 @@ class Electricity extends Common
         ->field('a.id, a.accounting_date, a.end_month, a.start_month, b.id as meter_id, b.type, b.house_property_id, b.name as electricity_name, a.master_sum, a.master_dosage')
         ->select();
         $result = [];
-        foreach ($water as  $value) {
+        foreach ($water as $value) {
             $detail = WeDetailModel::where('meter_id', $value['meter_id'])
             ->where('type', $value['type'])
             ->where('calculate_date', 'between time', [$value['start_month'] , $value['end_month']])
@@ -86,14 +86,16 @@ class Electricity extends Common
     {
         $id = $this->request->post('id/d', 0);
         $meter_id = $this->request->param('meter_id/d', 0);
+        $loginUser = $this->auth->getLoginUser();
         $data = [
             'meter_id' => $meter_id,
+            'house_property_id' => Property::getProperty($loginUser['id']),
             'start_month' => $this->request->post('start_month/s', '', 'trim'),
             'end_month' => $this->request->post('end_month/s', '', 'trim'),
             'master_dosage' => $this->request->param('master_dosage/d', 0),
             'master_sum' => $this->request->param('master_sum/f', 0.0),
         ];
-        if(!$meterArr = MeterModel::find($meter_id)) {
+        if (!$meterArr = MeterModel::find($meter_id)) {
             $this->error('保存失败，记录不存在。');
         }
         $data['end_month'] = $data['end_month'] . ' 23:59:59';
@@ -146,7 +148,7 @@ class Electricity extends Common
                 'type' => TYPE_EXPENDITURE,
                 'accounting_date' => $accounting_month,
             ])->find();
-            if($sum_data) {
+            if ($sum_data) {
                 $sum_data->save([
                     'amount' => $sum_data->amount + $totalData->master_sum,
                 ]);
