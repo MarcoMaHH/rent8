@@ -4,7 +4,7 @@ namespace app\admin\controller\house;
 
 use app\admin\controller\Common;
 use app\admin\model\HouseProperty as PropertyModel;
-use app\admin\model\BillMeter as MeterModel;
+use app\admin\model\WeMeter as MeterModel;
 use app\admin\validate\HouseProperty as PropertyValidate;
 use think\facade\View;
 use think\facade\Db;
@@ -39,31 +39,8 @@ class Property extends Common
             if (!$role = PropertyModel::find($id)) {
                 $this->error('修改失败，记录不存在。');
             }
-            $transFlag = true;
-            Db::startTrans();
-            try {
-                $role->save($data);
-                // 修改电表名称
-                MeterModel::where(
-                    ['house_property_id' => $id,
-                    'type' => TYPE_ELECTRICITY]
-                )->update(['name' => $data['name'] . '-电表']);
-                // 修改水表名称
-                $water = MeterModel::where(
-                    ['house_property_id' => $id,
-                    'type' => TYPE_WATER]
-                )->update(['name' => $data['name'] . '-水表']);
-                // 提交事务
-                Db::commit();
-            } catch (\Exception $e) {
-                $transFlag = false;
-                // 回滚事务
-                Db::rollback();
-                $this->error($e->getMessage());
-            }
-            if ($transFlag) {
-                $this->success('修改成功。');
-            }
+            $role->save($data);
+            $this->success('修改成功。');
         }
         $loginUser = $this->auth->getLoginUser();
         $data['admin_user_id'] = $loginUser['id'];
