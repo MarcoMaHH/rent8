@@ -4,10 +4,8 @@ namespace app\admin\controller\house;
 
 use app\admin\controller\Common;
 use app\admin\model\HouseProperty as PropertyModel;
-use app\admin\model\WeMeter as MeterModel;
 use app\admin\validate\HouseProperty as PropertyValidate;
 use think\facade\View;
-use think\facade\Db;
 
 class Property extends Common
 {
