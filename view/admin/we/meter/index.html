@@ -91,7 +91,7 @@
       },
       handleAdd() {
         this.$refs.meterForm.reset();
-        this.formData = {};
+        this.formData = { 'name': this.houseName + '-水电表' };
         this.formHeader = this.houseName + ' - 新增水电表';
         this.dialogVisible = true;
         this.numberCheckbox = [];

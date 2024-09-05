@@ -33,7 +33,7 @@ class WeDetail extends Migrator
             ['engine' => 'InnoDB', 'collation' => 'utf8mb4_general_ci']
         );
         $table->addColumn(
-            'bill_meter_id',
+            'meter_id',
             'integer',
             ['null' => false, 'default' => 0,  'comment' => '总表id']
         )

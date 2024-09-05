@@ -1,6 +1,6 @@
 <?php
 
-namespace app\admin\controller\bill;
+namespace app\admin\controller\we;
 
 use app\admin\controller\Common;
 use app\admin\model\WeBill as WeBillModel;
@@ -34,11 +34,11 @@ class Water extends Common
             \array_push($conditions, ['b.id', '=', $meter_id]);
         }
         $count = WeBillModel::alias('a')
-        ->join('BillMeter b', 'a.bill_meter_id = b.id')
+        ->join('WeMeter b', 'a.bill_meter_id = b.id')
         ->where($conditions)
         ->count();
         $water = WeBillModel::alias('a')
-        ->join('BillMeter b', 'a.bill_meter_id = b.id')
+        ->join('WeMeter b', 'a.bill_meter_id = b.id')
         ->where($conditions)
         ->order(['a.start_month' => 'desc', 'b.type'])
         ->field('a.id, a.accounting_date, a.end_month, a.start_month, b.id as meter_id, b.type, b.house_property_id, b.name as electricity_name, a.master_sum, a.master_dosage')
@@ -135,7 +135,7 @@ class Water extends Common
             ]);
             //总表记录
             $totalData = WeBillModel::where('a.id', $id)->alias('a')
-            ->join('BillMeter b', 'a.bill_meter_id = b.id')
+            ->join('WeMeter b', 'a.bill_meter_id = b.id')
             ->field('b.type, b.house_property_id, a.master_sum')
             ->find();
             $accounting_month = date('Y-m');
