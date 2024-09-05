@@ -14,6 +14,7 @@ use app\admin\model\BillAnnual as AnnualModel;
 use app\admin\model\HouseTenant as TenantModel;
 use app\admin\model\HouseBilling as BillingModel;
 use app\admin\model\HouseNumber as NumberModel;
+use app\admin\model\HouseOther as OtherModel;
 use app\admin\model\TenantPhoto as PhotoModel;
 use app\admin\validate\AdminUser as UserValidate;
 use think\facade\View;
@@ -96,6 +97,7 @@ class User extends Common
                 PhotoModel::where('house_property_id', $property[$i]['id'])->delete();
                 BillingModel::where('house_property_id', $property[$i]['id'])->delete();
                 AnnualModel::where('house_property_id', $property[$i]['id'])->delete();
+                OtherModel::where('house_property_id', $property[$i]['id'])->delete();
                 NumberModel::where('house_property_id', $property[$i]['id'])->delete();
             }
             $property->delete();
