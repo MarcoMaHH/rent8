@@ -1,10 +1,10 @@
 <?php
 
-namespace app\admin\controller\bill;
+namespace app\admin\controller\house;
 
 use app\admin\controller\Common;
 use app\admin\model\HouseProperty as PropertyModel;
-use app\admin\model\BillOther as OtherModel;
+use app\admin\model\HouseOther as OtherModel;
 use app\admin\model\BillSum as SumModel;
 use app\admin\model\HouseNumber as NumberModel;
 use app\admin\library\Property;

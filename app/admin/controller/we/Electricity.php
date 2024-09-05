@@ -1,11 +1,11 @@
 <?php
 
-namespace app\admin\controller\bill;
+namespace app\admin\controller\we;
 
 use app\admin\controller\Common;
-use app\admin\model\BillTotal as TotalModel;
-use app\admin\model\BillMeter as MeterModel;
-use app\admin\model\BillHydroelectricity as HydroelectricityModel;
+use app\admin\model\WeBill as WeBillModel;
+use app\admin\model\WeMeter as MeterModel;
+use app\admin\model\WeDetail as WeDetailModel;
 use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseNumber as NumberModel;
 use app\admin\library\Property;
@@ -13,7 +13,7 @@ use app\admin\model\BillSum as SumModel;
 use think\facade\View;
 use think\facade\Db;
 
-class Water extends Common
+class Electricity extends Common
 {
     public function index()
     {
@@ -21,23 +21,23 @@ class Water extends Common
     }
 
     //查询电费
-    public function query()
+    public function queryElectricity()
     {
         $loginUser = $this->auth->getLoginUser();
         $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
         $conditions = array(
             ['b.house_property_id', '=', $house_property_id],
-            ['b.type', '=', TYPE_WATER]
+            ['b.type', '=', TYPE_ELECTRICITY]
         );
         $meter_id = $this->request->param('meter_id/s', '', 'trim');
         if ($meter_id) {
             \array_push($conditions, ['b.id', '=', $meter_id]);
         }
-        $count = TotalModel::alias('a')
+        $count = WeBillModel::alias('a')
         ->join('BillMeter b', 'a.bill_meter_id = b.id')
         ->where($conditions)
         ->count();
-        $water = TotalModel::alias('a')
+        $water = WeBillModel::alias('a')
         ->join('BillMeter b', 'a.bill_meter_id = b.id')
         ->where($conditions)
         ->order(['a.start_month' => 'desc', 'b.type'])
@@ -45,13 +45,13 @@ class Water extends Common
         ->select();
         $result = [];
         foreach ($water as  $value) {
-            $detail = HydroelectricityModel::where('bill_meter_id', $value['meter_id'])
+            $detail = WeDetailModel::where('bill_meter_id', $value['meter_id'])
             ->where('type', $value['type'])
             ->where('calculate_date', 'between time', [$value['start_month'] , $value['end_month']])
             ->field('sum(amount) as amount, sum(dosage) as dosage')
             ->select()->toArray();
             if (count($detail)) {
-                if($detail[0]['amount']) {
+                if ($detail[0]['amount']) {
                     $value['detail_sum'] = round($detail[0]['amount'], 2);
                 } else {
                     $value['detail_sum'] = null;
@@ -76,7 +76,7 @@ class Water extends Common
         $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
         $electricity = MeterModel::where(
             ['house_property_id' => $house_property_id,
-            'type' => TYPE_WATER]
+            'type' => TYPE_ELECTRICITY]
         )->select();
         return $this->returnElement($electricity);
     }
@@ -87,41 +87,43 @@ class Water extends Common
         $id = $this->request->post('id/d', 0);
         $meter_id = $this->request->param('meter_id/d', 0);
         $data = [
-                'bill_meter_id' => $meter_id,
-                'start_month' => $this->request->post('start_month/s', '', 'trim'),
-                'end_month' => $this->request->post('end_month/s', '', 'trim'),
-                'master_dosage' => $this->request->param('master_dosage/d', 0),
-                'master_sum' => $this->request->param('master_sum/f', 0.0),
-            ];
+            'bill_meter_id' => $meter_id,
+            'start_month' => $this->request->post('start_month/s', '', 'trim'),
+            'end_month' => $this->request->post('end_month/s', '', 'trim'),
+            'master_dosage' => $this->request->param('master_dosage/d', 0),
+            'master_sum' => $this->request->param('master_sum/f', 0.0),
+        ];
         if(!$meterArr = MeterModel::find($meter_id)) {
             $this->error('保存失败，记录不存在。');
         }
         $data['end_month'] = $data['end_month'] . ' 23:59:59';
         if ($id) {
-            if (!$water = TotalModel::find($id)) {
+            if (!$water = WeBillModel::find($id)) {
                 $this->error('修改失败，记录不存在。');
             }
             $water->save($data);
             $this->success('修改成功。');
         }
-        TotalModel::create($data);
+        WeBillModel::create($data);
         $this->success('添加成功。');
     }
 
+    // // 删除
     // public function delete()
     // {
     //     $id = $this->request->param('id/d', 0);
-    //     if (!$water = WaterModel::find($id)) {
+    //     if (!$water = WeBillModel::find($id)) {
     //         $this->error('删除失败,记录不存在。');
     //     }
     //     $water->delete();
     //     $this->success('删除成功');
     // }
 
+    // 到账
     public function account()
     {
         $id = $this->request->param('id/d', 0);
-        if (!$water = TotalModel::whereNull('accounting_date')
+        if (!$water = WeBillModel::whereNull('accounting_date')
             ->whereNotNull('end_month')->find($id)) {
             $this->error('不符合到账条件');
         }
@@ -129,12 +131,12 @@ class Water extends Common
         Db::startTrans();
         try {
             $water->save(['accounting_date' => date('Y-m-d', time())]);
-            TotalModel::create([
+            WeBillModel::create([
                 'bill_meter_id' => $water->bill_meter_id,
                 'start_month' => date("Y-m-d", strtotime("+1 day", strtotime($water->end_month))),
             ]);
             //总表记录
-            $totalData = TotalModel::where('a.id', $id)->alias('a')
+            $totalData = WeBillModel::where('a.id', $id)->alias('a')
             ->join('BillMeter b', 'a.bill_meter_id = b.id')
             ->field('b.type, b.house_property_id, a.master_sum')
             ->find();
