@@ -3,6 +3,6 @@ namespace app\admin\model;
 
 use think\Model;
 
-class BillOther extends Model
+class BillAnnual extends Model
 {
 }

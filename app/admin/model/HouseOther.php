@@ -3,6 +3,6 @@ namespace app\admin\model;
 
 use think\Model;
 
-class BillTotal extends Model
+class HouseOther extends Model
 {
 }
