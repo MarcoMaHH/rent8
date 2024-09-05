@@ -13,11 +13,11 @@ define('LAYUI_PAGE', 1);
 //每页条数的选择项
 define('LAYUI_LIMIT', 10);
 
-// billMeter类型
+// WeMeter水电表类型
 //类型-电费
-define('TYPE_ELECTRICITY', 'B');
+define('TYPE_ELECTRICITY', 'E');
 //类型-水费
-define('TYPE_WATER', 'C');
+define('TYPE_WATER', 'W');
 
 // billSum类型
 //类型-收入

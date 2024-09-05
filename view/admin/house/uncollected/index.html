@@ -2,10 +2,10 @@
 {block name="main"}
 <t-card class="list-card-container" :bordered="false">
   <div style="margin-bottom: 10px;">
-    <t-button theme="primary" style="margin-right: 10px;" @click="concentrated('e')">
+    <t-button theme="primary" style="margin-right: 10px;" @click="concentrated('E')">
       集中抄电
     </t-button>
-    <t-button theme="primary" style="margin-right: 10px;" @click="concentrated('w')">
+    <t-button theme="primary" style="margin-right: 10px;" @click="concentrated('W')">
       集中抄水
     </t-button>
     <t-select placeholder="请选择抄表日期" clearable style="width: 140px;display: inline-block;" @change="changeDate">
@@ -174,12 +174,12 @@
 <!-- 集中抄表 -->
 <t-dialog v-model:visible="concentratedVisible" :header="formHeader" :width="680" :footer="false" top="5px">
   <t-form ref="concentratedForm" :label-width="100" @submit="concentratedSave">
-    <t-form-item v-if="concentratedType == 'e'" v-for="(domain, index) in concentratedData" :key="domain.id"
+    <t-form-item v-if="concentratedType == 'E'" v-for="(domain, index) in concentratedData" :key="domain.id"
       :label="domain.name + '-'+ domain.electricity_meter_last_month">
       <t-input-number v-model="domain.electricity_meter_this_month" :style="{ width: '480px' }" theme="normal"
         placeholder="请输入" />
     </t-form-item>
-    <t-form-item v-if="concentratedType == 'w'" v-for="(domain, index) in concentratedData" :key="domain.id"
+    <t-form-item v-if="concentratedType == 'W'" v-for="(domain, index) in concentratedData" :key="domain.id"
       :label="domain.name + '-'+ domain.water_meter_last_month">
       <t-input-number v-model="domain.water_meter_this_month" :style="{ width: '480px' }" theme="normal"
         placeholder="请输入" />
@@ -402,9 +402,9 @@
       },
       // 集中抄表
       concentrated(val) {
-        if (val == 'e') {
+        if (val == 'E') {
           this.formHeader = '集中抄电'
-        } else if (val == 'w') {
+        } else if (val == 'W') {
           this.formHeader = '集中抄水'
         }
         this.concentratedType = val
@@ -420,13 +420,13 @@
       // 集中抄表保存
       concentratedSave() {
         let postData = {}
-        if (this.concentratedType == 'e') {
+        if (this.concentratedType == 'E') {
           this.concentratedData.forEach(element => {
             if (element.electricity_meter_this_month) {
               postData[element.id] = element.electricity_meter_this_month
             }
           });
-        } else if (this.concentratedType == 'w') {
+        } else if (this.concentratedType == 'W') {
           this.concentratedData.forEach(element => {
             if (element.water_meter_this_month) {
               postData[element.id] = element.water_meter_this_month

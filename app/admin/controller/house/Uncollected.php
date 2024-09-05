@@ -8,8 +8,8 @@ use app\admin\model\HouseNumber as NumberModel;
 use app\admin\model\HouseTenant as TenantModel;
 use app\admin\model\HouseBilling as BillingModel;
 use app\admin\model\BillSum as SumModel;
-use app\admin\model\BillMeter as MeterModel;
-use app\admin\model\BillHydroelectricity as HydroelectricityModel;
+use app\admin\model\WeMeter as MeterModel;
+use app\admin\model\WeDetail as WeDetailModel;
 use app\admin\library\Property;
 use app\admin\library\Date;
 use think\facade\Db;
@@ -183,7 +183,7 @@ class Uncollected extends Common
                 'type' => TYPE_INCOME,
                 'accounting_date' => $accounting_month,
             ])->find();
-            if($sum_data) {
+            if ($sum_data) {
                 $sum_data->save([
                     'amount' => $sum_data->amount + $oldBill['total_money'],
                 ]);
@@ -201,26 +201,30 @@ class Uncollected extends Common
                     ->where('type', TYPE_ELECTRICITY)
                     ->whereFindInSet('house_number_id', $oldBill->house_number_id)
                     ->find();
-                HydroelectricityModel::create([
-                    'bill_meter_id' => $electricity->id,
-                    'amount' => $oldBill->electricity,
-                    'dosage' => $oldBill->electricity_consumption,
-                    'type' => TYPE_ELECTRICITY,
-                    'calculate_date' => date("Y-m-d", strtotime("-1 month", strtotime($oldBill->start_time)))
-                ]);
+                if ($electricity) {
+                    WeDetailModel::create([
+                        'bill_meter_id' => $electricity->id,
+                        'amount' => $oldBill->electricity,
+                        'dosage' => $oldBill->electricity_consumption,
+                        'type' => TYPE_ELECTRICITY,
+                        'calculate_date' => date("Y-m-d", strtotime("-1 month", strtotime($oldBill->start_time)))
+                    ]);
+                }
             }
             if ($oldBill->water) {
                 $water = MeterModel::where('house_property_id', $oldBill->house_property_id)
                     ->where('type', TYPE_WATER)
                     ->whereFindInSet('house_number_id', $oldBill->house_number_id)
                     ->find();
-                HydroelectricityModel::create([
-                    'bill_meter_id' => $water->id,
-                    'amount' => $oldBill->water,
-                    'dosage' => $oldBill->water_consumption,
-                    'type' => TYPE_WATER,
-                    'calculate_date' => date("Y-m-d", strtotime("-1 month", strtotime($oldBill->start_time)))
-                ]);
+                if ($water) {
+                    WeDetailModel::create([
+                        'bill_meter_id' => $water->id,
+                        'amount' => $oldBill->water,
+                        'dosage' => $oldBill->water_consumption,
+                        'type' => TYPE_WATER,
+                        'calculate_date' => date("Y-m-d", strtotime("-1 month", strtotime($oldBill->start_time)))
+                    ]);
+                }
             }
             // 提交事务
             Db::commit();
@@ -272,9 +276,9 @@ class Uncollected extends Common
             ['a.accounting_date', 'null', ''],
             ['a.end_time', 'not null', ''],
         );
-        if ($type == 'e') {
+        if ($type == TYPE_ELECTRICITY) {
             array_push($conditions, ['a.electricity_meter_this_month', 'null', '']);
-        } elseif ($type == 'w') {
+        } elseif ($type == TYPE_WATER) {
             array_push($conditions, ['a.water_meter_this_month', 'null', '']);
         }
         $data = BillingModel::where($conditions)
@@ -302,14 +306,14 @@ class Uncollected extends Common
                 ->find();
                 $data = array();
                 $data['meter_reading_time'] = date('Y-m-d', time());
-                if ($type == 'e') {
+                if ($type == TYPE_ELECTRICITY) {
                     $data['electricity_meter_this_month'] = $value;
                     $data['electricity_consumption'] = $value - $billing['electricity_meter_last_month'];
                     $data['electricity'] = $data['electricity_consumption'] * $number_data->electricity_price;
                     $data['total_money'] = round($billing['water'] + $data['electricity'] + $billing['rental']
                         + $billing['deposit'] + $billing['other_charges'] + $billing['management'] + $billing['garbage_fee'], 2);
                     $billing->save($data);
-                } elseif ($type == 'w') {
+                } elseif ($type == TYPE_WATER) {
                     $data['water_meter_this_month'] = $value;
                     $data['water_consumption'] = $value - $billing['water_meter_last_month'];
                     $data['water'] = $data['water_consumption'] * $number_data->water_price;
