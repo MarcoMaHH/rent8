@@ -47,7 +47,7 @@ class AdminMenu extends Seeder
              'controller' => 'we.water', 'sort' => 2],
             ['id' => 23, 'pid' => 20, 'name' => '电费账单', 'icon' => '',
              'controller' => 'we.electricity', 'sort' => 3],
-            ['id' => 30, 'pid' => 0, 'name' => '我的账本', 'icon' => 'bill',
+            ['id' => 30, 'pid' => 0, 'name' => '我的账本', 'icon' => 'chart-line-data-1',
              'controller' => 'bill', 'sort' => 3],
             ['id' => 31, 'pid' => 30, 'name' => '房产报表', 'icon' => '',
              'controller' => 'bill.report', 'sort' => 1],
