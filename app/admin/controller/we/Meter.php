@@ -7,6 +7,7 @@ use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseNumber as NumberModel;
 use app\admin\model\WeMeter as MeterModel;
 use app\admin\model\WeDetail as WeDetailModel;
+use app\admin\model\WeBill as WeBillModel;
 use app\admin\library\Property;
 use think\facade\View;
 use think\facade\Db;
@@ -79,6 +80,7 @@ class Meter extends Common
         try {
             $meter->delete();
             WeDetailModel::where('meter_id', $id)->delete();
+            WeBillModel::where('meter_id', $id)->delete();
             // 提交事务
             Db::commit();
         } catch (\Exception $e) {

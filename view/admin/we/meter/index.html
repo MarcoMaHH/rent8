@@ -8,8 +8,8 @@
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
     active-row-type="single" :hover="true" :loading="tableLoading">
     <template #state="{ row }">
-      <t-tag v-if="row.type === 'B'" theme="warning" variant="light"> 电表 </t-tag>
-      <t-tag v-if="row.type === 'C'" theme="primary" variant="light"> 水表 </t-tag>
+      <t-tag v-if="row.type === 'E'" theme="warning" variant="light"> 电表 </t-tag>
+      <t-tag v-if="row.type === 'W'" theme="primary" variant="light"> 水表 </t-tag>
     </template>
     <template #op="slotProps">
       <t-space>
@@ -30,8 +30,8 @@
     </t-form-item>
     <t-form-item label="类型" name="type">
       <t-radio-group v-model="formData.type">
-        <t-radio value="B">电表</t-radio>
-        <t-radio value="C">水表</t-radio>
+        <t-radio value="E">电表</t-radio>
+        <t-radio value="W">水表</t-radio>
       </t-radio-group>
     </t-form-item>
     <t-form-item label="关联房间" name="number_name">
@@ -122,20 +122,16 @@
         this.dialogVisible = true;
       },
       handleDelete(row) {
-        if (this.tableData.length == 1) {
-          this.$message.warning('不能删除全部房产');
-        } else {
-          axiosPost("{:url('delete')}", row).then(response => {
-            if (response.state == 'success') {
-              this.$message.success(response.msg);
-              this.init();
-            } else if (response.state == 'warning') {
-              this.$message.warning(response.msg);
-            } else {
-              this.$message.error(response.msg);
-            }
-          });
-        }
+        axiosPost("{:url('delete')}", row).then(response => {
+          if (response.state == 'success') {
+            this.$message.success(response.msg);
+            this.init();
+          } else if (response.state == 'warning') {
+            this.$message.warning(response.msg);
+          } else {
+            this.$message.error(response.msg);
+          }
+        });
       },
     }
   }

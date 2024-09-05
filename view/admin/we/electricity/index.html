@@ -96,8 +96,9 @@
           if (response.code == 1) {
             this.meterData = response.data;
             if (response.data.length > 0) {
-              this.meter_id = response.data[0].id
+              this.meter_id = response.data[0].id;
             }
+            console.log(this.meter_id);
             this.queryTable();
           } else {
             this.$message.error('系统出错了!!!');
@@ -109,10 +110,10 @@
           if (response.code == 1) {
             this.tableData = response.data;
             this.pagination.total = response.count;
-            if (this.tableData.length) {
-              this.buttonDisabled = true;
-            } else {
+            if (this.tableData.length == 0 && this.meter_id) {
               this.buttonDisabled = false;
+            } else {
+              this.buttonDisabled = true;
             }
           } else {
             this.$message.error('系统出错了!!!');
