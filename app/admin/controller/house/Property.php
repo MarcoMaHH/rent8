@@ -53,12 +53,12 @@ class Property extends Common
     public function delete()
     {
         $id = $this->request->param('id/d', 0);
+        if (!$property = PropertyModel::find($id)) {
+            $this->error('删除失败，记录不存在。');
+        }
         $validate = new PropertyValidate();
         if (!$validate->scene('delete')->check(['id' => $id])) {
             $this->error('删除失败，' . $validate->getError() . '。');
-        }
-        if (!$property = PropertyModel::find($id)) {
-            $this->error('删除失败，记录不存在。');
         }
         $property->delete();
         $this->success('删除成功。');
