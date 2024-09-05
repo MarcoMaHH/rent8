@@ -95,7 +95,9 @@
         axiosGet("{:url('queryMeter')}").then(response => {
           if (response.code == 1) {
             this.meterData = response.data;
-            this.meter_id = response.data[0].id
+            if (response.data.length > 0) {
+              this.meter_id = response.data[0].id
+            }
             this.queryTable();
           } else {
             this.$message.error('系统出错了!!!');

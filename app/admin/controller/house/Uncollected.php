@@ -204,6 +204,7 @@ class Uncollected extends Common
                 if ($electricity) {
                     WeDetailModel::create([
                         'meter_id' => $electricity->id,
+                        'house_property_id' => $oldBill->house_property_id,
                         'amount' => $oldBill->electricity,
                         'dosage' => $oldBill->electricity_consumption,
                         'type' => TYPE_ELECTRICITY,
@@ -219,6 +220,7 @@ class Uncollected extends Common
                 if ($water) {
                     WeDetailModel::create([
                         'meter_id' => $water->id,
+                        'house_property_id' => $oldBill->house_property_id,
                         'amount' => $oldBill->water,
                         'dosage' => $oldBill->water_consumption,
                         'type' => TYPE_WATER,
