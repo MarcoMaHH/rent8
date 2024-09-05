@@ -6,8 +6,11 @@ use app\admin\controller\Common;
 use app\admin\model\AdminUser as UserModel;
 use app\admin\model\AdminRole as RoleModel;
 use app\admin\model\HouseProperty as PropertyModel;
-use app\admin\model\BillMeter as MeterModel;
+use app\admin\model\WeMeter as MeterModel;
+use app\admin\model\WeBill as WeBillModel;
+use app\admin\model\WeDetail as WeDetailModel;
 use app\admin\model\BillSum as SumModel;
+use app\admin\model\BillAnnual as AnnualModel;
 use app\admin\model\HouseTenant as TenantModel;
 use app\admin\model\HouseBilling as BillingModel;
 use app\admin\model\HouseNumber as NumberModel;
@@ -85,11 +88,14 @@ class User extends Common
             $property = PropertyModel::where('admin_user_id', $id)->select();
             $length = \count($property);
             for ($i = 0; $i < $length; $i++) {
+                WeDetailModel::where('house_property_id', $property[$i]['id'])->delete();
+                WeBillModel::where('house_property_id', $property[$i]['id'])->delete();
                 MeterModel::where('house_property_id', $property[$i]['id'])->delete();
                 SumModel::where('house_property_id', $property[$i]['id'])->delete();
                 TenantModel::where('house_property_id', $property[$i]['id'])->delete();
                 PhotoModel::where('house_property_id', $property[$i]['id'])->delete();
                 BillingModel::where('house_property_id', $property[$i]['id'])->delete();
+                AnnualModel::where('house_property_id', $property[$i]['id'])->delete();
                 NumberModel::where('house_property_id', $property[$i]['id'])->delete();
             }
             $property->delete();
