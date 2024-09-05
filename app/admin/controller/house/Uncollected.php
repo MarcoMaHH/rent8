@@ -203,7 +203,7 @@ class Uncollected extends Common
                     ->find();
                 if ($electricity) {
                     WeDetailModel::create([
-                        'bill_meter_id' => $electricity->id,
+                        'meter_id' => $electricity->id,
                         'amount' => $oldBill->electricity,
                         'dosage' => $oldBill->electricity_consumption,
                         'type' => TYPE_ELECTRICITY,
@@ -218,7 +218,7 @@ class Uncollected extends Common
                     ->find();
                 if ($water) {
                     WeDetailModel::create([
-                        'bill_meter_id' => $water->id,
+                        'meter_id' => $water->id,
                         'amount' => $oldBill->water,
                         'dosage' => $oldBill->water_consumption,
                         'type' => TYPE_WATER,

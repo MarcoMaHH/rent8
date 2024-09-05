@@ -34,18 +34,18 @@ class Water extends Common
             \array_push($conditions, ['b.id', '=', $meter_id]);
         }
         $count = WeBillModel::alias('a')
-        ->join('WeMeter b', 'a.bill_meter_id = b.id')
+        ->join('WeMeter b', 'a.meter_id = b.id')
         ->where($conditions)
         ->count();
         $water = WeBillModel::alias('a')
-        ->join('WeMeter b', 'a.bill_meter_id = b.id')
+        ->join('WeMeter b', 'a.meter_id = b.id')
         ->where($conditions)
         ->order(['a.start_month' => 'desc', 'b.type'])
         ->field('a.id, a.accounting_date, a.end_month, a.start_month, b.id as meter_id, b.type, b.house_property_id, b.name as electricity_name, a.master_sum, a.master_dosage')
         ->select();
         $result = [];
         foreach ($water as  $value) {
-            $detail = WeDetailModel::where('bill_meter_id', $value['meter_id'])
+            $detail = WeDetailModel::where('meter_id', $value['meter_id'])
             ->where('type', $value['type'])
             ->where('calculate_date', 'between time', [$value['start_month'] , $value['end_month']])
             ->field('sum(amount) as amount, sum(dosage) as dosage')
@@ -87,7 +87,7 @@ class Water extends Common
         $id = $this->request->post('id/d', 0);
         $meter_id = $this->request->param('meter_id/d', 0);
         $data = [
-                'bill_meter_id' => $meter_id,
+                'meter_id' => $meter_id,
                 'start_month' => $this->request->post('start_month/s', '', 'trim'),
                 'end_month' => $this->request->post('end_month/s', '', 'trim'),
                 'master_dosage' => $this->request->param('master_dosage/d', 0),
@@ -130,12 +130,12 @@ class Water extends Common
         try {
             $water->save(['accounting_date' => date('Y-m-d', time())]);
             WeBillModel::create([
-                'bill_meter_id' => $water->bill_meter_id,
+                'meter_id' => $water->meter_id,
                 'start_month' => date("Y-m-d", strtotime("+1 day", strtotime($water->end_month))),
             ]);
             //总表记录
             $totalData = WeBillModel::where('a.id', $id)->alias('a')
-            ->join('WeMeter b', 'a.bill_meter_id = b.id')
+            ->join('WeMeter b', 'a.meter_id = b.id')
             ->field('b.type, b.house_property_id, a.master_sum')
             ->find();
             $accounting_month = date('Y-m');
