@@ -131,15 +131,16 @@ class Water extends Common
         Db::startTrans();
         try {
             $water->save(['accounting_date' => date('Y-m-d', time())]);
-            WeBillModel::create([
-                'meter_id' => $water->meter_id,
-                'start_month' => date("Y-m-d", strtotime("+1 day", strtotime($water->end_month))),
-            ]);
             //总表记录
             $totalData = WeBillModel::where('a.id', $id)->alias('a')
             ->join('WeMeter b', 'a.meter_id = b.id')
             ->field('b.type, b.house_property_id, a.master_sum')
             ->find();
+            WeBillModel::create([
+                'meter_id' => $water->meter_id,
+                'house_property_id' => $totalData->house_property_id,
+                'start_month' => date("Y-m-d", strtotime("+1 day", strtotime($water->end_month))),
+            ]);
             $accounting_month = date('Y-m');
             $sum_data = SumModel::where([
                 'house_property_id' => $totalData->house_property_id,
