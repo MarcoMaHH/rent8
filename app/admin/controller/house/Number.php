@@ -7,7 +7,6 @@ use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseNumber as NumberModel;
 use app\admin\model\HouseTenant as TenantModel;
 use app\admin\model\HouseBilling as BillingModel;
-use app\admin\model\BillMeter as MeterModel;
 use app\admin\model\AdminUser as UserModel;
 use app\admin\validate\HouseNumber as NumberValidate;
 use app\admin\library\Property;
@@ -92,57 +91,11 @@ class Number extends Common
         if (!$validate->scene('insert')->check($data)) {
             $this->error('添加失败，' . $validate->getError() . '。');
         }
-        $transFlag = true;
-        Db::startTrans();
-        try {
-            $result = NumberModel::create($data);
-            $propertyArr = PropertyModel::find($data['house_property_id']);
-            $electricity = MeterModel::where(
-                ['house_property_id' => $data['house_property_id'],
-                'type' => TYPE_ELECTRICITY]
-            )->find();
-            if ($electricity) {
-                $meter = ['house_number_id' => $electricity->house_number_id . ',' . $result->id];
-                $electricity->save($meter);
-            } else {
-                $meter = [
-                    'name' => $propertyArr['name'] . '-电表',
-                    'house_property_id' => $data['house_property_id'],
-                    'house_number_id' => $result->id,
-                    'type' => TYPE_ELECTRICITY
-                ];
-                MeterModel::create($meter);
-            }
-
-            $water = MeterModel::where(
-                ['house_property_id' => $data['house_property_id'],
-                'type' => TYPE_WATER]
-            )->find();
-            if ($water) {
-                $meter = ['house_number_id' => $water->house_number_id . ',' . $result->id];
-                $water->save($meter);
-            } else {
-                $meter = [
-                    'name' => $propertyArr['name'] . '-水表',
-                    'house_property_id' => $data['house_property_id'],
-                    'house_number_id' => $result->id,
-                    'type' => TYPE_WATER
-                ];
-                MeterModel::create($meter);
-            }
-            // 提交事务
-            Db::commit();
-        } catch (\Exception $e) {
-            $transFlag = false;
-            // 回滚事务
-            Db::rollback();
-            $this->error($e->getMessage());
-        }
-        if ($transFlag) {
-            $this->success('添加成功');
-        }
+        $result = NumberModel::create($data);
+        $this->success('添加成功');
     }
 
+    // 批量保存
     public function saveMore()
     {
         $numbdrData = $this->request->post();
