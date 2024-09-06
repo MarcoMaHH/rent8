@@ -4,7 +4,7 @@ namespace app\admin\controller\bill;
 
 use app\admin\controller\Common;
 use app\admin\model\HouseProperty as PropertyModel;
-use app\admin\validate\HouseProperty as PropertyValidate;
+use app\admin\model\BillAnnual as AnnualModel;
 use think\facade\View;
 
 class Annual extends Common

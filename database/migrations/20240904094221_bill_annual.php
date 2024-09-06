@@ -38,14 +38,14 @@ class BillAnnual extends Migrator
             ['limit' => 6, 'null' => false, 'default' => 0,  'comment' => '房产id']
         )
         ->addColumn(
-            'type',
-            'string',
-            ['limit' => 2, 'null' => false, 'comment' => '收支类型']
+            'income',
+            'float',
+            ['null' => false, 'default' => 0.0, 'comment' => '收入']
         )
         ->addColumn(
-            'amount',
+            'expenditure',
             'float',
-            ['null' => false, 'default' => 0.0, 'comment' => '金额']
+            ['null' => false, 'default' => 0.0, 'comment' => '支持']
         )
         ->addColumn('annual', 'string', ['limit' => 6, 'null' => false, 'comment' => '年度'])
         ->addTimestamps()
