@@ -5,6 +5,8 @@ namespace app\admin\controller\bill;
 use app\admin\controller\Common;
 use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\BillAnnual as AnnualModel;
+use app\admin\model\BillSum as SumModel;
+
 use think\facade\View;
 
 class Annual extends Common
@@ -25,6 +27,7 @@ class Annual extends Common
         foreach ($annual as $key => $value) {
             $value['profit'] = $value['price'] - $value['deposit'];
         }
+        // $lasyYear = SumModel::where('admin_user_id', $loginUser['id'])->order('year desc')->find();
         return $this->returnElement($annual);
     }
 
