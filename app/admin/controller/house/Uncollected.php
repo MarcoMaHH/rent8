@@ -189,10 +189,12 @@ class Uncollected extends Common
                 ]);
             } else {
                 SumModel::create([
+                    'admin_user_id' => $this->auth->getLoginUser()['id'],
                     'house_property_id' => $oldBill->house_property_id,
                     'amount' => $oldBill->total_money,
                     'type' => TYPE_INCOME,
-                    'accounting_date' => $accounting_month
+                    'accounting_date' => $accounting_month,
+                    'annual' => date('Y'),
                 ]);
             }
             // 新增水电表记录

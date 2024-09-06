@@ -117,10 +117,12 @@ class Other extends Common
             ]);
         } else {
             SumModel::create([
+                'admin_user_id' => $this->auth->getLoginUser()['id'],
                 'house_property_id' => $other['house_property_id'],
                 'amount' => $other['total_money'],
                 'type' => TYPE_EXPENDITURE,
-                'accounting_date' => $accounting_month
+                'accounting_date' => $accounting_month,
+                'annual' => date('Y'),
             ]);
         }
         $other->save(['accout_mark' => 'Y']);
