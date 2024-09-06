@@ -53,6 +53,8 @@ class Electricity extends Common
             if (count($detail)) {
                 if ($detail[0]['amount']) {
                     $value['detail_sum'] = round($detail[0]['amount'], 2);
+                    $value['difference_sum'] = $value['master_sum'] - $value['detail_sum'];
+                    $value['difference_dosage'] = $value['master_dosage'] - $value['detail_dosage'];
                 } else {
                     $value['detail_sum'] = null;
                 }
