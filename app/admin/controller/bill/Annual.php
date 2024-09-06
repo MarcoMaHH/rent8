@@ -17,12 +17,14 @@ class Annual extends Common
     public function query()
     {
         $loginUser = $this->auth->getLoginUser();
-        $property = PropertyModel::where('admin_user_id', $loginUser['id'])->select()->toArray();
-        $result = array_map(function ($item) {
-            return $item['id'];
-        }, $property);
-        $annual = AnnualModel::where('house_property_id', 'in', $result)
+        $annual = AnnualModel::where('a.admin_user_id', $loginUser['id'])
+        ->alias('a')
+        ->join('HouseProperty c', 'c.id = a.house_property_id')
+        ->field('a.*, c.name as property_name')
         ->select();
+        foreach ($annual as $key => $value) {
+            $value['profit'] = $value['price'] - $value['deposit'];
+        }
         return $this->returnElement($annual);
     }
 
