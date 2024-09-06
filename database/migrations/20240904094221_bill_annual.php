@@ -33,6 +33,10 @@ class BillAnnual extends Migrator
             ['engine' => 'InnoDB', 'collation' => 'utf8mb4_general_ci']
         );
         $table->addColumn(
+            'admin_user_id',
+            'integer',
+            ['null' => false, 'default' => 0,  'comment' => '用户id']
+        )->addColumn(
             'house_property_id',
             'integer',
             ['limit' => 6, 'null' => false, 'default' => 0,  'comment' => '房产id']
