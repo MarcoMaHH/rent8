@@ -3,10 +3,8 @@
 namespace app\admin\controller\bill;
 
 use app\admin\controller\Common;
-use app\admin\model\BillSum as SumModel;
-use app\admin\model\AdminUser as UserModel;
-use app\admin\library\Property;
 use app\admin\model\HouseProperty as PropertyModel;
+use app\admin\validate\HouseProperty as PropertyValidate;
 use think\facade\View;
 
 class Annual extends Common
@@ -19,54 +17,48 @@ class Annual extends Common
     public function query()
     {
         $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
-        $accounting_month = date('Y-m');
-        $income = SumModel::where('house_property_id', $house_property_id)
-        ->where('type', TYPE_INCOME)
-        ->where('accounting_date', $accounting_month)
-        ->sum('amount');
-        // todo
-        $spending = SumModel::where('house_property_id', $house_property_id)
-        ->where('type', TYPE_EXPENDITURE)
-        ->where('accounting_date', $accounting_month)
-        ->sum('amount');
-        $user = UserModel::find($loginUser['id']);
-        $number_count =  $user->houseNumber->where('house_property_id', $house_property_id)->count();
-        $empty_count =  $user->houseNumber->where('rent_mark', 'N')->where('house_property_id', $house_property_id)->count();
-        $occupancy = $number_count == 0 ? '0%' : round((($number_count - $empty_count) / $number_count) * 100).'%';
-        $house_info = [
-            'income' => $income,
-            'spending' => round($spending, 2),
-            'profit' => round($income - $spending, 2),
-            'occupancy' => $occupancy,
-            'number_count' => $number_count,
-            'empty_count' => $empty_count,
-        ];
-        return $this->returnElement($house_info);
+        $property = PropertyModel::where('admin_user_id', $loginUser['id'])
+        ->order('firstly')
+        ->select();
+        return $this->returnElement($property);
     }
 
-    public function echar()
+    public function save()
     {
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
-        $currentDate = new \DateTime();
-        $currentDate->modify('first day of this month');
-        $charData = array();
-        for ($i = 12; $i >= 0; $i--) {
-            $month = clone $currentDate;
-            $accounting_month = $month->modify("-{$i} month")->format('Y-m');
-            $income = SumModel::where('house_property_id', $house_property_id)
-            ->where('accounting_date', $accounting_month)
-            ->where('type', TYPE_INCOME)
-            ->sum('amount');
-            $spending = SumModel::where('house_property_id', $house_property_id)
-            ->where('accounting_date', $accounting_month)
-            ->where('type', TYPE_EXPENDITURE)
-            ->sum('amount');
-            \array_push($charData, ['month' => $accounting_month, 'project' => '收入', 'money' => $income]);
-            \array_push($charData, ['month' => $accounting_month, 'project' => '支出', 'money' => intval($spending)]);
-            \array_push($charData, ['month' => $accounting_month, 'project' => '利润', 'money' => $income - intval($spending)]);
+        $id = $this->request->post('id/d', 0);
+        $data = [
+            'name' => $this->request->post('name/s', null, 'trim'),
+            'address' => $this->request->post('address/s', null, 'trim'),
+            'landlord' => $this->request->post('landlord/s', null, 'trim'),
+            'phone' => $this->request->post('phone/s', null, 'trim'),
+            'id_card' => $this->request->post('id_card/s', null, 'trim'),
+        ];
+        if ($id) {
+            if (!$role = PropertyModel::find($id)) {
+                $this->error('修改失败，记录不存在。');
+            }
+            $role->save($data);
+            $this->success('修改成功。');
         }
-        return $this->returnElement($charData);
+        $loginUser = $this->auth->getLoginUser();
+        $data['admin_user_id'] = $loginUser['id'];
+        $data['firstly'] = 'Y';
+        PropertyModel::where('admin_user_id', $loginUser['id'])->update(['firstly' => 'N']);
+        PropertyModel::create($data);
+        $this->success('添加成功。');
+    }
+
+    public function delete()
+    {
+        $id = $this->request->param('id/d', 0);
+        if (!$property = PropertyModel::find($id)) {
+            $this->error('删除失败，记录不存在。');
+        }
+        $validate = new PropertyValidate();
+        if (!$validate->scene('delete')->check(['id' => $id])) {
+            $this->error('删除失败，' . $validate->getError() . '。');
+        }
+        $property->delete();
+        $this->success('删除成功。');
     }
 }
