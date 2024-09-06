@@ -33,6 +33,11 @@ class BillSum extends Migrator
             ['engine' => 'InnoDB', 'collation' => 'utf8mb4_general_ci']
         );
         $table->addColumn(
+            'admin_user_id',
+            'integer',
+            ['null' => false, 'default' => 0,  'comment' => '用户id']
+        )
+        ->addColumn(
             'house_property_id',
             'integer',
             ['limit' => 6, 'null' => false, 'default' => 0,  'comment' => '房产id']
@@ -48,6 +53,7 @@ class BillSum extends Migrator
             ['null' => false, 'default' => 0.0, 'comment' => '金额']
         )
         ->addColumn('accounting_date', 'string', ['limit' => 10, 'null' => false, 'comment' => '到账日期'])
+        ->addColumn('annual', 'string', ['limit' => 6, 'null' => false, 'comment' => '年度'])
         ->addTimestamps()
         ->create();
     }

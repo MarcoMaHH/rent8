@@ -155,10 +155,12 @@ class Water extends Common
                 ]);
             } else {
                 SumModel::create([
+                    'admin_user_id' => $this->auth->getLoginUser()['id'],
                     'house_property_id' => $totalData->house_property_id,
                     'amount' => $totalData->master_sum,
                     'type' => TYPE_EXPENDITURE,
-                    'accounting_date' => $accounting_month
+                    'accounting_date' => $accounting_month,
+                    'annual' => date('Y'),
                 ]);
             }
             // 提交事务
