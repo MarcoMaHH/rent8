@@ -34,24 +34,30 @@ class Annual extends Common
     public function arrange()
     {
         $loginUser = $this->auth->getLoginUser();
-        $sumData = SumModel::where('admin_user_id', $loginUser['id'])->select();
+        $years = SumModel::where('admin_user_id', $loginUser['id'])->field('annual')->group('annual')->select()->toArray();
+        $result = [];
+        $currentYear = date('Y');
 
-        // 开始事务
-        $transFlag = true;
-        Db::startTrans();
-        try {
+        foreach ($years as $value) {
+            if ($value['annual'] < $currentYear - 1) {
+                $data = [
+                    'annual' => $value['annual'],
+                    'admin_user_id' => $loginUser['id'],
+                    'income' => SumModel::where('admin_user_id', $loginUser['id'])
+                        ->where('type', 'I')
+                        ->where('annual', $value['annual'])
+                        ->sum('amount'),
+                    'expenditure' => SumModel::where('admin_user_id', $loginUser['id'])
+                        ->where('type', 'E')
+                        ->where('annual', $value['annual'])
+                        ->sum('amount'),
+                ];
 
-            // 提交事务
-            Db::commit();
-        } catch (\Exception $e) {
-            $transFlag = false;
-            // 回滚事务
-            Db::rollback();
-            $this->error($e->getMessage());
+                $result[] = $data;
+            }
         }
-        if ($transFlag) {
-            $this->success('整理成功');
-        }
+        return $this->returnElement($result);
+
     }
 
     public function delete()
