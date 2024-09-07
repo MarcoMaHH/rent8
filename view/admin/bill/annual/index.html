@@ -38,13 +38,13 @@
         });
       },
       handleArrange() {
-        axiosGet("{:url('query')}").then(response => {
+        axiosGet("{:url('arrange')}").then(response => {
           if (response.code == 1) {
-            this.tableData = response.data;
+            this.$message.success(response.msg);
+            this.init();
           } else {
             this.$message.error('系统出错了!!!');
           }
-          this.tableLoading = false;
         });
       },
     }

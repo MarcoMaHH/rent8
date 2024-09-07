@@ -6,7 +6,7 @@ use app\admin\controller\Common;
 use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\BillAnnual as AnnualModel;
 use app\admin\model\BillSum as SumModel;
-
+use think\facade\Db;
 use think\facade\View;
 
 class Annual extends Common
@@ -31,29 +31,27 @@ class Annual extends Common
         return $this->returnElement($annual);
     }
 
-    public function save()
+    public function arrange()
     {
-        $id = $this->request->post('id/d', 0);
-        $data = [
-            'name' => $this->request->post('name/s', null, 'trim'),
-            'address' => $this->request->post('address/s', null, 'trim'),
-            'landlord' => $this->request->post('landlord/s', null, 'trim'),
-            'phone' => $this->request->post('phone/s', null, 'trim'),
-            'id_card' => $this->request->post('id_card/s', null, 'trim'),
-        ];
-        if ($id) {
-            if (!$role = PropertyModel::find($id)) {
-                $this->error('修改失败，记录不存在。');
-            }
-            $role->save($data);
-            $this->success('修改成功。');
-        }
         $loginUser = $this->auth->getLoginUser();
-        $data['admin_user_id'] = $loginUser['id'];
-        $data['firstly'] = 'Y';
-        PropertyModel::where('admin_user_id', $loginUser['id'])->update(['firstly' => 'N']);
-        PropertyModel::create($data);
-        $this->success('添加成功。');
+        $sumData = SumModel::where('admin_user_id', $loginUser['id'])->select();
+
+        // 开始事务
+        $transFlag = true;
+        Db::startTrans();
+        try {
+
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            $transFlag = false;
+            // 回滚事务
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+        if ($transFlag) {
+            $this->success('整理成功');
+        }
     }
 
     public function delete()
