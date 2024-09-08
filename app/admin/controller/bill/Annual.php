@@ -24,6 +24,9 @@ class Annual extends Common
         ->join('HouseProperty c', 'c.id = a.house_property_id')
         ->field('a.*, c.name as property_name')
         ->select();
+        foreach ($annual as $value) {
+            $value['profit'] = $value['income'] - $value['expenditure'];
+        }
 
         $lasyYear = date('Y', strtotime('-1 year'));
         $propertys = PropertyModel::where('admin_user_id', $loginUser['id'])->select()->toArray();
@@ -61,14 +64,12 @@ class Annual extends Common
                 $annual[] = [
                     'annual' => $lasyYear,
                     'admin_user_id' => $loginUser['id'],
-                    'house_property_id' => $propertyId,
+                    'property_name' => $property['name'],
                     'income' => $income,
                     'expenditure' => $expenditure,
+                    'profit' => $income - $expenditure,
                 ];
             }
-        }
-        foreach ($annual as $value) {
-            $value['profit'] = $value['income'] - $value['expenditure'];
         }
         return $this->returnElement($annual);
     }
