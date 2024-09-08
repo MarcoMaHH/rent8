@@ -24,10 +24,52 @@ class Annual extends Common
         ->join('HouseProperty c', 'c.id = a.house_property_id')
         ->field('a.*, c.name as property_name')
         ->select();
-        foreach ($annual as $key => $value) {
-            $value['profit'] = $value['price'] - $value['deposit'];
+
+        $lasyYear = date('Y', strtotime('-1 year'));
+        $propertys = PropertyModel::where('admin_user_id', $loginUser['id'])->select()->toArray();
+        $allIncomes = SumModel::where('admin_user_id', $loginUser['id'])
+        ->where('type', 'I')
+        ->where('annual', $lasyYear)
+        ->field('annual, house_property_id, sum(amount) as amount')
+        ->group('annual, house_property_id')
+        ->select()->toArray();
+        $allExpenditures = SumModel::where('admin_user_id', $loginUser['id'])
+            ->where('type', 'E')
+            ->where('annual', $lasyYear)
+            ->field('annual, house_property_id, sum(amount) as amount')
+            ->group('annual, house_property_id')
+            ->select()->toArray();
+        foreach ($propertys as $property) {
+            $propertyId = $property['id'];
+            $income = 0;
+            $expenditure = 0;
+
+            // 从预先查询的数据中筛选当前年份和房产的收入和支出
+            foreach ($allIncomes as $in) {
+                if ($in['house_property_id'] == $propertyId) {
+                    $income += $in['amount'];
+                }
+            }
+
+            foreach ($allExpenditures as $ex) {
+                if ($ex['house_property_id'] == $propertyId) {
+                    $expenditure += $ex['amount'];
+                }
+            }
+
+            if ($income > 0 || $expenditure > 0) {
+                $annual[] = [
+                    'annual' => $lasyYear,
+                    'admin_user_id' => $loginUser['id'],
+                    'house_property_id' => $propertyId,
+                    'income' => $income,
+                    'expenditure' => $expenditure,
+                ];
+            }
         }
-        // $lasyYear = SumModel::where('admin_user_id', $loginUser['id'])->order('year desc')->find();
+        foreach ($annual as $value) {
+            $value['profit'] = $value['income'] - $value['expenditure'];
+        }
         return $this->returnElement($annual);
     }
 
