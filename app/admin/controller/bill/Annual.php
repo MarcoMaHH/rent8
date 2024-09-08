@@ -38,65 +38,53 @@ class Annual extends Common
         $propertys = PropertyModel::where('admin_user_id', $loginUser['id'])->select()->toArray();
         $result = [];
 
-        foreach ($years as $value) {
-            if ($value['annual'] < date('Y') - 1) {
-                $income = SumModel::where('admin_user_id', $loginUser['id'])
-                    ->where('type', 'I')
-                    ->where('annual', $value['annual'])
-                    ->field('house_property_id,sum(amount) as amount')
-                    ->group('house_property_id')
-                    ->select()->toArray();
+        // 预先查询所有相关收入和支出数据，避免在循环中多次查询数据库
+        $allIncomes = SumModel::where('admin_user_id', $loginUser['id'])
+            ->where('type', 'I')
+            ->field('annual, house_property_id, sum(amount) as amount')
+            ->group('annual, house_property_id')
+            ->select()->toArray();
 
-                $expenditure = SumModel::where('admin_user_id', $loginUser['id'])
-                    ->where('type', 'E')
-                    ->where('annual', $value['annual'])
-                    ->field('house_property_id,sum(amount) as amount')
-                    ->group('house_property_id')
-                    ->select()->toArray();
+        $allExpenditures = SumModel::where('admin_user_id', $loginUser['id'])
+            ->where('type', 'E')
+            ->field('annual, house_property_id, sum(amount) as amount')
+            ->group('annual, house_property_id')
+            ->select()->toArray();
 
-                foreach ($propertys as $vv) {
-                    $temp_income = 0;
-                    $temp_expenditure = 0;
-                    foreach ($income as $vi) {
-                        if ($vi['house_property_id'] == $vv['id']) {
-                            if ($vi['amount']) {
-                                $temp_income += $vi['amount'];
-                            }
+        foreach ($years as $yearData) {
+            $year = $yearData['annual'];
+            if ($year < date('Y') - 1) {
+                foreach ($propertys as $property) {
+                    $propertyId = $property['id'];
+                    $income = 0;
+                    $expenditure = 0;
+
+                    // 从预先查询的数据中筛选当前年份和房产的收入和支出
+                    foreach ($allIncomes as $in) {
+                        if ($in['annual'] == $year && $in['house_property_id'] == $propertyId) {
+                            $income += $in['amount'];
                         }
                     }
-                    foreach ($expenditure as $ve) {
-                        if ($ve['house_property_id'] == $vv['id']) {
-                            if ($ve['amount']) {
-                                $temp_expenditure += $ve['amount'];
-                            }
+
+                    foreach ($allExpenditures as $ex) {
+                        if ($ex['annual'] == $year && $ex['house_property_id'] == $propertyId) {
+                            $expenditure += $ex['amount'];
                         }
                     }
-                    if ($temp_expenditure || $temp_income) {
+
+                    if ($income > 0 || $expenditure > 0) {
                         $result[] = [
-                            'annual' => $value['annual'],
+                            'annual' => $year,
                             'admin_user_id' => $loginUser['id'],
-                            'house_property_id' => $vv['id'],
-                            'income' => $temp_income,
-                            'expenditure' => $temp_expenditure,
+                            'house_property_id' => $propertyId,
+                            'income' => $income,
+                            'expenditure' => $expenditure,
                         ];
                     }
                 }
             }
         }
-        return $this->returnElement($result);
-    }
 
-    public function delete()
-    {
-        $id = $this->request->param('id/d', 0);
-        if (!$property = PropertyModel::find($id)) {
-            $this->error('删除失败，记录不存在。');
-        }
-        $validate = new PropertyValidate();
-        if (!$validate->scene('delete')->check(['id' => $id])) {
-            $this->error('删除失败，' . $validate->getError() . '。');
-        }
-        $property->delete();
-        $this->success('删除成功。');
+        return $this->returnElement($result);
     }
 }
