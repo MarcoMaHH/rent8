@@ -35,29 +35,55 @@ class Annual extends Common
     {
         $loginUser = $this->auth->getLoginUser();
         $years = SumModel::where('admin_user_id', $loginUser['id'])->field('annual')->group('annual')->select()->toArray();
+        $propertys = PropertyModel::where('admin_user_id', $loginUser['id'])->select()->toArray();
         $result = [];
-        $currentYear = date('Y');
 
         foreach ($years as $value) {
-            if ($value['annual'] < $currentYear - 1) {
-                $data = [
-                    'annual' => $value['annual'],
-                    'admin_user_id' => $loginUser['id'],
-                    'income' => SumModel::where('admin_user_id', $loginUser['id'])
-                        ->where('type', 'I')
-                        ->where('annual', $value['annual'])
-                        ->sum('amount'),
-                    'expenditure' => SumModel::where('admin_user_id', $loginUser['id'])
-                        ->where('type', 'E')
-                        ->where('annual', $value['annual'])
-                        ->sum('amount'),
-                ];
+            if ($value['annual'] < date('Y') - 1) {
+                $income = SumModel::where('admin_user_id', $loginUser['id'])
+                    ->where('type', 'I')
+                    ->where('annual', $value['annual'])
+                    ->field('house_property_id,sum(amount) as amount')
+                    ->group('house_property_id')
+                    ->select()->toArray();
 
-                $result[] = $data;
+                $expenditure = SumModel::where('admin_user_id', $loginUser['id'])
+                    ->where('type', 'E')
+                    ->where('annual', $value['annual'])
+                    ->field('house_property_id,sum(amount) as amount')
+                    ->group('house_property_id')
+                    ->select()->toArray();
+
+                foreach ($propertys as $vv) {
+                    $temp_income = 0;
+                    $temp_expenditure = 0;
+                    foreach ($income as $vi) {
+                        if ($vi['house_property_id'] == $vv['id']) {
+                            if ($vi['amount']) {
+                                $temp_income += $vi['amount'];
+                            }
+                        }
+                    }
+                    foreach ($expenditure as $ve) {
+                        if ($ve['house_property_id'] == $vv['id']) {
+                            if ($ve['amount']) {
+                                $temp_expenditure += $ve['amount'];
+                            }
+                        }
+                    }
+                    if ($temp_expenditure || $temp_income) {
+                        $result[] = [
+                            'annual' => $value['annual'],
+                            'admin_user_id' => $loginUser['id'],
+                            'house_property_id' => $vv['id'],
+                            'income' => $temp_income,
+                            'expenditure' => $temp_expenditure,
+                        ];
+                    }
+                }
             }
         }
         return $this->returnElement($result);
-
     }
 
     public function delete()
