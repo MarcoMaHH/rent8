@@ -128,6 +128,32 @@ class Annual extends Common
             }
         }
 
-        return $this->returnElement($result);
+        // 开始事务
+        $transFlag = true;
+        Db::startTrans();
+        try {
+            foreach ($result as $item) {
+                if ($annual = AnnualModel::where('admin_user_id', $item['admin_user_id'])
+                    ->where('house_property_id', $item['house_property_id'])
+                    ->where('annual', $item['annual'])
+                    ->find()) {
+                    $annual->income += $item['income'];
+                    $annual->expenditure += $item['expenditure'];
+                    $annual->save();
+                } else {
+                    AnnualModel::create($item);
+                }
+            }
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            $transFlag = false;
+            // 回滚事务
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+        if ($transFlag) {
+            $this->success('整理成功');
+        }
     }
 }
