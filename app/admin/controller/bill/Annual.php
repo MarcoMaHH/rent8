@@ -143,6 +143,10 @@ class Annual extends Common
                 } else {
                     AnnualModel::create($item);
                 }
+                SumModel::where('annual', $item['annual'])
+                    ->where('admin_user_id', $item['admin_user_id'])
+                    ->where('house_property_id', $item['house_property_id'])
+                    ->delete();
             }
             // 提交事务
             Db::commit();
