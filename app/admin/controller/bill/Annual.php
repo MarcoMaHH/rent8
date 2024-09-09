@@ -23,9 +23,11 @@ class Annual extends Common
         ->alias('a')
         ->join('HouseProperty c', 'c.id = a.house_property_id')
         ->field('a.*, c.name as property_name')
-        ->select();
-        foreach ($annual as $value) {
-            $value['profit'] = $value['income'] - $value['expenditure'];
+        ->order(['a.annual'=> 'desc', 'c.name'])
+        ->select()
+        ->toArray();
+        foreach ($annual as $key => $value) {
+            $annual[$key]['profit'] = $value['income'] - $value['expenditure'];
         }
 
         $lasyYear = date('Y', strtotime('-1 year'));
@@ -61,14 +63,14 @@ class Annual extends Common
             }
 
             if ($income > 0 || $expenditure > 0) {
-                $annual[] = [
+                array_unshift($annual, [
                     'annual' => $lasyYear,
                     'admin_user_id' => $loginUser['id'],
                     'property_name' => $property['name'],
                     'income' => $income,
                     'expenditure' => $expenditure,
                     'profit' => $income - $expenditure,
-                ];
+                ]);
             }
         }
         return $this->returnElement($annual);
