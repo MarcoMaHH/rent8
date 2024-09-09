@@ -1,6 +1,6 @@
 # rent8-最常用出租屋管理系统
 
-自家用的出租屋管理系统。本系统基于ThinkPHP8(PHP8)+TDesign开发，前后端**不**分离，这是**最最后的倔强**！！！
+自家用的出租屋管理系统。本系统基于ThinkPHP8(PHP8)+TDesign(Vue3)开发，前后端**不**分离，这是**最最后的倔强**！！！
 
 ---
 
@@ -9,16 +9,6 @@
 ![最常用房东助手](https://gitee.com/MarcoMaHH/picture/raw/master/project.jpg)
 
 ---
-
-**其他版本**：
-
-[最常用出租屋管理系统rent2混编版-thinkph5.1+layUI](https://gitee.com/MarcoMaHH/rent2)
-
-[最常用出租屋管理系统rent4混编版-thinkphp6+ElementUI](https://gitee.com/MarcoMaHH/rent4)
-
-[最常用出租屋管理系统rent6前后端分离版-thinkphp8+TDesign](https://gitee.com/MarcoMaHH/rent6)
-
-[最常用出租屋管理系统rent8混编版-thinkphp8+TDesign](https://gitee.com/MarcoMaHH/rent8)
 
 ### 系统环境
 
@@ -65,9 +55,17 @@
 
 ![到账账单-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/collect.jpg)
 
-菜单管理-页面
+电费账单-页面
 
-![菜单管理-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/menu.jpg)
+![用户管理-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/electricity.jpg)
+
+年度报表-页面
+
+![用户管理-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/annual.jpg)
+
+用户管理-页面
+
+![用户管理-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/user.jpg)
 
 ### 安装步骤
 
