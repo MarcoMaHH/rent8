@@ -52,11 +52,6 @@ class AdminUser extends Migrator
             'char',
             ['limit' => 32, 'null' => false, 'default' => '', 'comment' => '密码salt']
         )
-        ->addColumn(
-            'openid',
-            'string',
-            ['limit' => 32, 'null' => true, 'default' => '', 'comment' => '微信小程序openID']
-        )
         ->addColumn('expiration_date', 'timestamp', ['null' => true, 'comment' => '失效期'])
         ->addColumn('login_date', 'timestamp', ['null' => true, 'comment' => '最近一次登录日期'])
         ->addIndex(['username'], ['unique' => true])
