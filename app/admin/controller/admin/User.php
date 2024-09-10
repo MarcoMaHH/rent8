@@ -86,7 +86,7 @@ class User extends Common
         Db::startTrans();
         try {
             $user->delete();
-            $property = PropertyModel::where('admin_user_id', $id)->select();
+            $property = PropertyModel::where('admin_user_id', $id)->select()->toArray();
             $length = \count($property);
             for ($i = 0; $i < $length; $i++) {
                 WeDetailModel::where('house_property_id', $property[$i]['id'])->delete();
@@ -94,13 +94,23 @@ class User extends Common
                 MeterModel::where('house_property_id', $property[$i]['id'])->delete();
                 SumModel::where('house_property_id', $property[$i]['id'])->delete();
                 TenantModel::where('house_property_id', $property[$i]['id'])->delete();
-                PhotoModel::where('house_property_id', $property[$i]['id'])->delete();
                 BillingModel::where('house_property_id', $property[$i]['id'])->delete();
                 AnnualModel::where('house_property_id', $property[$i]['id'])->delete();
                 OtherModel::where('house_property_id', $property[$i]['id'])->delete();
                 NumberModel::where('house_property_id', $property[$i]['id'])->delete();
+                $photoRootPath = app()->getRootPath() . 'public' . DIRECTORY_SEPARATOR . 'storage';
+                PhotoModel::where('house_property_id', $property[$i]['id'])->chunk(100, function ($photos) use ($photoRootPath) {
+                    foreach ($photos as $photo) {
+                        $photoName = explode('/', $photo['url']);
+                        $filePath = $photoRootPath . DIRECTORY_SEPARATOR . $photoName[2] . DIRECTORY_SEPARATOR . $photoName[3];
+                        if (file_exists($filePath)) {
+                            @unlink($filePath);
+                        }
+                    }
+                });
+                PhotoModel::where('house_property_id', $property[$i]['id'])->delete();
             }
-            $property->delete();
+            PropertyModel::where('admin_user_id', $id)->delete();
             // 提交事务
             Db::commit();
         } catch (\Exception $e) {
