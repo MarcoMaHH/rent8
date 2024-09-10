@@ -18,13 +18,13 @@ class AdminPermission extends Seeder
             // 管理员
             ['id' => 1, 'admin_role_id' => 1, 'controller' => '*', 'action' => '*'],
             // 体验者
-            ['id' => 2, 'admin_role_id' => 2, 'controller' => 'index', 'action' => 'index,queryHouse,login,logout,echar'],
+            ['id' => 2, 'admin_role_id' => 2, 'controller' => 'index', 'action' => 'index,queryHouse,queryRemind,login,logout,password,echar'],
             ['id' => 3, 'admin_role_id' => 2, 'controller' => 'house', 'action' => 'index'],
             ['id' => 4, 'admin_role_id' => 2, 'controller' => 'house.property', 'action' => 'index,query,sort'],
-            ['id' => 5, 'admin_role_id' => 2, 'controller' => 'house.number', 'action' => 'index,query,queryNumberId,contract'],
+            ['id' => 5, 'admin_role_id' => 2, 'controller' => 'house.number', 'action' => 'index,query,queryNumberId,contract,queryNumberId,getMessage'],
             ['id' => 6, 'admin_role_id' => 2, 'controller' => 'house.uncollected', 'action' => 'index,queryReadingTime,query,queryHistory,centralized'],
             ['id' => 7, 'admin_role_id' => 2, 'controller' => 'house.collected', 'action' => 'index,query,sum'],
-            ['id' => 8, 'admin_role_id' => 2, 'controller' => 'house.tenant', 'action' => 'index,query'],
+            ['id' => 8, 'admin_role_id' => 2, 'controller' => 'house.tenant', 'action' => 'index,query,queryPhoto'],
             ['id' => 9, 'admin_role_id' => 2, 'controller' => 'house.other', 'action' => 'index,query'],
 
             // 普通会员
