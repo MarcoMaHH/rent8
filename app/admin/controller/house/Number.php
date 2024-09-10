@@ -88,10 +88,10 @@ class Number extends Common
             $permission->save($data);
             $this->success('修改成功');
         }
-        if (!$validate->scene('insert')->check($data)) {
-            $this->error('添加失败，' . $validate->getError() . '。');
+        if (NumberModel::where('name', $data['name'])->where('house_property_id', $data['house_property_id'])->find()) {
+            $this->error('房间名已存在');
         }
-        $result = NumberModel::create($data);
+        NumberModel::create($data);
         $this->success('添加成功');
     }
 
@@ -128,11 +128,29 @@ class Number extends Common
     public function delete()
     {
         $id = $this->request->param('id/d', 0);
-        if (!$permission = NumberModel::find($id)) {
+        if (!$number = NumberModel::find($id)) {
             $this->error('删除失败,记录不存在。');
         }
-        $permission->delete();
-        $this->success('删除成功');
+
+        // 开始事务
+        $transFlag = true;
+        Db::startTrans();
+        try {
+            BillingModel::where('house_property_id', $number['house_property_id'])
+            ->where('house_number_id', $number['id'])
+            ->delete();
+            $number->delete();
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            $transFlag = false;
+            // 回滚事务
+            Db::rollback();
+            $this->error($e->getMessage());
+        }
+        if ($transFlag) {
+            $this->success('删除成功');
+        }
     }
 
     //新租
