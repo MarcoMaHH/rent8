@@ -42,6 +42,9 @@ class Number extends Common
             if ($value['lease']) {
                 $value['rent_date'] = Date::getLease($value['checkin_time'], $value['lease'] - $value['lease_type'])[0];
             }
+            if ($value['checkin_time']) {
+                $value['checkin_time'] = \substr($value['checkin_time'], 0, 10);
+            }
         }
         return $this->returnElement($numbers);
     }
