@@ -63,7 +63,7 @@
 ### 技术栈
 
 - ThinkPHP8（PHP8）
-- TDesign（Vue Next for Web）
+- TDesign（Vue3）
 - antV G2
 - printJS
 
