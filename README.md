@@ -12,11 +12,11 @@
 
 ### 界面及功能展示
 
-登录页面
+<!-- 登录页面 -->
 
 ![登录页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/login.jpg)
 
-主页面
+<!-- 主页面 -->
 
 ![主页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/index.jpg)
 
