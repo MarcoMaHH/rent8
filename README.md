@@ -4,26 +4,11 @@
 
 ---
 
-下面是出租屋管理系统微信小程序版，免费使用，适合白嫖党，小白党！
+出租屋管理系统微信小程序版，免费使用，适合白嫖党，小白党！
 
 ![最常用房东助手](https://gitee.com/MarcoMaHH/picture/raw/master/project.jpg)
 
 ---
-
-### 系统环境
-
-- PHP = 8.1.22
-
-- Apache = 2.4.41
-
-- MySQL = 5.7.28
-
-### 技术栈
-
-- ThinkPHP8（PHP8）
-- TDesign（Vue Next for Web）
-- antV G2
-- printJS
 
 ### 界面及功能展示
 
@@ -67,8 +52,23 @@
 
 ![用户管理-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/user.jpg)
 
-### 安装步骤
+### 系统环境
 
+- PHP = 8.1.22
+
+- Apache = 2.4.41
+
+- MySQL = 5.7.28
+
+### 技术栈
+
+- ThinkPHP8（PHP8）
+- TDesign（Vue Next for Web）
+- antV G2
+- printJS
+
+### 安装步骤
+PS:需先安装php环境，composer环境
 1. 建立数据库`rent8`
 2. `git clone https://gitee.com/MarcoMaHH/rent8.git`
 3. 将.example.env改为.env，并修改数据库数据
