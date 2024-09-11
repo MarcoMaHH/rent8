@@ -59,6 +59,7 @@
         ],
       },
       expanded: ["{$current_route['pid']}"],
+      buttonDisabled: true,
     }
 
     function common_f() {
@@ -111,6 +112,7 @@
                 if (this.houseList[index].firstly == 'Y') {
                   this.houseDef = this.houseList[index].id;
                   this.houseName = this.houseList[index].name;
+                  this.buttonDisabled = false;
                   break;
                 }
               }

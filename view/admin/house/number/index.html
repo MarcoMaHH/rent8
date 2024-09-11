@@ -4,11 +4,11 @@
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
     <!-- 新建按钮位于左侧 -->
     <div>
-      <t-button theme="primary" @click="handleAdd">
+      <t-button theme="primary" @click="handleAdd" :disabled="buttonDisabled">
         <template #icon><t-icon name="add" /></template>
         新建
       </t-button>
-      <t-button theme="primary" @click="handleAddMore" style="margin-left: 10px;">
+      <t-button theme="primary" @click="handleAddMore" style="margin-left: 10px;" :disabled="buttonDisabled">
         批量新建
       </t-button>
     </div>

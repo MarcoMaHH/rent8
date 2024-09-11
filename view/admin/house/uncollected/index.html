@@ -2,10 +2,10 @@
 {block name="main"}
 <t-card class="list-card-container" :bordered="false">
   <div style="margin-bottom: 10px;">
-    <t-button theme="primary" style="margin-right: 10px;" @click="concentrated('E')">
+    <t-button theme="primary" style="margin-right: 10px;" @click="concentrated('E')" :disabled="buttonDisabled">
       集中抄电
     </t-button>
-    <t-button theme="primary" style="margin-right: 10px;" @click="concentrated('W')">
+    <t-button theme="primary" style="margin-right: 10px;" @click="concentrated('W')" :disabled="buttonDisabled">
       集中抄水
     </t-button>
     <t-select placeholder="请选择抄表日期" clearable style="width: 140px;display: inline-block;" @change="changeDate">

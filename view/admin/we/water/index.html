@@ -2,7 +2,7 @@
 {block name="main"}
 <t-card class="list-card-container" :bordered="false">
   <div style="margin-bottom: 10px;">
-    <t-button theme="primary" style="margin-right: 10px;" @click="handleAdd" :disabled="buttonDisabled">
+    <t-button theme="primary" style="margin-right: 10px;" @click="handleAdd" :disabled="insertButton">
       <template #icon><t-icon name="add" /></template>
       新建
     </t-button>
@@ -89,7 +89,7 @@
       master_sum: [{ required: true, message: '必填' }],
     },
     // 新增按钮
-    buttonDisabled: true,
+    insertButton: true,
   };
   function f() {
     return {
@@ -112,9 +112,9 @@
             this.tableData = response.data;
             this.pagination.total = response.count;
             if (this.tableData.length == 0 && this.meter_id) {
-              this.buttonDisabled = false;
+              this.insertButton = false;
             } else {
-              this.buttonDisabled = true;
+              this.insertButton = true;
             }
           } else {
             this.$message.error('系统出错了!!!');

@@ -1,7 +1,7 @@
 {extend name="common/layout" /}
 {block name="main"}
 <t-card class="list-card-container" :bordered="false">
-  <t-button theme="primary" style="margin-bottom: 10px;" @click="handleAdd">
+  <t-button theme="primary" style="margin-bottom: 10px;" @click="handleAdd" :disabled="buttonDisabled">
     <template #icon><t-icon name="add" /></template>
     新建
   </t-button>
