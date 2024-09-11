@@ -129,7 +129,7 @@ class Number extends Common
     {
         $id = $this->request->param('id/d', 0);
         if (!$number = NumberModel::find($id)) {
-            $this->error('删除失败,记录不存在。');
+            $this->error('删除失败,房间不存在。');
         }
 
         // 开始事务
