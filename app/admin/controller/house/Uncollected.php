@@ -279,6 +279,8 @@ class Uncollected extends Common
             ['a.start_time', '< time', 'today+10 days'],
             ['a.accounting_date', 'null', ''],
             ['a.end_time', 'not null', ''],
+            ['a.electricity_meter_last_month', 'not null', ''],
+            ['a.water_meter_last_month', 'not null', ''],
         );
         if ($type == TYPE_ELECTRICITY) {
             array_push($conditions, ['a.electricity_meter_this_month', 'null', '']);
