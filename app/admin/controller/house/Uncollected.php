@@ -348,20 +348,13 @@ class Uncollected extends Common
             'total_money' => $billing_data['total_money'],
             'note' => '延期',
         ];
-        $data_crebit = [
-            'house_property_id' => $billing_data['house_property_id'],
-            'house_number_id' => $billing_data['house_number_id'],
-            'start_time' =>  $billing_data['start_time'],
-            'other_charges' => 0 - $billing_data['total_money'],
-            'total_money' => 0 - $billing_data['total_money'],
-            'note' => '延期',
-            'accounting_date' => date('Y-m-d', time()),
-        ];
         $transFlag = true;
         Db::startTrans();
         try {
             $number_data = NumberModel::find($billing_data->house_number_id);
             $billing_update['accounting_date'] = date('Y-m-d', time());
+            $billing_update['total_money'] = 0;
+            $billing_update['note'] = '延期';
 
             $dates = Date::getLease($number_data->checkin_time, $number_data->lease, $number_data->lease_type);
             $billing_insert = [
@@ -378,7 +371,6 @@ class Uncollected extends Common
                 'total_money' => ($number_data['rental'] + $number_data['management'] + $number_data['garbage_fee']) * $number_data['lease_type'],
             ];
 
-
             // 新增下一个账单
             $new_billing = BillingModel::create($billing_insert);
             $number_update['payment_time'] = $billing_insert['start_time'];
@@ -390,7 +382,6 @@ class Uncollected extends Common
             $billing_data->save($billing_update);
             // 新增延期账单
             BillingModel::create($data_debit);
-            BillingModel::create($data_crebit);
             // 提交事务
             Db::commit();
         } catch (\Exception $e) {
