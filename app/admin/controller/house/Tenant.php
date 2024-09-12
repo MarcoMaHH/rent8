@@ -115,6 +115,7 @@ class Tenant extends Common
             'url' => '/storage/' . $savename
         ];
         PhotoModel::create($data);
+        return json(['code' => 1, 'msg' => '上传成功']);
     }
 
     // 查询照片信息
