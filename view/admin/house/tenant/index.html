@@ -92,6 +92,7 @@
     upheaders: { 'X-CSRF-TOKEN': '{$layout_token}' },
     uploadData: {},
     fileList: [],
+    selectId: 0,
   };
   function f() {
     return {
@@ -134,13 +135,14 @@
       },
       // 证件照片
       handlePhoto(row) {
-        this.queryPhoto(row.id);
+        this.selectId = row.id;
+        this.queryPhoto();
         this.formHeader = row.property_name + '-' + row.number_name + '-' + row.name;
         this.uploadData = { way: row.id }
         this.photoVisible = true;
       },
-      queryPhoto(id) {
-        axiosGet("{:url('queryPhoto')}", { id: id }).then(response => {
+      queryPhoto() {
+        axiosGet("{:url('queryPhoto')}", { id: this.selectId }).then(response => {
           if (response.code == 1) {
             this.fileList = response.data;
           } else {
