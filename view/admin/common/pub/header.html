@@ -11,16 +11,16 @@
     </t-select>
   </div>
   <template #operations>
-    <!-- <t-tooltip placement="bottom" :content="代码仓库">
-      <t-button theme="default" shape="square" variant="text" @click="navToGitHub">
+    <t-popup content="代码仓库" overlayClassName="overlay">
+      <t-button theme="default" shape="square" variant="text" @click="navToGitee">
         <t-icon name="logo-github" />
       </t-button>
-    </t-tooltip>
-    <t-tooltip placement="bottom" :content="帮助文档">
+    </t-popup>
+    <t-popup content="帮助文档">
       <t-button theme="default" shape="square" variant="text" @click="navToHelper">
         <t-icon name="help-circle" />
       </t-button>
-    </t-tooltip> -->
+    </t-popup>
     <t-dropdown trigger="click">
       <template #dropdown>
         <t-dropdown-menu>
@@ -40,7 +40,6 @@
         <template #suffix><t-icon name="chevron-down" /></template>
       </t-button>
     </t-dropdown>
-
   </template>
 </t-head-menu>
 
