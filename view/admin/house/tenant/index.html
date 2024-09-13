@@ -15,7 +15,8 @@
 <!-- 新增FORM -->
 <t-dialog v-model:visible="photoVisible" :header="formHeader" :width="680" :footer="false" top="30px">
   <t-upload ref="uploadRef1" v-model="fileList" :data="uploadData" :max="8" multiple :headers="upheaders"
-    action="upload" theme="image" accept="image/*" :auto-upload="true" @remove="removePhoto"></t-upload>
+    action="upload" theme="image" accept="image/*" :auto-upload="true" @remove="removePhoto"
+    @success="changePhoto"></t-upload>
 </t-dialog>
 
 <!-- 新增FORM -->
@@ -158,7 +159,10 @@
             });
           }
         });
-      }
+      },
+      changePhoto() {
+        this.queryPhoto();
+      },
     }
   }
 </script>
