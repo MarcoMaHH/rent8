@@ -11,11 +11,13 @@
     </t-select>
   </div>
   <template #operations>
-    <t-popup content="代码仓库" overlayClassName="overlay">
-      <t-button theme="default" shape="square" variant="text" @click="navToGitee">
-        <t-icon name="logo-github" />
-      </t-button>
-    </t-popup>
+    <div style="margin-bottom:3px; margin-right: 10px;">
+      <t-popup content="代码仓库" overlayClassName="overlay">
+        <t-button theme="default" shape="square" variant="text" @click="navToGitee">
+          <t-icon name="logo-github" />
+        </t-button>
+      </t-popup>
+    </div>
     <t-popup content="帮助文档">
       <t-button theme="default" shape="square" variant="text" @click="navToHelper">
         <t-icon name="help-circle" />
