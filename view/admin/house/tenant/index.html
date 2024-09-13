@@ -160,8 +160,14 @@
           }
         });
       },
-      changePhoto() {
+      changePhoto(res) {
         this.queryPhoto();
+        let code = res.response[0].code;
+        if (code == 1) {
+          this.$message.success('上传成功');
+        } else {
+          this.$message.error('上传失败');
+        }
       },
     }
   }
