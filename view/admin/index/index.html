@@ -158,13 +158,12 @@
             // Step 1: 创建 Chart 对象
             const chart = new G2.Chart({
               container: 'c1', // 指定图表容器 ID
-              autoFit: true,
+              forceFit: true,
               height: 430,
             });
-            chart.data(data);
-            chart.scale({
+            chart.source(data, {
               month: {
-                range: [0, 1],
+                range: [0, 1]
               },
               money: {
                 nice: true,
@@ -172,8 +171,9 @@
             });
 
             chart.tooltip({
-              showCrosshairs: true,
-              shared: true,
+              crosshairs: {
+                type: 'line'
+              }
             });
 
             chart.axis('money', {
