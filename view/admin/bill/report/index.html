@@ -98,11 +98,11 @@
             // Step 1: 创建 Chart 对象
             const chart = new G2.Chart({
               container: 'c1', // 指定图表容器 ID
-              autoFit: true,
+              forceFit: true,
               height: 325,
+              padding: [10, 25, 80, 40],
             });
-            chart.data(data);
-            chart.scale({
+            chart.source(data, {
               month: {
                 range: [0, 1],
               },
@@ -128,13 +128,13 @@
             chart
               .line()
               .position('month*money')
-              .color('project')
+              .color('project', ['#0052d9', '#e37318', '#2ba471'])
               .shape('smooth');
 
             chart
               .point()
               .position('month*money')
-              .color('project')
+              .color('project', ['#0052d9', '#e37318', '#2ba471'])
               .shape('circle');
 
             chart.render();
