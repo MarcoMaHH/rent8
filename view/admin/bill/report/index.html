@@ -149,6 +149,13 @@
           }
         });
 
+        axiosGet("{:url('expenditure')}").then(response => {
+          if (response.code == 1) {
+            // const data = response.data
+            console.log(response.data);
+          }
+        });
+
         const data = [
           { item: '事例一', count: 40, percent: 0.4 },
           { item: '事例二', count: 21, percent: 0.21 },

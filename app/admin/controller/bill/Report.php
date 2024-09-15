@@ -76,10 +76,13 @@ class Report extends Common
         $loginUser = $this->auth->getLoginUser();
         $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
         $accounting_month = date('Y-m');
+        $first_day_of_month = date('Y-m-01', strtotime($accounting_month));
+        $last_day_of_month = date('Y-m-d', strtotime("$first_day_of_month +1 month -1 day"));
         $other = OtherModel::where('house_property_id', $house_property_id)
-        ->where('accounting_date', $accounting_month)
+        ->whereTime('accounting_date', 'between', [$first_day_of_month , $last_day_of_month])
         ->where('accout_mark', 'Y')
-        ->sum('total_money');
+        ->select();
+        // ->sum('total_money');
         return $this->returnElement($other);
     }
 }
