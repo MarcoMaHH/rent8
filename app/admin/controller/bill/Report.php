@@ -75,14 +75,14 @@ class Report extends Common
     {
         $loginUser = $this->auth->getLoginUser();
         $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
-        $accounting_month = date('Y-m');
-        $first_day_of_month = date('Y-m-01', strtotime($accounting_month));
-        $last_day_of_month = date('Y-m-d', strtotime("$first_day_of_month +1 month -1 day"));
+        $first_day_of_month = date('Y-m-01');
+        $last_day_of_month = date('Y-m-t'); // 使用 't' 来获取当前月份的天数，简化代码
         $other = OtherModel::where('house_property_id', $house_property_id)
-        ->whereTime('accounting_date', 'between', [$first_day_of_month , $last_day_of_month])
-        ->where('accout_mark', 'Y')
-        ->select();
-        // ->sum('total_money');
+            ->whereTime('accounting_date', 'between', [$first_day_of_month, $last_day_of_month])
+            ->where('accout_mark', 'Y')
+            ->field('house_property_id, sum(total_money) as total_money')
+            ->group('house_property_id')
+            ->select();
         return $this->returnElement($other);
     }
 }
