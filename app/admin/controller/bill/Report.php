@@ -7,6 +7,7 @@ use app\admin\model\BillSum as SumModel;
 use app\admin\model\AdminUser as UserModel;
 use app\admin\library\Property;
 use app\admin\model\HouseProperty as PropertyModel;
+use app\admin\model\HouseOther as OtherModel;
 use think\facade\View;
 
 class Report extends Common
@@ -68,5 +69,17 @@ class Report extends Common
             \array_push($charData, ['month' => $accounting_month, 'project' => '利润', 'money' => $income - intval($spending)]);
         }
         return $this->returnElement($charData);
+    }
+
+    public function expenditure()
+    {
+        $loginUser = $this->auth->getLoginUser();
+        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
+        $accounting_month = date('Y-m');
+        $other = OtherModel::where('house_property_id', $house_property_id)
+        ->where('accounting_date', $accounting_month)
+        ->where('accout_mark', 'Y')
+        ->sum('total_money');
+        return $this->returnElement($other);
     }
 }
