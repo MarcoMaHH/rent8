@@ -29,7 +29,7 @@ class Permission extends Common
         ->order('a.id')
         ->select()
         ->toArray();
-        return $this->returnElement($roles, $count);
+        return $this->returnResult($roles, $count);
     }
 
     public function save()
@@ -43,28 +43,28 @@ class Permission extends Common
         $validate = new PermissionValidate();
         if ($id) {
             if (!$validate->scene('update')->check($data)) {
-                $this->error('修改失败，' . $validate->getError() . '。');
+                return $this->returnError('修改失败，' . $validate->getError() . '。');
             }
             if (!$permission = PermissionModel::find($id)) {
-                $this->error('修改失败，记录不存在。');
+                return $this->returnError('修改失败，记录不存在。');
             }
             $permission->save($data);
-            $this->success('修改成功。');
+            return $this->returnSuccess('修改成功。');
         }
         if (!$validate->scene('insert')->check($data)) {
-            $this->error('添加失败，' . $validate->getError() . '。');
+            return $this->returnError('添加失败，' . $validate->getError() . '。');
         }
         PermissionModel::create($data);
-        $this->success('添加成功。');
+        return $this->returnSuccess('添加成功。');
     }
 
     public function delete()
     {
         $id = $this->request->param('id/d', 0);
         if (!$permission = PermissionModel::find($id)) {
-            $this->error('删除失败，记录不存在。');
+            return $this->returnError('删除失败，记录不存在。');
         }
         $permission->delete();
-        $this->success('删除成功。');
+        return $this->returnSuccess('删除成功。');
     }
 }

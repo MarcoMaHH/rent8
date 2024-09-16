@@ -17,7 +17,7 @@ class Menu extends Common
     public function query()
     {
         $menu = MenuModel::tree()->getTreeListEle();
-        return $this->returnElement($menu);
+        return $this->returnResult($menu);
     }
 
     public function save()
@@ -33,19 +33,19 @@ class Menu extends Common
         $validate = new MenuValidate();
         if ($id) {
             if (!$validate->scene('update')->check(\array_merge($data, ['id' => $id]))) {
-                $this->error('修改失败，' . $validate->getError() . '。');
+                return $this->returnError('修改失败，' . $validate->getError() . '。');
             }
             if (!$menu = MenuModel::find($id)) {
-                $this->error('修改失败,记录不存在');
+                return $this->returnError('修改失败,记录不存在');
             }
             $menu->save($data);
-            $this->success('修改成功。');
+            return $this->returnSuccess('修改成功。');
         }
         if (!$validate->scene('insert')->check($data)) {
-            $this->error('添加失败，' . $validate->getError() . '。');
+            return $this->returnError('添加失败，' . $validate->getError() . '。');
         }
         MenuModel::create($data);
-        $this->success('添加成功');
+        return $this->returnSuccess('添加成功');
     }
 
     public function delete()
@@ -53,12 +53,12 @@ class Menu extends Common
         $id = $this->request->param('id/d', 0);
         $validate = new MenuValidate();
         if (!$validate->scene('delete')->check(['id' => $id])) {
-            $this->error('删除失败，' . $validate->getError() . '。');
+            return $this->returnError('删除失败，' . $validate->getError() . '。');
         }
         if (!$menu = MenuModel::find($id)) {
-            $this->error('删除失败，记录不存在。');
+            return $this->returnError('删除失败，记录不存在。');
         }
         $menu->delete();
-        $this->success('删除成功。');
+        return $this->returnSuccess('删除成功。');
     }
 }
