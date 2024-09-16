@@ -42,7 +42,7 @@ class WeBill extends Migrator
             'integer',
             ['limit' => 6, 'null' => false, 'default' => 0,  'comment' => '房产id']
         )
-        ->addColumn('accounting_date', 'string', ['limit' => 10, 'null' => true, 'comment' => '到账日期'])
+        ->addColumn('accounting_date', 'timestamp', ['null' => true, 'comment' => '到账日期'])
         ->addColumn('start_month', 'timestamp', ['null' => true, 'comment' => '开始月份'])
         ->addColumn('end_month', 'timestamp', ['null' => true, 'comment' => '结束月份'])
         ->addColumn(
