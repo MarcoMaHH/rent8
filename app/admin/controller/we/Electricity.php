@@ -68,7 +68,7 @@ class Electricity extends Common
             }
             \array_push($result, $value);
         }
-        return $this->returnElement($water, $count);
+        return $this->returnResult($water, $count);
     }
 
     // 查询电表
@@ -80,7 +80,7 @@ class Electricity extends Common
             ['house_property_id' => $house_property_id,
             'type' => TYPE_ELECTRICITY]
         )->select();
-        return $this->returnElement($electricity);
+        return $this->returnResult($electricity);
     }
 
     // 保存电费
@@ -98,18 +98,18 @@ class Electricity extends Common
             'master_sum' => $this->request->param('master_sum/f', 0.0),
         ];
         if (!$meterArr = MeterModel::find($meter_id)) {
-            $this->error('保存失败，记录不存在。');
+            return $this->returnError('保存失败，记录不存在。');
         }
         $data['end_month'] = $data['end_month'] . ' 23:59:59';
         if ($id) {
             if (!$water = WeBillModel::find($id)) {
-                $this->error('修改失败，记录不存在。');
+                return $this->returnError('修改失败，记录不存在。');
             }
             $water->save($data);
-            $this->success('修改成功。');
+            return $this->returnSuccess('修改成功。');
         }
         WeBillModel::create($data);
-        $this->success('添加成功。');
+        return $this->returnSuccess('添加成功。');
     }
 
     // // 删除
@@ -117,10 +117,10 @@ class Electricity extends Common
     // {
     //     $id = $this->request->param('id/d', 0);
     //     if (!$water = WeBillModel::find($id)) {
-    //         $this->error('删除失败,记录不存在。');
+    //         return $this->returnError('删除失败,记录不存在。');
     //     }
     //     $water->delete();
-    //     $this->success('删除成功');
+    //     return $this->returnSuccess('删除成功');
     // }
 
     // 到账
@@ -129,7 +129,7 @@ class Electricity extends Common
         $id = $this->request->param('id/d', 0);
         if (!$water = WeBillModel::whereNull('accounting_date')
             ->whereNotNull('end_month')->find($id)) {
-            $this->error('不符合到账条件');
+            return $this->returnError('不符合到账条件');
         }
         $transFlag = true;
         Db::startTrans();
@@ -171,10 +171,10 @@ class Electricity extends Common
             $transFlag = false;
             Db::rollback();
             // 回滚事务
-            $this->error($e->getMessage());
+            return $this->returnError($e->getMessage());
         }
         if ($transFlag) {
-            $this->success('操作成功');
+            return $this->returnSuccess('操作成功');
         }
     }
 }

@@ -44,7 +44,7 @@ class Meter extends Common
                 }
             }
         }
-        return $this->returnElement($meters);
+        return $this->returnResult($meters);
     }
 
     public function save()
@@ -60,20 +60,20 @@ class Meter extends Common
         ];
         if ($id) {
             if (!$meter = MeterModel::find($id)) {
-                $this->error('修改失败，记录不存在。');
+                return $this->returnError('修改失败，记录不存在。');
             }
             $meter->save($data);
-            $this->success('修改成功');
+            return $this->returnSuccess('修改成功');
         }
         MeterModel::create($data);
-        $this->success('添加成功');
+        return $this->returnSuccess('添加成功');
     }
 
     public function delete()
     {
         $id = $this->request->post('id/d', 0);
         if (!$meter = MeterModel::find($id)) {
-            $this->error('删除失败，记录不存在。');
+            return $this->returnError('删除失败，记录不存在。');
         }
         $transFlag = true;
         Db::startTrans();
@@ -87,10 +87,10 @@ class Meter extends Common
             $transFlag = false;
             // 回滚事务
             Db::rollback();
-            $this->error($e->getMessage());
+            return $this->returnError($e->getMessage());
         }
         if ($transFlag) {
-            $this->success('删除成功。');
+            return $this->returnSuccess('删除成功。');
         }
     }
 }
