@@ -103,7 +103,7 @@ class Index extends Common
             $loginUser = $this->auth->getLoginUser();
             $user = UserModel::find($loginUser['id']);
             $user->save(['login_date' => date("Y-m-d H:i:s")]);
-            $this->success('登陆成功');
+            return $this->returnSuccess('登陆成功');
         }
         View::assign('thisYear', date("Y"));
         View::assign('token', $this->getToken());

@@ -36,7 +36,8 @@ class Common extends BaseController
             $token = $this->getToken();
             header('X-CSRF-TOKEN: ' . $token);
             if ($token !== $this->request->header('X-CSRF-TOKEN')) {
-                $this->error('令牌已过期，请重新提交。');
+                echo json_encode(['code' => 0, 'msg' => '令牌已过期，请重新提交。']);
+                exit;
             }
         }
         $this->auth = Auth::getInstance();
@@ -46,10 +47,12 @@ class Common extends BaseController
             return;
         }
         if (!$this->auth->isLogin()) {
-            $this->error('您还没有登录。', 'Index/login');
+            echo json_encode(['code' => 0, 'msg' => '您尚未登录']);
+            exit;
         }
         if (!$this->auth->checkAuth($controller, $action)) {
-            $this->error('您没有权限访问。');
+            echo json_encode(['code' => 0, 'msg' => '您没有操作权限']);
+            exit;
         }
         $loginUser = $this->auth->getLoginUser();
         View::assign('layout_login_user', ['id' => $loginUser['id'], 'username' => $loginUser['username'], 'expiration_date' => $loginUser['expiration_date']]);
@@ -74,7 +77,7 @@ class Common extends BaseController
         return $token;
     }
 
-    public function returnElement($data = [], $count = 0, $msg = '', $code = 1)
+    protected function returnResult($data = [], $count = 0, $msg = '', $code = 1)
     {
         if (!$count) {
             $count = \count($data);
@@ -84,6 +87,24 @@ class Common extends BaseController
             "msg" =>  $msg,
             "count" => $count,
             "data" => $data
+        ];
+        return \json($data);
+    }
+
+    protected function returnError($msg = '系统出错')
+    {
+        $data = [
+            "code" => 0,
+            "msg" =>  $msg
+        ];
+        return \json($data);
+    }
+
+    protected function returnSuccess($msg = '操作成功')
+    {
+        $data = [
+            "code" => 1,
+            "msg" =>  $msg
         ];
         return \json($data);
     }
