@@ -46,7 +46,7 @@ class Other extends Common
                     break;
             }
         }
-        return $this->returnElement($numbers, $count);
+        return $this->returnResult($numbers, $count);
     }
 
     public function save()
@@ -54,7 +54,7 @@ class Other extends Common
         $id = $this->request->post('id/d', 0);
         $house_property_id = $this->request->post('house_property_id/s', '', 'trim');
         if (!$propertyArr = PropertyModel::find($house_property_id)) {
-            $this->error('房产数据异常');
+            return $this->returnError('房产数据异常');
         }
         $data = [
             'house_property_id' => $this->request->post('house_property_id/s', '', 'trim'),
@@ -67,23 +67,23 @@ class Other extends Common
         ];
         if ($id) {
             if (!$electricity = OtherModel::find($id)) {
-                $this->error('修改失败，记录不存在。');
+                return $this->returnError('修改失败，记录不存在。');
             }
             $electricity->save($data);
-            $this->success('修改成功。');
+            return $this->returnSuccess('修改成功。');
         }
         OtherModel::create($data);
-        $this->success('添加成功。');
+        return $this->returnSuccess('添加成功。');
     }
 
     public function delete()
     {
         $id = $this->request->param('id/d', 0);
         if (!$permission = OtherModel::find($id)) {
-            $this->error('删除失败,记录不存在。');
+            return $this->returnError('删除失败,记录不存在。');
         }
         $permission->delete();
-        $this->success('删除成功');
+        return $this->returnSuccess('删除成功');
     }
 
     //到账
@@ -91,7 +91,7 @@ class Other extends Common
     {
         $id = $this->request->param('id/d', 0);
         if (!$other = OtherModel::find($id)) {
-            $this->error('到账失败,记录不存在。');
+            return $this->returnError('到账失败,记录不存在。');
         }
         if ($other['circulate_mark'] == 'Y') {
             $accounting_date = $other['accounting_date'];
@@ -126,6 +126,6 @@ class Other extends Common
             ]);
         }
         $other->save(['accout_mark' => 'Y']);
-        $this->success('操作成功');
+        return $this->returnSuccess('操作成功');
     }
 }

@@ -47,7 +47,7 @@ class Uncollected extends Common
                 array_push($data, $value);
             }
         }
-        return $this->returnElement($data);
+        return $this->returnResult($data);
     }
 
     //主页面 table查询
@@ -92,7 +92,7 @@ class Uncollected extends Common
             }
             $value['total_money2'] = Property::convert_case_number($value['total_money']);
         }
-        return $this->returnElement($datas, $count);
+        return $this->returnResult($datas, $count);
     }
 
     //抄表页面 保存
@@ -115,7 +115,7 @@ class Uncollected extends Common
             'note' => $this->request->post('note/s', '', 'trim'),
         ];
         if (!$billing_data = BillingModel::find($id)) {
-            $this->error('记录不存在。');
+            return $this->returnError('记录不存在。');
         }
         $number_data = NumberModel::where('house_property_id', $billing_data->house_property_id)
         ->where('id', $billing_data->house_number_id)
@@ -127,7 +127,7 @@ class Uncollected extends Common
         $data['total_money'] = round($data['water'] + $data['electricity'] + $data['rental'] + $data['deposit']
              + $data['other_charges'] + $data['garbage_fee'] + $data['management'], 2);
         $billing_data->save($data);
-        $this->success('修改成功');
+        return $this->returnSuccess('修改成功');
     }
 
     //到账
@@ -135,7 +135,7 @@ class Uncollected extends Common
     {
         $id = $this->request->param('id/d', 0);
         if (!$billing_data = BillingModel::find($id)) {
-            $this->error('记录不存在。');
+            return $this->returnError('记录不存在。');
         }
         $oldBill = clone $billing_data;
         $number_data = NumberModel::find($billing_data->house_number_id);
@@ -236,10 +236,10 @@ class Uncollected extends Common
             $transFlag = false;
             Db::rollback();
             // 回滚事务
-            $this->error($e->getMessage());
+            return $this->returnError($e->getMessage());
         }
         if ($transFlag) {
-            $this->success('操作成功');
+            return $this->returnSuccess('操作成功');
         }
     }
 
@@ -266,7 +266,7 @@ class Uncollected extends Common
         foreach ($billing_data as $value) {
             $value['start_time'] = \substr($value['start_time'], 0, 10);
         }
-        return $this->returnElement($billing_data, $limit);
+        return $this->returnResult($billing_data, $limit);
     }
 
     //集中抄水电表
@@ -293,7 +293,7 @@ class Uncollected extends Common
         ->field('a.*, b.name')
         ->order('b.name')
         ->select();
-        return $this->returnElement($data);
+        return $this->returnResult($data);
     }
 
     //保存集中抄表
@@ -305,7 +305,7 @@ class Uncollected extends Common
         foreach ($data as $key => $value) {
             if ($value) {
                 if (!$billing = BillingModel::find($key)) {
-                    $this->error('修改失败，记录不存在');
+                    return $this->returnError('修改失败，记录不存在');
                 }
                 $number_data = NumberModel::where('house_property_id', $billing->house_property_id)
                 ->where('id', $billing->house_number_id)
@@ -329,7 +329,7 @@ class Uncollected extends Common
                 }
             }
         }
-        $this->success('修改成功');
+        return $this->returnSuccess('修改成功');
     }
 
     // 延期
@@ -337,7 +337,7 @@ class Uncollected extends Common
     {
         $id = $this->request->param('id/d', 0);
         if (!$billing_data = BillingModel::find($id)) {
-            $this->error('记录不存在。');
+            return $this->returnError('记录不存在。');
         }
         // 新增延期账单
         $data_debit = [
@@ -390,9 +390,9 @@ class Uncollected extends Common
             // 回滚事务
         }
         if ($transFlag) {
-            $this->success('操作成功');
+            return $this->returnSuccess('操作成功');
         } else {
-            $this->error('111操作成功');
+            return $this->returnError('111操作成功');
         }
     }
 }

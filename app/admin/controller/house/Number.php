@@ -46,7 +46,7 @@ class Number extends Common
                 $value['checkin_time'] = \substr($value['checkin_time'], 0, 10);
             }
         }
-        return $this->returnElement($numbers);
+        return $this->returnResult($numbers);
     }
 
     public function getMessage()
@@ -62,7 +62,7 @@ class Number extends Common
             'rented' => $number_count - $empty_count,
             'empty' => $empty_count,
         ];
-        return $this->returnElement($number_info);
+        return $this->returnResult($number_info);
     }
 
     public function save()
@@ -83,19 +83,19 @@ class Number extends Common
         $validate = new NumberValidate();
         if ($id) {
             if (!$validate->scene('update')->check($data)) {
-                $this->error('修改失败，' . $validate->getError() . '。');
+                return $this->returnError('修改失败，' . $validate->getError() . '。');
             }
             if (!$permission = NumberModel::find($id)) {
-                $this->error('修改失败，记录不存在');
+                return $this->returnError('修改失败，记录不存在');
             }
             $permission->save($data);
-            $this->success('修改成功');
+            return $this->returnSuccess('修改成功');
         }
         if (NumberModel::where('name', $data['name'])->where('house_property_id', $data['house_property_id'])->find()) {
-            $this->error('房间名已存在');
+            return $this->returnError('房间名已存在');
         }
         NumberModel::create($data);
-        $this->success('添加成功');
+        return $this->returnSuccess('添加成功');
     }
 
     // 批量保存
@@ -121,10 +121,10 @@ class Number extends Common
             $transFlag = false;
             // 回滚事务
             Db::rollback();
-            $this->error($e->getMessage());
+            return $this->returnError($e->getMessage());
         }
         if ($transFlag) {
-            $this->success('新建成功');
+            return $this->returnSuccess('新建成功');
         }
     }
 
@@ -132,7 +132,7 @@ class Number extends Common
     {
         $id = $this->request->param('id/d', 0);
         if (!$number = NumberModel::find($id)) {
-            $this->error('删除失败,房间不存在。');
+            return $this->returnError('删除失败,房间不存在。');
         }
 
         // 开始事务
@@ -149,10 +149,10 @@ class Number extends Common
             $transFlag = false;
             // 回滚事务
             Db::rollback();
-            $this->error($e->getMessage());
+            return $this->returnError($e->getMessage());
         }
         if ($transFlag) {
-            $this->success('删除成功');
+            return $this->returnSuccess('删除成功');
         }
     }
 
@@ -174,7 +174,7 @@ class Number extends Common
             'work_units' => $this->request->post('work_units/s', '', 'trim'),
         ];
         if (!$number_data = NumberModel::find($house_number_id)) {
-            $this->error('修改失败，记录不存在');
+            return $this->returnError('修改失败，记录不存在');
         }
         // 账单资料
         $note = "单据开出中途退房，一律不退房租。 \n" .
@@ -220,12 +220,12 @@ class Number extends Common
             $transFlag = false;
             // 回滚事务
             Db::rollback();
-            $this->error($e->getMessage());
+            return $this->returnError($e->getMessage());
         }
         if ($transFlag) {
-            $this->success('添加租客成功');
+            return $this->returnSuccess('添加租客成功');
         } else {
-            $this->error('系统出错了');
+            return $this->returnError('系统出错了');
         }
     }
 
@@ -235,7 +235,7 @@ class Number extends Common
         $number_id = $this->request->param('id/d', 0);
         $leave_time = $this->request->param('leave_time/s', date('Y-m-d'), 'trim');
         if (!$number_data = NumberModel::find($number_id)) {
-            $this->error('修改失败，记录不存在');
+            return $this->returnError('修改失败，记录不存在');
         }
         $number_update = [
             'rent_mark' => 'N',
@@ -269,7 +269,7 @@ class Number extends Common
             'note' => $note,
         ];
         $billing_data->save($billing_update);
-        $this->success('退房成功');
+        return $this->returnSuccess('退房成功');
     }
 
     //其他页面查询numberId
@@ -282,7 +282,7 @@ class Number extends Common
         ->field('id as value,name as label')
         ->select()
         ->toArray();
-        return $this->returnElement($number);
+        return $this->returnResult($number);
     }
 
     public function contract()
@@ -296,7 +296,7 @@ class Number extends Common
         ->field('a.*,b.address, b.landlord, b.id_card as landlordId, c.name as renter, c.id_card_number')
         ->select()->toArray();
         if (!$number_data) {
-            $this->error('修改失败，记录不存在');
+            return $this->returnError('修改失败，记录不存在');
         }
         // var_dump($number_data);
         $tmp = new \PhpOffice\PhpWord\TemplateProcessor('static/wordfile/contract.docx');//打开模板

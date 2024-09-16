@@ -20,7 +20,7 @@ class Property extends Common
         $property = PropertyModel::where('admin_user_id', $loginUser['id'])
         ->order('firstly')
         ->select();
-        return $this->returnElement($property);
+        return $this->returnResult($property);
     }
 
     public function save()
@@ -35,31 +35,31 @@ class Property extends Common
         ];
         if ($id) {
             if (!$role = PropertyModel::find($id)) {
-                $this->error('修改失败，记录不存在。');
+                return $this->returnError('修改失败，记录不存在。');
             }
             $role->save($data);
-            $this->success('修改成功。');
+            return $this->returnSuccess('修改成功。');
         }
         $loginUser = $this->auth->getLoginUser();
         $data['admin_user_id'] = $loginUser['id'];
         $data['firstly'] = 'Y';
         PropertyModel::where('admin_user_id', $loginUser['id'])->update(['firstly' => 'N']);
         PropertyModel::create($data);
-        $this->success('添加成功。');
+        return $this->returnSuccess('添加成功。');
     }
 
     public function delete()
     {
         $id = $this->request->param('id/d', 0);
         if (!$property = PropertyModel::find($id)) {
-            $this->error('删除失败，记录不存在。');
+            return $this->returnError('删除失败，记录不存在。');
         }
         $validate = new PropertyValidate();
         if (!$validate->scene('delete')->check(['id' => $id])) {
-            $this->error('删除失败，' . $validate->getError() . '。');
+            return $this->returnError('删除失败，' . $validate->getError() . '。');
         }
         $property->delete();
-        $this->success('删除成功。');
+        return $this->returnSuccess('删除成功。');
     }
 
     public function sort()
@@ -81,6 +81,6 @@ class Property extends Common
         }
         $property = new PropertyModel();
         $property->saveAll($result);
-        $this->success('切换成功');
+        return $this->returnSuccess('切换成功');
     }
 }

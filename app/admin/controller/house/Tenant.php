@@ -56,7 +56,7 @@ class Tenant extends Common
                     break;
             }
         }
-        return $this->returnElement($tenants, $count);
+        return $this->returnResult($tenants, $count);
     }
 
     public function save()
@@ -75,13 +75,13 @@ class Tenant extends Common
         ];
         if ($id) {
             if (!$tenant = TenantModel::find($id)) {
-                $this->error('修改失败，记录不存在');
+                return $this->returnError('修改失败，记录不存在');
             }
             $tenant->save($data);
-            $this->success('修改成功');
+            return $this->returnSuccess('修改成功');
         }
         TenantModel::create($data);
-        $this->success('添加成功');
+        return $this->returnSuccess('添加成功');
     }
 
     public function delete()
@@ -89,13 +89,13 @@ class Tenant extends Common
         $id = $this->request->param('id/d', 0);
         $validate = new TenantValidate();
         if (!$validate->scene('delete')->check(['id' => $id])) {
-            $this->error('删除失败，' . $validate->getError() . '。');
+            return $this->returnError('删除失败，' . $validate->getError() . '。');
         }
         if (!$property = TenantModel::find($id)) {
-            $this->error('删除失败，记录不存在。');
+            return $this->returnError('删除失败，记录不存在。');
         }
         $property->delete();
-        $this->success('删除成功。');
+        return $this->returnSuccess('删除成功。');
     }
 
     // 上传照片信息
@@ -126,7 +126,7 @@ class Tenant extends Common
         foreach($photo as $value) {
             $value['name'] = $value['url'];
         }
-        return $this->returnElement($photo);
+        return $this->returnResult($photo);
     }
 
     // 删除照片
@@ -134,12 +134,12 @@ class Tenant extends Common
     {
         $id = $this->request->post('id/d', 0);
         if (!$photo = PhotoModel::find($id)) {
-            $this->error('删除失败，记录不存在。');
+            return $this->returnError('删除失败，记录不存在。');
         }
         $photo->delete();
         $photoName = explode('/', $photo['url']);
         $photoUrl =  app()->getRootPath();
         unlink($photoUrl . '\public\storage\\' . $photoName[2] . '\\' . $photoName[3]);
-        $this->success('删除成功。');
+        return $this->returnSuccess('删除成功。');
     }
 }

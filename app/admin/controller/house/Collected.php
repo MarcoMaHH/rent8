@@ -50,7 +50,7 @@ class Collected extends Common
                 $value['lease'] = \substr($value['start_time'], 0, 10);
             }
         }
-        return $this->returnElement($billing, $count);
+        return $this->returnResult($billing, $count);
     }
 
     public function sum()
@@ -60,6 +60,6 @@ class Collected extends Common
         $sum = BillingModel::where('house_property_id', $house_property_id)
         ->whereTime('accounting_date', 'today')
         ->sum('total_money');
-        return $this->returnElement([], 1, $sum);
+        return $this->returnResult([], 1, $sum);
     }
 }
