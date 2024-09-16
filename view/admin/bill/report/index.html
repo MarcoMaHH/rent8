@@ -151,59 +151,58 @@
 
         axiosGet("{:url('expenditure')}").then(response => {
           if (response.code == 1) {
-            // const data = response.data
-            console.log(response.data);
+            const data = response.data
+            // console.log(response.data);
+            // const data = [
+            //   { item: '水费', percent: 0.4 },
+            //   { item: '电费', percent: 0.21 },
+            //   { item: '其他支出', percent: 0.17 },
+            // ];
+            const chart = new G2.Chart({
+              container: 'c2',
+              forceFit: true,
+              height: 200,
+              padding: [0, 0, 40, 0],
+            });
+            chart.source(data, {
+              percent: {
+                formatter: val => {
+                  val = (val * 100) + '%';
+                  return val;
+                }
+              }
+            });
+            chart.coord('theta');
+            chart.tooltip({
+              showTitle: false
+            });
+            chart.intervalStack()
+              .position('percent')
+              .color('item')
+              .label('percent', {
+                offset: -40,
+                // autoRotate: false,
+                textStyle: {
+                  textAlign: 'center',
+                  shadowBlur: 2,
+                  shadowColor: 'rgba(0, 0, 0, .45)',
+                  fill: '#fff'
+                }
+              })
+              .tooltip('item*percent', (item, percent) => {
+                percent = percent * 100 + '%';
+                return {
+                  name: item,
+                  value: percent
+                };
+              })
+              .style({
+                lineWidth: 1,
+                stroke: '#fff'
+              });
+            chart.render();
           }
         });
-
-        const data = [
-          { item: '水费', percent: 0.4 },
-          { item: '电费', percent: 0.21 },
-          { item: '其他支出', percent: 0.17 },
-        ];
-        const chart = new G2.Chart({
-          container: 'c2',
-          forceFit: true,
-          height: 200,
-          padding: [0, 0, 40, 0],
-        });
-        chart.source(data, {
-          percent: {
-            formatter: val => {
-              val = (val * 100) + '%';
-              return val;
-            }
-          }
-        });
-        chart.coord('theta');
-        chart.tooltip({
-          showTitle: false
-        });
-        chart.intervalStack()
-          .position('percent')
-          .color('item')
-          .label('percent', {
-            offset: -40,
-            // autoRotate: false,
-            textStyle: {
-              textAlign: 'center',
-              shadowBlur: 2,
-              shadowColor: 'rgba(0, 0, 0, .45)',
-              fill: '#fff'
-            }
-          })
-          .tooltip('item*percent', (item, percent) => {
-            percent = percent * 100 + '%';
-            return {
-              name: item,
-              value: percent
-            };
-          })
-          .style({
-            lineWidth: 1,
-            stroke: '#fff'
-          });
-        chart.render();
       }
     }
   }

@@ -78,34 +78,34 @@ class Report extends Common
         $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
         $first_day_of_month = date('Y-m-01');
         $last_day_of_month = date('Y-m-t');
-        
+
         $other_total = OtherModel::where('house_property_id', $house_property_id)
             ->whereTime('accounting_date', 'between', [$first_day_of_month, $last_day_of_month])
             ->where('accout_mark', 'Y')
             ->sum('total_money');
-        
+
         $water_total = WeBillModel::alias('a')
             ->join('we_meter b', 'a.meter_id = b.id and a.house_property_id=b.house_property_id')
             ->where('a.house_property_id', $house_property_id)
             ->whereTime('a.accounting_date', 'between', [$first_day_of_month, $last_day_of_month])
             ->where('b.type', TYPE_WATER)
             ->sum('a.master_sum');
-        
+
         $electricity_total = WeBillModel::alias('a')
             ->join('we_meter b', 'a.meter_id = b.id and a.house_property_id=b.house_property_id')
             ->where('a.house_property_id', $house_property_id)
             ->whereTime('a.accounting_date', 'between', [$first_day_of_month, $last_day_of_month])
             ->where('b.type', TYPE_ELECTRICITY)
             ->sum('a.master_sum');
-        
+        // var_dump($other_total, $water_total, $electricity_total);
         $sum = $other_total + $water_total + $electricity_total;
-        
+
         $result = [
-            ['name' => '其他费用', 'percentage' => $sum ? round(($other_total * 100 / $sum), 2) : 0],
-            ['name' => '水费', 'percentage' => $sum ? round(($water_total * 100 / $sum), 2) : 0],
-            ['name' => '电费', 'percentage' => $sum ? round(($electricity_total * 100 / $sum), 2) : 0]
+            ['item' => '其他费用', 'percent' => $sum ? round(($other_total / $sum), 2) : 0],
+            ['item' => '水费', 'percent' => $sum ? round(($water_total / $sum), 2) : 0],
+            ['item' => '电费', 'percent' => $sum ? round(($electricity_total / $sum), 2) : 0]
         ];
-        
+
         return $this->returnElement($result);
     }
 }
