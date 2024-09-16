@@ -26,8 +26,7 @@
         "topthink/think-filesystem": "^2.0",
         "topthink/think-migration": "^3.1",
         "topthink/think-multi-app": "^1.0",
-        "phpoffice/phpword": "^1.2",
-        "liliuwei/thinkphp-jump": "^2.0"
+        "phpoffice/phpword": "^1.2"
     },
     "require-dev": {
         "symfony/var-dumper": ">=4.2",
