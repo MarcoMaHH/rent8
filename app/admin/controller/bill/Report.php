@@ -44,7 +44,7 @@ class Report extends Common
             'number_count' => $number_count,
             'empty_count' => $empty_count,
         ];
-        return $this->returnElement($house_info);
+        return $this->returnResult($house_info);
     }
 
     public function echar()
@@ -69,7 +69,7 @@ class Report extends Common
             \array_push($charData, ['month' => $accounting_month, 'project' => '支出', 'money' => intval($spending)]);
             \array_push($charData, ['month' => $accounting_month, 'project' => '利润', 'money' => $income - intval($spending)]);
         }
-        return $this->returnElement($charData);
+        return $this->returnResult($charData);
     }
 
     public function expenditure()
@@ -106,6 +106,6 @@ class Report extends Common
             ['item' => '电费', 'percent' => $sum ? round(($electricity_total / $sum), 2) : 0]
         ];
 
-        return $this->returnElement($result);
+        return $this->returnResult($result);
     }
 }

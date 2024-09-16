@@ -73,7 +73,7 @@ class Annual extends Common
                 ]);
             }
         }
-        return $this->returnElement($annual);
+        return $this->returnResult($annual);
     }
 
     public function arrange()
@@ -156,10 +156,10 @@ class Annual extends Common
             $transFlag = false;
             // 回滚事务
             Db::rollback();
-            $this->error($e->getMessage());
+            return $this->returnError($e->getMessage());
         }
         if ($transFlag) {
-            $this->success('整理成功');
+            return $this->returnSuccess('整理成功');
         }
     }
 }
