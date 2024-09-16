@@ -60,7 +60,7 @@ class Index extends Common
             'overdue_todo' => $overdue_todo,
             'overdue_uncollected' => $overdue_uncollected,
         ];
-        return $this->returnElement($house_info);
+        return $this->returnResult($house_info);
     }
 
     public function queryRemind()
@@ -87,7 +87,7 @@ class Index extends Common
                 $value['start_time'] = \substr($value['start_time'], 0, 10);
             }
         }
-        return $this->returnElement($remind);
+        return $this->returnResult($remind);
     }
 
     public function login()
@@ -98,7 +98,7 @@ class Index extends Common
                 'password' => $this->request->post('password/s', ''),
             ];
             if (!$this->auth->login($data['username'], $data['password'])) {
-                $this->error('登陆失败：' . $this->auth->getError());
+                return $this->returnError('登陆失败：' . $this->auth->getError());
             }
             $loginUser = $this->auth->getLoginUser();
             $user = UserModel::find($loginUser['id']);
@@ -113,14 +113,14 @@ class Index extends Common
     public function logout()
     {
         $this->auth->logout();
-        $this->success('退出成功');
+        return $this->returnSuccess('退出成功');
     }
 
     public function password()
     {
         $password = $this->request->post('password/s', '');
         $this->auth->changePassword($password);
-        $this->success('密码修改成功。');
+        return $this->returnSuccess('密码修改成功。');
     }
 
     public function echar()
@@ -148,6 +148,6 @@ class Index extends Common
             \array_push($charData, ['month' => $setDate, 'project' => '支出', 'money' => intval($spending)]);
             \array_push($charData, ['month' => $setDate, 'project' => '利润', 'money' => $income - intval($spending)]);
         }
-        return $this->returnElement($charData);
+        return $this->returnResult($charData);
     }
 }
