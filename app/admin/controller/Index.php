@@ -2,13 +2,11 @@
 
 namespace app\admin\controller;
 
-use think\facade\View;
-use think\App;
-use think\Db;
 use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseBilling as BillingModel;
 use app\admin\model\BillSum as SumModel;
 use app\admin\model\AdminUser as UserModel;
+use think\facade\View;
 
 class Index extends Common
 {
