@@ -8,6 +8,7 @@ use app\admin\model\AdminUser as UserModel;
 use app\admin\library\Property;
 use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseOther as OtherModel;
+use app\admin\model\WeBill as WeBillModel;
 use think\facade\View;
 
 class Report extends Common
@@ -76,13 +77,35 @@ class Report extends Common
         $loginUser = $this->auth->getLoginUser();
         $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
         $first_day_of_month = date('Y-m-01');
-        $last_day_of_month = date('Y-m-t'); // 使用 't' 来获取当前月份的天数，简化代码
-        $other = OtherModel::where('house_property_id', $house_property_id)
+        $last_day_of_month = date('Y-m-t');
+        
+        $other_total = OtherModel::where('house_property_id', $house_property_id)
             ->whereTime('accounting_date', 'between', [$first_day_of_month, $last_day_of_month])
             ->where('accout_mark', 'Y')
-            ->field('house_property_id, sum(total_money) as total_money')
-            ->group('house_property_id')
-            ->select();
-        return $this->returnElement($other);
+            ->sum('total_money');
+        
+        $water_total = WeBillModel::alias('a')
+            ->join('we_meter b', 'a.meter_id = b.id and a.house_property_id=b.house_property_id')
+            ->where('a.house_property_id', $house_property_id)
+            ->whereTime('a.accounting_date', 'between', [$first_day_of_month, $last_day_of_month])
+            ->where('b.type', TYPE_WATER)
+            ->sum('a.master_sum');
+        
+        $electricity_total = WeBillModel::alias('a')
+            ->join('we_meter b', 'a.meter_id = b.id and a.house_property_id=b.house_property_id')
+            ->where('a.house_property_id', $house_property_id)
+            ->whereTime('a.accounting_date', 'between', [$first_day_of_month, $last_day_of_month])
+            ->where('b.type', TYPE_ELECTRICITY)
+            ->sum('a.master_sum');
+        
+        $sum = $other_total + $water_total + $electricity_total;
+        
+        $result = [
+            ['name' => '其他费用', 'percentage' => $sum ? round(($other_total * 100 / $sum), 2) : 0],
+            ['name' => '水费', 'percentage' => $sum ? round(($water_total * 100 / $sum), 2) : 0],
+            ['name' => '电费', 'percentage' => $sum ? round(($electricity_total * 100 / $sum), 2) : 0]
+        ];
+        
+        return $this->returnElement($result);
     }
 }
