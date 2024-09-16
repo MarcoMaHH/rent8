@@ -12,43 +12,23 @@
 
 ### 界面及功能展示
 
-<!-- 登录页面 -->
-
 ![登录页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/login.jpg)
-
-<!-- 主页面 -->
 
 ![主页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/index.jpg)
 
-<!-- 房号管理-页面 -->
-
 ![房号管理-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/number.jpg)
-
-<!-- 租聘合同-展示 -->
 
 ![租聘合同-展示](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/contract.png)
 
-<!-- 未收账单-页面 -->
-
 ![未收账单-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/uncollect.jpg)
-
-<!-- 收据单-展示 -->
 
 ![收据单-展示](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/rent.jpg)
 
-<!-- 到账账单-页面 -->
-
 ![到账账单-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/collect.jpg)
-
-<!-- 电费账单-页面 -->
 
 ![用户管理-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/electricity.jpg)
 
-<!-- 年度报表-页面 -->
-
 ![用户管理-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/annual.jpg)
-
-<!-- 用户管理-页面 -->
 
 ![用户管理-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/user.jpg)
 
