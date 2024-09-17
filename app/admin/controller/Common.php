@@ -4,7 +4,6 @@ namespace app\admin\controller;
 
 use app\admin\library\Auth;
 use app\BaseController;
-// use think\facade\Validate;
 use think\facade\Session;
 use think\facade\View;
 
@@ -36,12 +35,7 @@ class Common extends BaseController
             $token = $this->getToken();
             header('X-CSRF-TOKEN: ' . $token);
             if ($token !== $this->request->header('X-CSRF-TOKEN')) {
-                if ($this->request->header('X-Client-Type')) {
-                    echo json_encode(['code' => 0, 'msg' => '令牌已过期，请重新提交。']);
-                    exit;
-                } else {
-                    return $this->error('令牌已过期，请重新提交。', '/admin/index/login');
-                }
+                return $this->error('令牌已过期，请重新提交。', '/admin/index/login');
             }
         }
         $this->auth = Auth::getInstance();
@@ -51,28 +45,14 @@ class Common extends BaseController
             return;
         }
         if (!$this->auth->isLogin()) {
-            if ($this->request->header('X-Client-Type')) {
-                echo json_encode(['code' => 0, 'msg' => '尚未登录']);
-                exit;
-            } else {
-                return $this->error('尚未登录', '/admin/index/login');
-            }
+            return $this->error('尚未登录', '/admin/index/login');
         }
         if (!$this->auth->checkAuth($controller, $action)) {
-            if ($this->request->header('X-Client-Type')) {
-                echo json_encode(['code' => 0, 'msg' => '您没有操作权限']);
-                exit;
-            } else {
-                return $this->error('您没有操作权限', '/admin/index/login');
-            }
+            return $this->error('您没有操作权限', '/admin/index/login');
         }
         $loginUser = $this->auth->getLoginUser();
         View::assign('layout_login_user', ['id' => $loginUser['id'], 'username' => $loginUser['username'], 'expiration_date' => $loginUser['expiration_date']]);
         if (!$this->request->isAjax()) {
-            // // 开启模板布局
-            // View::config(['layout_on' => true]);
-            // // 布局文件名称
-            // View::config(['layout_name' => 'common/layout']);
             View::assign('layout_menu', $this->auth->menu($controller));
             View::assign('current_route', $this->auth->currentRoute($controller));
             View::assign('layout_token', $this->getToken());
