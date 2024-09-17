@@ -48,13 +48,15 @@
 - printJS
 
 ### 安装步骤
-PS:需先安装php环境，composer环境
-1. 建立数据库`rent8`
+
+1. 建立数据库`rent`
 2. `git clone https://gitee.com/MarcoMaHH/rent8.git`
 3. 将.example.env改为.env，并修改数据库数据
 4. 在根目录执行`composer install`
 5. `php think migrate:run`
 6. `php think seed:run`
+
+[最常用出租屋管理系统安装记录-腾讯云宝塔版 For小小白,大神请忽略](https://blog.csdn.net/m0_61078449/article/details/131347945)
 
 ### 原始账号密码
 
