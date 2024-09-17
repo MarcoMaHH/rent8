@@ -56,7 +56,7 @@
 5. `php think migrate:run`
 6. `php think seed:run`
 
-[最常用出租屋管理系统安装记录-腾讯云宝塔版 For小小白,大神请忽略](https://blog.csdn.net/m0_61078449/article/details/131347945)
+[最常用出租屋管理系统rent8安装记录-腾讯云宝塔版 For小小白,大神请忽略](https://blog.csdn.net/m0_61078449/article/details/142316854)
 
 ### 原始账号密码
 
