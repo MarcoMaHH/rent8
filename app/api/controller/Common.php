@@ -7,9 +7,9 @@ use app\BaseController;
 
 // billMeter类型
 //类型-电费
-define('TYPE_ELECTRICITY', 'B');
+define('TYPE_ELECTRICITY', 'E');
 //类型-水费
-define('TYPE_WATER', 'C');
+define('TYPE_WATER', 'W');
 
 // billSum类型
 //类型-收入
