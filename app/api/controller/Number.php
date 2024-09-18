@@ -70,58 +70,11 @@ class Number extends Common
             $permission->save($data);
             return $this->returnSuccess('修改成功');
         }
-        if (!$validate->scene('insert')->check($data)) {
-            return $this->returnError('添加失败，' . $validate->getError() . '。');
+        if (NumberModel::where('name', $data['name'])->where('house_property_id', $data['house_property_id'])->find()) {
+            return $this->returnError('房间名已存在');
         }
-        $transFlag = true;
-        Db::startTrans();
-        try {
-            $result = NumberModel::create($data);
-            $propertyArr = PropertyModel::find($data['house_property_id']);
-            $electricity = MeterModel::where(
-                ['house_property_id' => $data['house_property_id'],
-                'type' => TYPE_ELECTRICITY]
-            )->find();
-            if($electricity) {
-                $meter = ['house_number_id' => $electricity->house_number_id . ',' . $result->id];
-                $electricity->save($meter);
-            } else {
-                $meter = [
-                    'name' => $propertyArr['name'] . '-电表',
-                    'house_property_id' => $data['house_property_id'],
-                    'house_number_id' => $result->id,
-                    'type' => TYPE_ELECTRICITY
-                ];
-                MeterModel::create($meter);
-            }
-
-            $water = MeterModel::where(
-                ['house_property_id' => $data['house_property_id'],
-                'type' => TYPE_WATER]
-            )->find();
-            if($water) {
-                $meter = ['house_number_id' => $water->house_number_id . ',' . $result->id];
-                $water->save($meter);
-            } else {
-                $meter = [
-                    'name' => $propertyArr['name'] . '-水表',
-                    'house_property_id' => $data['house_property_id'],
-                    'house_number_id' => $result->id,
-                    'type' => TYPE_WATER
-                ];
-                MeterModel::create($meter);
-            }
-            // 提交事务
-            Db::commit();
-        } catch (\Exception $e) {
-            $transFlag = false;
-            // 回滚事务
-            Db::rollback();
-            return $this->returnError($e->getMessage());
-        }
-        if ($transFlag) {
-            return $this->returnSuccess('添加成功');
-        }
+        NumberModel::create($data);
+        return $this->returnSuccess('添加成功');
     }
 
     //新租页面
