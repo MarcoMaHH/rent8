@@ -60,21 +60,14 @@ class Number extends Common
             'electricity_price' => $this->request->post('electricity_price/f', 0.0),
         ];
         $validate = new NumberValidate();
-        if ($id) {
-            if (!$validate->scene('update')->check($data)) {
-                return $this->returnError('修改失败，' . $validate->getError() . '。');
-            }
-            if (!$permission = NumberModel::find($id)) {
-                return $this->returnError('修改失败，记录不存在');
-            }
-            $permission->save($data);
-            return $this->returnSuccess('修改成功');
+        if (!$validate->scene('update')->check($data)) {
+            return $this->returnError('修改失败，' . $validate->getError() . '。');
         }
-        if (NumberModel::where('name', $data['name'])->where('house_property_id', $data['house_property_id'])->find()) {
-            return $this->returnError('房间名已存在');
+        if (!$permission = NumberModel::find($id)) {
+            return $this->returnError('修改失败，记录不存在');
         }
-        NumberModel::create($data);
-        return $this->returnSuccess('添加成功');
+        $permission->save($data);
+        return $this->returnSuccess('修改成功');
     }
 
     //新租页面
@@ -126,7 +119,7 @@ class Number extends Common
             'work_units' => $this->request->post('work_units/s', '', 'trim'),
         ];
         if (!$number_data = NumberModel::find($house_number_id)) {
-            $this->returnError('修改失败，记录不存在');
+            return $this->returnError('修改失败，记录不存在');
         }
         // 账单资料
         $note = "单据开出中途退房，一律不退房租。 \n" .
@@ -172,12 +165,12 @@ class Number extends Common
             $transFlag = false;
             // 回滚事务
             Db::rollback();
-            $this->returnError($e->getMessage());
+            return $this->returnError($e->getMessage());
         }
         if ($transFlag) {
             return $this->returnSuccess('添加租客成功');
         } else {
-            $this->returnError('系统出错了');
+            return $this->returnError('系统出错了');
         }
     }
 
@@ -187,7 +180,7 @@ class Number extends Common
         $number_id = $this->request->param('id/d', 0);
         $leave_time = $this->request->param('leave_time/s', date('Y-m-d'), 'trim');
         if (!$number_data = NumberModel::find($number_id)) {
-            $this->returnError('修改失败，记录不存在');
+            return $this->returnError('修改失败，记录不存在');
         }
         $number_update = [
             'rent_mark' => 'N',
@@ -196,6 +189,12 @@ class Number extends Common
             // 'payment_time' => date('Y-m-d'),
             'lease' => 0,
         ];
+        $number_data->save($number_update);
+        TenantModel::where('house_property_id', $number_data->house_property_id)
+        ->where('house_number_id', $number_id)
+        ->where('leave_time', 'null')
+        ->data(['leave_time' => $leave_time, 'mark' => 'Y'])
+        ->update();
         $billing_data = BillingModel::find($number_data->receipt_number);
         $datediff = intval((strtotime($leave_time) - strtotime($billing_data->start_time)) / (60 * 60 * 24));
         $note = '';
@@ -214,25 +213,7 @@ class Number extends Common
             'garbage_fee' => 0,
             'note' => $note,
         ];
-        $transFlag = true;
-        Db::startTrans();
-        try {
-            $number_data->save($number_update);
-            TenantModel::where('house_property_id', $number_data->house_property_id)
-            ->where('house_number_id', $number_id)
-            ->where('leave_time', 'null')
-            ->data(['leave_time' => $leave_time, 'mark' => 'Y'])
-            ->update();
-            $billing_data->save($billing_update);
-            // 提交事务
-            Db::commit();
-        } catch (\Exception $e) {
-            $transFlag = false;
-            // 回滚事务
-            Db::rollback();
-        }
-        if ($transFlag) {
-            return $this->returnSuccess('退房成功');
-        }
+        $billing_data->save($billing_update);
+        return $this->returnSuccess('退房成功');
     }
 }
