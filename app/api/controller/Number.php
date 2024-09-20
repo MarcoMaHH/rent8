@@ -9,6 +9,7 @@ use app\admin\model\HouseTenant as TenantModel;
 use app\admin\model\HouseBilling as BillingModel;
 use app\admin\model\BillMeter as MeterModel;
 use app\admin\library\Property;
+use app\common\house\Number as NumberAction;
 use think\facade\Db;
 
 class Number extends Common
@@ -59,15 +60,12 @@ class Number extends Common
             'water_price' => $this->request->post('water_price/f', 0.0),
             'electricity_price' => $this->request->post('electricity_price/f', 0.0),
         ];
-        $validate = new NumberValidate();
-        if (!$validate->scene('update')->check($data)) {
-            return $this->returnError('修改失败，' . $validate->getError() . '。');
+        $result = NumberAction::save($id, $data);
+        if ($result['flag']) {
+            return $this->returnSuccess($result['msg']);
+        } else {
+            return $this->returnError($result['msg']);
         }
-        if (!$permission = NumberModel::find($id)) {
-            return $this->returnError('修改失败，记录不存在');
-        }
-        $permission->save($data);
-        return $this->returnSuccess('修改成功');
     }
 
     //新租页面
