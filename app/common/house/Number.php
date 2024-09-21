@@ -19,4 +19,13 @@ class Number
         $number->save($data);
         return ['flag' => true, 'msg' => '修改成功'];
     }
+
+    public static function checkin($id)
+    {
+
+    }
+
+    public static function checkout($id)
+    {
+    }
 }
