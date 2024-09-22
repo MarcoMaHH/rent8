@@ -225,16 +225,18 @@ class Uncollected extends Common
                 'type' => TYPE_INCOME,
                 'accounting_date' => $accounting_month,
             ])->find();
-            if($sum_data) {
+            if ($sum_data) {
                 $sum_data->save([
                     'amount' => $sum_data->amount + $oldBill['total_money'],
                 ]);
             } else {
                 SumModel::create([
+                    'admin_user_id' => $this->auth->getLoginUser()['id'],
                     'house_property_id' => $oldBill->house_property_id,
                     'amount' => $oldBill->total_money,
                     'type' => TYPE_INCOME,
-                    'accounting_date' => $accounting_month
+                    'accounting_date' => $accounting_month,
+                    'annual' => date('Y'),
                 ]);
             }
             // 新增水电表记录
@@ -243,26 +245,32 @@ class Uncollected extends Common
                     ->where('type', TYPE_ELECTRICITY)
                     ->whereFindInSet('house_number_id', $oldBill->house_number_id)
                     ->find();
-                HydroelectricityModel::create([
-                    'bill_meter_id' => $electricity->id,
-                    'amount' => $oldBill->electricity,
-                    'dosage' => $oldBill->electricity_consumption,
-                    'type' => TYPE_ELECTRICITY,
-                    'calculate_date' => date("Y-m-d", strtotime("-1 month", strtotime($oldBill->start_time)))
-                ]);
+                if ($electricity) {
+                    WeDetailModel::create([
+                        'meter_id' => $electricity->id,
+                        'house_property_id' => $oldBill->house_property_id,
+                        'amount' => $oldBill->electricity,
+                        'dosage' => $oldBill->electricity_consumption,
+                        'type' => TYPE_ELECTRICITY,
+                        'calculate_date' => date("Y-m-d", strtotime("-1 month", strtotime($oldBill->start_time)))
+                    ]);
+                }
             }
             if ($oldBill->water) {
                 $water = MeterModel::where('house_property_id', $oldBill->house_property_id)
                     ->where('type', TYPE_WATER)
                     ->whereFindInSet('house_number_id', $oldBill->house_number_id)
                     ->find();
-                HydroelectricityModel::create([
-                    'bill_meter_id' => $water->id,
-                    'amount' => $oldBill->water,
-                    'dosage' => $oldBill->water_consumption,
-                    'type' => TYPE_WATER,
-                    'calculate_date' => date("Y-m-d", strtotime("-1 month", strtotime($oldBill->start_time)))
-                ]);
+                if ($water) {
+                    WeDetailModel::create([
+                        'meter_id' => $water->id,
+                        'house_property_id' => $oldBill->house_property_id,
+                        'amount' => $oldBill->water,
+                        'dosage' => $oldBill->water_consumption,
+                        'type' => TYPE_WATER,
+                        'calculate_date' => date("Y-m-d", strtotime("-1 month", strtotime($oldBill->start_time)))
+                    ]);
+                }
             }
             // 提交事务
             Db::commit();
