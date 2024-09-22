@@ -2,21 +2,18 @@
 
 namespace app\common\house;
 
-use app\api\validate\User as UserValidate;
-use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseNumber as NumberModel;
 use app\admin\model\HouseBilling as BillingModel;
 use app\admin\model\BillSum as SumModel;
-use app\admin\model\BillMeter as MeterModel;
-use app\admin\model\BillHydroelectricity as HydroelectricityModel;
-use app\admin\library\Property;
+use app\admin\model\WeMeter as MeterModel;
+use app\admin\model\WeDetail as WeDetailModel;
 use app\admin\library\Date;
 use think\facade\Db;
 
 class Uncollected
 {
     //到账
-    public function account($id)
+    public static function account($id)
     {
         if (!$billing_data = BillingModel::find($id)) {
             return $this->returnError('记录不存在。');
