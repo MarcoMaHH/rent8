@@ -10,7 +10,6 @@ use app\admin\model\HouseBilling as BillingModel;
 use app\admin\model\BillMeter as MeterModel;
 use app\admin\library\Property;
 use app\common\house\Number as NumberAction;
-use think\facade\Db;
 
 class Number extends Common
 {
@@ -116,59 +115,11 @@ class Number extends Common
             'native_place' => $this->request->post('native_place/s', '', 'trim'),
             'work_units' => $this->request->post('work_units/s', '', 'trim'),
         ];
-        if (!$number_data = NumberModel::find($house_number_id)) {
-            return $this->returnError('修改失败，记录不存在');
-        }
-        // 账单资料
-        $note = "单据开出中途退房，一律不退房租。 \n" .
-                "到期如果不续租，超期将按每天" . $number_data['daily_rent'] . "元计算。" ;
-        $lease_type = $number_data['lease_type'];
-        $transFlag = true;
-        Db::startTrans();
-        try {
-            //insert租客资料
-            $tenant = TenantModel::create($data);
-            // 删除上位租客的账单
-            BillingModel::where('house_property_id', $this->request->post('house_property_id/d', 0))
-            ->where('house_number_id', $house_number_id)
-            ->delete();
-            //insert账单资料
-            $billing_data = [
-                'house_property_id' => $data['house_property_id'],
-                'house_number_id' => $data['house_number_id'],
-                'start_time' => $checkin_time,
-                'end_time' => date('Y-m-d', strtotime("$checkin_time +$lease_type month -1 day")),
-                'tenant_id' => $tenant->id,
-                'rental' => $number_data['rental'] * $lease_type,
-                'deposit' => $number_data['deposit'],
-                'management' => $number_data['management'] * $lease_type,
-                'garbage_fee' => $number_data['garbage_fee'] * $lease_type,
-                'total_money' => $number_data['deposit'] + $number_data['rental'] * $lease_type + $number_data['management'] * $lease_type + $number_data['garbage_fee'] * $lease_type,
-                'note' => $note
-            ];
-            $billing = BillingModel::create($billing_data);
-            //update房号资料
-            $update_data = [
-                'tenant_id' => $tenant->id,
-                'receipt_number' => $billing->id,
-                'payment_time' => $checkin_time,
-                'checkin_time' => $checkin_time,
-                'rent_mark' => 'Y',
-                'lease' => $lease_type,
-            ];
-            $number_data->save($update_data);
-            // 提交事务
-            Db::commit();
-        } catch (\Exception $e) {
-            $transFlag = false;
-            // 回滚事务
-            Db::rollback();
-            return $this->returnError($e->getMessage());
-        }
-        if ($transFlag) {
-            return $this->returnSuccess('添加租客成功');
+        $result = NumberAction::checkin($house_number_id, $data, $checkin_time);
+        if ($result['flag']) {
+            return $this->returnSuccess($result['msg']);
         } else {
-            return $this->returnError('系统出错了');
+            return $this->returnError($result['msg']);
         }
     }
 
