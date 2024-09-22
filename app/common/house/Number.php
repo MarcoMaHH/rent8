@@ -4,6 +4,8 @@ namespace app\common\house;
 
 use app\admin\validate\HouseNumber as NumberValidate;
 use app\admin\model\HouseNumber as NumberModel;
+use app\admin\model\HouseTenant as TenantModel;
+use app\admin\model\HouseBilling as BillingModel;
 use think\facade\Db;
 
 class Number
@@ -21,8 +23,9 @@ class Number
         return ['flag' => true, 'msg' => '修改成功'];
     }
 
-    public static function checkin($house_number_id, $data, $checkin_time)
+    public static function checkin($house_number_id, $data)
     {
+        $checkin_time = $data['checkin_time'];
         if (!$number_data = NumberModel::find($house_number_id)) {
             return ['flag' => false, 'msg' => '入住失败，房间不存在'];
         }
@@ -36,14 +39,14 @@ class Number
             //insert租客资料
             $tenant = TenantModel::create($data);
             // 删除上位租客的账单
-            BillingModel::where('house_property_id', $this->request->post('house_property_id/d', 0))
+            BillingModel::where('house_property_id', $data['house_property_id'])
             ->where('house_number_id', $house_number_id)
             ->delete();
             //insert账单资料
             $billing_data = [
                 'house_property_id' => $data['house_property_id'],
                 'house_number_id' => $data['house_number_id'],
-                'start_time' => $checkin_time,
+                'start_time' => $data['checkin_time'],
                 'end_time' => date('Y-m-d', strtotime("$checkin_time +$lease_type month -1 day")),
                 'tenant_id' => $tenant->id,
                 'rental' => $number_data['rental'] * $lease_type,
@@ -70,7 +73,10 @@ class Number
             $transFlag = false;
             // 回滚事务
             Db::rollback();
-            return $this->returnError($e->getMessage());
+            return ['flag' => false, 'msg' => $e->getMessage()];
+        }
+        if ($transFlag) {
+            return ['flag' => true, 'msg' => '入住成功'];
         }
     }
 

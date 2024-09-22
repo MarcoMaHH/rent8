@@ -115,7 +115,7 @@ class Number extends Common
             'native_place' => $this->request->post('native_place/s', '', 'trim'),
             'work_units' => $this->request->post('work_units/s', '', 'trim'),
         ];
-        $result = NumberAction::checkin($house_number_id, $data, $checkin_time);
+        $result = NumberAction::checkin($house_number_id, $data);
         if ($result['flag']) {
             return $this->returnSuccess($result['msg']);
         } else {
