@@ -23,10 +23,10 @@ class Number
         return ['flag' => true, 'msg' => '修改成功'];
     }
 
-    public static function checkin($house_number_id, $data)
+    public static function checkin($data)
     {
         $checkin_time = $data['checkin_time'];
-        if (!$number_data = NumberModel::find($house_number_id)) {
+        if (!$number_data = NumberModel::find($data['house_number_id'])) {
             return ['flag' => false, 'msg' => '入住失败，房间不存在'];
         }
         // 账单资料
@@ -40,7 +40,7 @@ class Number
             $tenant = TenantModel::create($data);
             // 删除上位租客的账单
             BillingModel::where('house_property_id', $data['house_property_id'])
-            ->where('house_number_id', $house_number_id)
+            ->where('house_number_id', $data['house_number_id'])
             ->delete();
             //insert账单资料
             $billing_data = [

@@ -101,21 +101,18 @@ class Number extends Common
     //新租
     public function checkin()
     {
-        // 租客资料
-        $house_number_id = $this->request->post('house_number_id/d', 0);
-        $checkin_time = $this->request->post('checkin_time/s', '', 'trim');
         $data = [
             'house_property_id' => $this->request->post('house_property_id/d', 0),
-            'house_number_id' => $house_number_id,
+            'house_number_id' => $this->request->post('house_number_id/d', 0),
             'name' => $this->request->post('name/s', '', 'trim'),
             'sex' => $this->request->post('sex/s', '', 'trim'),
-            'checkin_time' => $checkin_time,
+            'checkin_time' => $this->request->post('checkin_time/s', '', 'trim'),
             'phone' => $this->request->post('phone/d', ''),
             'id_card_number' => $this->request->post('id_card_number/d', ''),
             'native_place' => $this->request->post('native_place/s', '', 'trim'),
             'work_units' => $this->request->post('work_units/s', '', 'trim'),
         ];
-        $result = NumberAction::checkin($house_number_id, $data);
+        $result = NumberAction::checkin($data);
         if ($result['flag']) {
             return $this->returnSuccess($result['msg']);
         } else {
