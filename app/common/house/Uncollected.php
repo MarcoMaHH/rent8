@@ -13,10 +13,10 @@ use think\facade\Db;
 class Uncollected
 {
     //到账
-    public static function account($id)
+    public static function account($id, $admin_user_id)
     {
         if (!$billing_data = BillingModel::find($id)) {
-            return $this->returnError('记录不存在。');
+            return ['flag' => false, 'msg' => '修改失败，账单不存在'];
         }
         $oldBill = clone $billing_data;
         $number_data = NumberModel::find($billing_data->house_number_id);
@@ -70,7 +70,7 @@ class Uncollected
                 ]);
             } else {
                 SumModel::create([
-                    'admin_user_id' => $this->auth->getLoginUser()['id'],
+                    'admin_user_id' =>  $admin_user_id,
                     'house_property_id' => $oldBill->house_property_id,
                     'amount' => $oldBill->total_money,
                     'type' => TYPE_INCOME,
@@ -117,10 +117,10 @@ class Uncollected
             $transFlag = false;
             Db::rollback();
             // 回滚事务
-            return $this->returnError($e->getMessage());
+            return ['flag' => false, 'msg' => $e->getMessage()];
         }
         if ($transFlag) {
-            return $this->returnSuccess('操作成功');
+            return ['flag' => true, 'msg' => '操作成功'];
         }
     }
 }

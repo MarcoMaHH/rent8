@@ -177,7 +177,7 @@ class Uncollected extends Common
     public function account()
     {
         $id = $this->request->param('id/d', 0);
-        $result = UncollectedAction::account($id);
+        $result = UncollectedAction::account($id,  $this->auth->getLoginUser()['id']);
         if ($result['flag']) {
             return $this->returnSuccess($result['msg']);
         } else {
