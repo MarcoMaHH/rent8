@@ -12,14 +12,12 @@ use app\admin\model\BillHydroelectricity as HydroelectricityModel;
 use app\admin\library\Property;
 use app\admin\library\Date;
 use think\facade\Db;
-use think\facade\Log;
 
 class Uncollected
 {
     //到账
-    public function account()
+    public function account($id)
     {
-        $id = $this->request->param('id/d', 0);
         if (!$billing_data = BillingModel::find($id)) {
             return $this->returnError('记录不存在。');
         }
