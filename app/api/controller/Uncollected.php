@@ -128,11 +128,9 @@ class Uncollected extends Common
             "data" => $data
         ];
         return \json($returnData);
-        // $arr=json_decode(json_encode($data), true);
-        // return $this->returnWechat($arr);
     }
 
-    //抄表页面 保存
+    //抄表页面 保存-common
     public function save()
     {
         $id = $this->request->post('id/d', 0);
@@ -159,7 +157,7 @@ class Uncollected extends Common
         }
     }
 
-    //到账
+    //到账-common
     public function account()
     {
         $id = $this->request->param('id/d', 0);
