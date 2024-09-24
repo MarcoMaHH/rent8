@@ -12,11 +12,29 @@ use think\facade\Db;
 
 class Uncollected
 {
+    public static function save($id, $data)
+    {
+        if (!$billing_data = BillingModel::find($id)) {
+            return ['flag' => false, 'msg' => '修改失败，账单不存在'];
+        }
+        $number_data = NumberModel::where('house_property_id', $billing_data->house_property_id)
+            ->where('id', $billing_data->house_number_id)
+            ->find();
+        $data['electricity_consumption'] = $data['electricity_meter_this_month'] - $data['electricity_meter_last_month'];
+        $data['electricity'] = $data['electricity_consumption'] * $number_data->electricity_price;
+        $data['water_consumption'] = $data['water_meter_this_month'] - $data['water_meter_last_month'];
+        $data['water'] = $data['water_consumption'] * $number_data->water_price;
+        $data['total_money'] = round($data['water'] + $data['electricity'] + $data['rental'] + $data['deposit']
+             + $data['other_charges'] + $data['garbage_fee'] + $data['management'], 2);
+        $billing_data->save($data);
+        return ['flag' => true, 'msg' => '修改成功'];
+    }
+
     //到账
     public static function account($id, $admin_user_id)
     {
         if (!$billing_data = BillingModel::find($id)) {
-            return ['flag' => false, 'msg' => '修改失败，账单不存在'];
+            return ['flag' => false, 'msg' => '到账失败，账单不存在'];
         }
         $oldBill = clone $billing_data;
         $number_data = NumberModel::find($billing_data->house_number_id);
@@ -120,7 +138,7 @@ class Uncollected
             return ['flag' => false, 'msg' => $e->getMessage()];
         }
         if ($transFlag) {
-            return ['flag' => true, 'msg' => '操作成功'];
+            return ['flag' => true, 'msg' => '到账成功'];
         }
     }
 }

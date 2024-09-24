@@ -151,20 +151,12 @@ class Uncollected extends Common
             'other_charges' => $this->request->post('other_charges/f', 0),
             'note' => $this->request->post('note/s', '', 'trim'),
         ];
-        if (!$billing_data = BillingModel::find($id)) {
-            return $this->returnError('记录不存在。');
+        $result = UncollectedAction::save($id, $data);
+        if ($result['flag']) {
+            return $this->returnSuccess($result['msg']);
+        } else {
+            return $this->returnError($result['msg']);
         }
-        $number_data = NumberModel::where('house_property_id', $billing_data->house_property_id)
-            ->where('id', $billing_data->house_number_id)
-            ->find();
-        $data['electricity_consumption'] = $data['electricity_meter_this_month'] - $data['electricity_meter_last_month'];
-        $data['electricity'] = $data['electricity_consumption'] * $number_data->electricity_price;
-        $data['water_consumption'] = $data['water_meter_this_month'] - $data['water_meter_last_month'];
-        $data['water'] = $data['water_consumption'] * $number_data->water_price;
-        $data['total_money'] = round($data['water'] + $data['electricity'] + $data['rental'] + $data['deposit']
-             + $data['other_charges'] + $data['garbage_fee'] + $data['management'], 2);
-        $billing_data->save($data);
-        return $this->returnSuccess('修改成功');
     }
 
     //到账
