@@ -2,17 +2,12 @@
 
 namespace app\api\controller;
 
-use app\api\validate\User as UserValidate;
 use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseNumber as NumberModel;
 use app\admin\model\HouseBilling as BillingModel;
-use app\admin\model\BillSum as SumModel;
-use app\admin\model\BillMeter as MeterModel;
-use app\admin\model\BillHydroelectricity as HydroelectricityModel;
 use app\common\house\Uncollected as UncollectedAction;
 use app\admin\library\Property;
 use app\admin\library\Date;
-use think\facade\Db;
 
 class Uncollected extends Common
 {
