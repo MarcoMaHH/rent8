@@ -119,8 +119,8 @@ class Uncollected extends Common
             return $this->returnError('记录不存在。');
         }
         $number_data = NumberModel::where('house_property_id', $billing_data->house_property_id)
-        ->where('id', $billing_data->house_number_id)
-        ->find();
+            ->where('id', $billing_data->house_number_id)
+            ->find();
         $data['electricity_consumption'] = $data['electricity_meter_this_month'] - $data['electricity_meter_last_month'];
         $data['electricity'] = $data['electricity_consumption'] * $number_data->electricity_price;
         $data['water_consumption'] = $data['water_meter_this_month'] - $data['water_meter_last_month'];

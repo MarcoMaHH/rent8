@@ -161,8 +161,8 @@ class Uncollected extends Common
         $data['electricity'] = $data['electricity_consumption'] * $number_data->electricity_price;
         $data['water_consumption'] = $data['water_meter_this_month'] - $data['water_meter_last_month'];
         $data['water'] = $data['water_consumption'] * $number_data->water_price;
-        $data['total_money'] = intval($data['water'] + $data['electricity'] + $data['rental'] + $data['deposit']
-                + $data['garbage_fee'] + $data['management'] + $data['other_charges']);
+        $data['total_money'] = round($data['water'] + $data['electricity'] + $data['rental'] + $data['deposit']
+             + $data['other_charges'] + $data['garbage_fee'] + $data['management'], 2);
         $billing_data->save($data);
         return $this->returnSuccess('修改成功');
     }
