@@ -13,7 +13,6 @@ use app\common\house\Uncollected as UncollectedAction;
 use app\admin\library\Property;
 use app\admin\library\Date;
 use think\facade\Db;
-use think\facade\Log;
 
 class Uncollected extends Common
 {
@@ -164,12 +163,7 @@ class Uncollected extends Common
         $data['water'] = $data['water_consumption'] * $number_data->water_price;
         $data['total_money'] = intval($data['water'] + $data['electricity'] + $data['rental'] + $data['deposit']
                 + $data['garbage_fee'] + $data['management'] + $data['other_charges']);
-        try {
-            $billing_data->save($data);
-        } catch (\Exception $e) {
-            Log::error('账单保存失败：' . $e->getMessage());
-            return $this->returnError($e->getMessage());
-        }
+        $billing_data->save($data);
         return $this->returnSuccess('修改成功');
     }
 
