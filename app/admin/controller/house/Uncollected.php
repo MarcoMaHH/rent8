@@ -284,7 +284,7 @@ class Uncollected extends Common
         if ($transFlag) {
             return $this->returnSuccess('操作成功');
         } else {
-            return $this->returnError('111操作成功');
+            return $this->returnError('操作失败');
         }
     }
 }
