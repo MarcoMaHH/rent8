@@ -96,7 +96,7 @@ class Uncollected extends Common
         return $this->returnResult($datas, $count);
     }
 
-    //抄表页面 保存
+    //抄表页面 保存-common
     public function save()
     {
         $id = $this->request->post('id/d', 0);
