@@ -138,19 +138,19 @@ class Uncollected extends Common
     {
         $id = $this->request->post('id/d', 0);
         $data = [
-                'house_property_id' => $this->request->post('house_property_id/d', 0),
-                'house_number_id' => $this->request->post('house_number_id/d', 0),
-                'meter_reading_time' => $this->request->post('meter_reading_time/s', '', 'trim'),
-                'electricity_meter_this_month' => $this->request->post('electricity_meter_this_month/d', 0),
-                'water_meter_this_month' => $this->request->post('water_meter_this_month/d', 0),
-                'electricity_meter_last_month' => $this->request->post('electricity_meter_last_month/d', 0),
-                'water_meter_last_month' => $this->request->post('water_meter_last_month/d', 0),
-                'rental' => $this->request->post('rental/d', 0),
-                'deposit' => $this->request->post('deposit/d', 0),
-                'garbage_fee' => $this->request->post('garbage_fee/d', 0),
-                'management' => $this->request->post('management/d', 0),
-                'other_charges' => $this->request->post('other_charges/f', 0),
-                'note' => $this->request->post('note/s', '', 'trim'),
+            'house_property_id' => $this->request->post('house_property_id/d', 0),
+            'house_number_id' => $this->request->post('house_number_id/d', 0),
+            'meter_reading_time' => $this->request->post('meter_reading_time/s', '', 'trim'),
+            'electricity_meter_this_month' => $this->request->post('electricity_meter_this_month/d', 0),
+            'water_meter_this_month' => $this->request->post('water_meter_this_month/d', 0),
+            'electricity_meter_last_month' => $this->request->post('electricity_meter_last_month/d', 0),
+            'water_meter_last_month' => $this->request->post('water_meter_last_month/d', 0),
+            'rental' => $this->request->post('rental/d', 0),
+            'deposit' => $this->request->post('deposit/d', 0),
+            'garbage_fee' => $this->request->post('garbage_fee/d', 0),
+            'management' => $this->request->post('management/d', 0),
+            'other_charges' => $this->request->post('other_charges/f', 0),
+            'note' => $this->request->post('note/s', '', 'trim'),
             ];
         if (!$billing_data = BillingModel::find($id)) {
             return $this->returnError('记录不存在。');
@@ -177,7 +177,7 @@ class Uncollected extends Common
     public function account()
     {
         $id = $this->request->param('id/d', 0);
-        $result = UncollectedAction::account($id,  $this->auth->getLoginUser()['id']);
+        $result = UncollectedAction::account($id, $this->auth->getLoginUser()['id']);
         if ($result['flag']) {
             return $this->returnSuccess($result['msg']);
         } else {

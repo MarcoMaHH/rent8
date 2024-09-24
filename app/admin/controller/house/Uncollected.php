@@ -131,7 +131,7 @@ class Uncollected extends Common
         return $this->returnSuccess('修改成功');
     }
 
-    //到账
+    //到账-common
     public function account()
     {
         $id = $this->request->param('id/d', 0);
