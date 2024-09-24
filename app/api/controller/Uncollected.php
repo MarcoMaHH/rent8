@@ -146,11 +146,11 @@ class Uncollected extends Common
             'water_meter_last_month' => $this->request->post('water_meter_last_month/d', 0),
             'rental' => $this->request->post('rental/d', 0),
             'deposit' => $this->request->post('deposit/d', 0),
-            'garbage_fee' => $this->request->post('garbage_fee/d', 0),
             'management' => $this->request->post('management/d', 0),
+            'garbage_fee' => $this->request->post('garbage_fee/d', 0),
             'other_charges' => $this->request->post('other_charges/f', 0),
             'note' => $this->request->post('note/s', '', 'trim'),
-            ];
+        ];
         if (!$billing_data = BillingModel::find($id)) {
             return $this->returnError('记录不存在。');
         }
