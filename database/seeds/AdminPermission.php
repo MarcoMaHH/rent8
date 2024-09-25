@@ -34,11 +34,10 @@ class AdminPermission extends Seeder
             ['id' => 24, 'admin_role_id' => 2, 'controller' => 'bill.annual', 'action' => '*'],
             ['id' => 25, 'admin_role_id' => 2, 'controller' => 'bill.report', 'action' => '*'],
             ['id' => 26, 'admin_role_id' => 2, 'controller' => 'property', 'action' => '*'],
-            ['id' => 27, 'admin_role_id' => 2, 'controller' => 'collected', 'action' => '*'],
+            ['id' => 27, 'admin_role_id' => 2, 'controller' => 'number', 'action' => '*'],
             ['id' => 28, 'admin_role_id' => 2, 'controller' => 'uncollected', 'action' => '*'],
-            ['id' => 29, 'admin_role_id' => 2, 'controller' => 'user', 'action' => '*'],
-            ['id' => 30, 'admin_role_id' => 2, 'controller' => 'report', 'action' => '*'],
-            ['id' => 31, 'admin_role_id' => 2, 'controller' => 'number', 'action' => '*'],
+            ['id' => 29, 'admin_role_id' => 2, 'controller' => 'collected', 'action' => '*'],
+            ['id' => 30, 'admin_role_id' => 2, 'controller' => 'user', 'action' => '*'],
         ])->save();
     }
 }
