@@ -66,40 +66,6 @@ class Auth
         ];
     }
 
-    public function loginWechat($openid)
-    {
-        $user = UserModel::where('openid', $openid)->find();
-        if (!$user) {
-            $this->setError('不存在该微信对应的账号');
-            return false;
-        }
-        if (strtotime(date("Y-m-d")) - strtotime($user->expiration_date) > 0) {
-            $this->setError('用户账号于 ' . substr($user->expiration_date, 0, 10) . ' 到期');
-            return false;
-        }
-        Session::set($this->sessionName, ['id' => $user->id]);
-        return [
-            'session_id' => Session::getId(),
-            'id' => $user->id,
-            'name' => $user->username,
-            'role' => $user->admin_role_id,
-        ];
-    }
-
-    public function bindWechat($openid)
-    {
-        $loginUser = $this->getLoginUser();
-        $user = UserModel::find($loginUser['id']);
-        if ($user->openid) {
-            $this->setError('该账号已绑定微信');
-            return false;
-        } else {
-            $data = ['openid' => $openid];
-            $user->save($data);
-            return true;
-        }
-    }
-
     protected function getSession()
     {
         if ($id = request()->header('Authorization')) {
