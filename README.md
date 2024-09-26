@@ -4,6 +4,8 @@
 
 [rent8-最常用出租屋管理系统-微信小程序端](https://gitee.com/MarcoMaHH/rent8_wechat)
 
+[使用说明](https://blog.csdn.net/m0_61078449/article/details/142572124)
+
 ---
 
 出租屋管理系统微信小程序版，免费使用，适合白嫖党，小白党！
