@@ -63,6 +63,7 @@ class Auth
             'id' => $user->id,
             'name' => $user->username,
             'role' => $user->admin_role_id,
+            'expiration_date' => substr($user->expiration_date, 0, 10),
         ];
     }
 
