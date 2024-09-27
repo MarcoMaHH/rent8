@@ -25,7 +25,7 @@ class Uncollected
         $data['water_consumption'] = $data['water_meter_this_month'] - $data['water_meter_last_month'];
         $data['water'] = $data['water_consumption'] * $number_data->water_price;
         $data['total_money'] = round($data['water'] + $data['electricity'] + $data['rental'] + $data['deposit']
-             + $data['other_charges'] + $data['garbage_fee'] + $data['management'], 2);
+            + $data['management'] + $data['network'] + $data['garbage_fee'] + $data['other_charges'], 2);
         $billing_data->save($data);
         return ['flag' => true, 'msg' => '修改成功'];
     }
@@ -54,10 +54,11 @@ class Uncollected
                         'tenant_id' => $number_data['tenant_id'],
                         'rental' => $number_data['rental'] * $number_data['lease_type'],
                         'management' => $number_data['management'] * $number_data['lease_type'],
+                        'network' => $number_data['network'] * $number_data['lease_type'],
                         'garbage_fee' => $number_data['garbage_fee'] * $number_data['lease_type'],
                         'electricity_meter_last_month' => $billing_data['electricity_meter_this_month'],
                         'water_meter_last_month' => $billing_data['water_meter_this_month'],
-                        'total_money' => ($number_data['rental'] + $number_data['management'] + $number_data['garbage_fee']) * $number_data['lease_type'],
+                        'total_money' => ($number_data['rental'] + $number_data['management']  + $number_data['network'] + $number_data['garbage_fee']) * $number_data['lease_type'],
                     ];
                     $new_billing = BillingModel::create($billing_insert);
                     $number_update['payment_time'] = $billing_insert['start_time'];

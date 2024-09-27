@@ -111,6 +111,7 @@ class Uncollected extends Common
             'rental' => $this->request->post('rental/d', 0),
             'deposit' => $this->request->post('deposit/d', 0),
             'management' => $this->request->post('management/d', 0),
+            'network' => $this->request->post('network/d', 0),
             'garbage_fee' => $this->request->post('garbage_fee/d', 0),
             'other_charges' => $this->request->post('other_charges/f', 0),
             'note' => $this->request->post('note/s', '', 'trim'),
@@ -127,7 +128,7 @@ class Uncollected extends Common
     public function account()
     {
         $id = $this->request->param('id/d', 0);
-        $result = UncollectedAction::account($id,  $this->auth->getLoginUser()['id']);
+        $result = UncollectedAction::account($id, $this->auth->getLoginUser()['id']);
         if ($result['flag']) {
             return $this->returnSuccess($result['msg']);
         } else {
@@ -209,14 +210,14 @@ class Uncollected extends Common
                     $data['electricity_consumption'] = $value - $billing['electricity_meter_last_month'];
                     $data['electricity'] = $data['electricity_consumption'] * $number_data->electricity_price;
                     $data['total_money'] = round($billing['water'] + $data['electricity'] + $billing['rental']
-                        + $billing['deposit'] + $billing['other_charges'] + $billing['management'] + $billing['garbage_fee'], 2);
+                        + $billing['deposit'] + $billing['other_charges'] + $billing['management'] + $billing['network'] + $billing['garbage_fee'], 2);
                     $billing->save($data);
                 } elseif ($type == TYPE_WATER) {
                     $data['water_meter_this_month'] = $value;
                     $data['water_consumption'] = $value - $billing['water_meter_last_month'];
                     $data['water'] = $data['water_consumption'] * $number_data->water_price;
                     $data['total_money'] = round($data['water'] + $billing['electricity'] + $billing['rental']
-                        + $billing['deposit'] + $billing['other_charges'] + $billing['management'] + $billing['garbage_fee'], 2);
+                        + $billing['deposit'] + $billing['other_charges'] + $billing['management'] + $billing['network'] + $billing['garbage_fee'], 2);
                     $billing->save($data);
                 }
             }
@@ -257,10 +258,11 @@ class Uncollected extends Common
                 'tenant_id' => $number_data['tenant_id'],
                 'rental' => $number_data['rental'] * $number_data['lease_type'],
                 'management' => $number_data['management'] * $number_data['lease_type'],
+                'network' => $number_data['network'] * $number_data['lease_type'],
                 'garbage_fee' => $number_data['garbage_fee'] * $number_data['lease_type'],
                 'electricity_meter_last_month' => $billing_data['electricity_meter_this_month'],
                 'water_meter_last_month' => $billing_data['water_meter_this_month'],
-                'total_money' => ($number_data['rental'] + $number_data['management'] + $number_data['garbage_fee']) * $number_data['lease_type'],
+                'total_money' => ($number_data['rental'] + $number_data['management'] + $number_data['network'] + $number_data['garbage_fee']) * $number_data['lease_type'],
             ];
 
             // 新增下一个账单
