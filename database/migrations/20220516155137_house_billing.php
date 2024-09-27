@@ -101,14 +101,19 @@ class HouseBilling extends Migrator
             ['null' => false, 'default' => 0, 'comment' => '押金']
         )
         ->addColumn(
-            'garbage_fee',
-            'integer',
-            ['null' => false, 'default' => 0, 'comment' => '卫生费']
-        )
-        ->addColumn(
             'management',
             'integer',
             ['null' => false, 'default' => 0, 'comment' => '管理费']
+        )
+        ->addColumn(
+            'network',
+            'integer',
+            ['null' => false, 'default' => 0, 'comment' => '网络费']
+        )
+        ->addColumn(
+            'garbage_fee',
+            'integer',
+            ['null' => false, 'default' => 0, 'comment' => '卫生费']
         )
         ->addColumn(
             'other_charges',
