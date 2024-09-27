@@ -249,9 +249,9 @@ class Number extends Common
         $tmp->setValue('rentalLower', $number_data[0]['rental']);
         $tmp->setValue('depositLower', $number_data[0]['deposit']);
         $tmp->setValue('deposit', Property::convert_case_number($number_data[0]['deposit']));
-        $tmp->setValue('management', Property::convert_case_number($number_data[0]['management']));
-        $tmp->setValue('network', Property::convert_case_number($number_data[0]['network']));
-        $tmp->setValue('garbage_fee', Property::convert_case_number($number_data[0]['garbage_fee']));
+        // $tmp->setValue('management', Property::convert_case_number($number_data[0]['management']));
+        // $tmp->setValue('network', Property::convert_case_number($number_data[0]['network']));
+        // $tmp->setValue('garbage_fee', Property::convert_case_number($number_data[0]['garbage_fee']));
         $startDate = explode('-', Date::getLease($number_data[0]['checkin_time'], $number_data[0]['lease'] - $number_data[0]['lease_type'])[0]);
         $endDate = explode('-', Date::getLease($number_data[0]['checkin_time'], $number_data[0]['lease'] + 11 - $number_data[0]['lease_type'])[1]);
         $tmp->setValue('startDate', $startDate[0] . '年' . $startDate[1] . '月' . $startDate[2] . '日');
