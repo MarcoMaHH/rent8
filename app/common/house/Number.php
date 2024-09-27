@@ -12,15 +12,23 @@ class Number
 {
     public static function save($id, $data)
     {
-        $validate = new NumberValidate();
-        if (!$validate->scene('update')->check($data)) {
-            return ['flag' => false, 'msg' => '修改失败，' . $validate->getError()];
+        if ($id) {
+            $validate = new NumberValidate();
+            if (!$validate->scene('update')->check($data)) {
+                return ['flag' => false, 'msg' => '修改失败，' . $validate->getError()];
+            }
+            if (!$number = NumberModel::find($id)) {
+                return ['flag' => false, 'msg' => '修改失败，房间不存在'];
+            }
+            $number->save($data);
+            return ['flag' => true, 'msg' => '修改成功'];
+        } else {
+            if (NumberModel::where('name', $data['name'])->where('house_property_id', $data['house_property_id'])->find()) {
+                return $this->returnError('房间名已存在');
+            }
+            NumberModel::create($data);
+            return ['flag' => true, 'msg' => '添加成功'];
         }
-        if (!$number = NumberModel::find($id)) {
-            return ['flag' => false, 'msg' => '修改失败，房间不存在'];
-        }
-        $number->save($data);
-        return ['flag' => true, 'msg' => '修改成功'];
     }
 
     public static function checkin($data)

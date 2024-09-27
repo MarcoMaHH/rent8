@@ -9,6 +9,7 @@ use app\admin\model\HouseTenant as TenantModel;
 use app\admin\model\HouseBilling as BillingModel;
 use app\admin\model\AdminUser as UserModel;
 use app\admin\validate\HouseNumber as NumberValidate;
+use app\common\house\Number as NumberAction;
 use app\admin\library\Property;
 use app\admin\library\Date;
 use think\facade\Db;
@@ -75,27 +76,18 @@ class Number extends Common
             'deposit' => $this->request->post('deposit/d', 0),
             'lease_type' => $this->request->post('lease_type/d', 0),
             'management' => $this->request->post('management/d', 0),
+            'network' => $this->request->post('network/d', 0),
             'garbage_fee' => $this->request->post('garbage_fee/d', 0),
             'daily_rent' => $this->request->post('daily_rent/d', 0),
             'water_price' => $this->request->post('water_price/f', 0.0),
             'electricity_price' => $this->request->post('electricity_price/f', 0.0),
         ];
-        $validate = new NumberValidate();
-        if ($id) {
-            if (!$validate->scene('update')->check($data)) {
-                return $this->returnError('修改失败，' . $validate->getError() . '。');
-            }
-            if (!$permission = NumberModel::find($id)) {
-                return $this->returnError('修改失败，记录不存在');
-            }
-            $permission->save($data);
-            return $this->returnSuccess('修改成功');
+        $result = NumberAction::save($id, $data);
+        if ($result['flag']) {
+            return $this->returnSuccess($result['msg']);
+        } else {
+            return $this->returnError($result['msg']);
         }
-        if (NumberModel::where('name', $data['name'])->where('house_property_id', $data['house_property_id'])->find()) {
-            return $this->returnError('房间名已存在');
-        }
-        NumberModel::create($data);
-        return $this->returnSuccess('添加成功');
     }
 
     // 批量保存
@@ -199,6 +191,7 @@ class Number extends Common
                 'rental' => $number_data['rental'] * $lease_type,
                 'deposit' => $number_data['deposit'],
                 'management' => $number_data['management'] * $lease_type,
+                'network' => $number_data['network'] * $lease_type,
                 'garbage_fee' => $number_data['garbage_fee'] * $lease_type,
                 'total_money' => $number_data['deposit'] + $number_data['rental'] * $lease_type + $number_data['management'] * $lease_type + $number_data['garbage_fee'] * $lease_type,
                 'note' => $note
@@ -265,6 +258,7 @@ class Number extends Common
             'rental' => $rental,
             'deposit' => 0 - $number_data->deposit,
             'management' => 0,
+            'network' => 0,
             'garbage_fee' => 0,
             'note' => $note,
         ];
@@ -310,6 +304,7 @@ class Number extends Common
         $tmp->setValue('depositLower', $number_data[0]['deposit']);
         $tmp->setValue('deposit', Property::convert_case_number($number_data[0]['deposit']));
         $tmp->setValue('management', Property::convert_case_number($number_data[0]['management']));
+        $tmp->setValue('network', Property::convert_case_number($number_data[0]['network']));
         $tmp->setValue('garbage_fee', Property::convert_case_number($number_data[0]['garbage_fee']));
         $startDate = explode('-', Date::getLease($number_data[0]['checkin_time'], $number_data[0]['lease'] - $number_data[0]['lease_type'])[0]);
         $endDate = explode('-', Date::getLease($number_data[0]['checkin_time'], $number_data[0]['lease'] + 11 - $number_data[0]['lease_type'])[1]);

@@ -4,12 +4,10 @@ namespace app\api\controller;
 
 use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseNumber as NumberModel;
-use app\admin\validate\HouseNumber as NumberValidate;
 use app\admin\model\HouseTenant as TenantModel;
 use app\admin\model\HouseBilling as BillingModel;
-use app\admin\model\BillMeter as MeterModel;
-use app\admin\library\Property;
 use app\common\house\Number as NumberAction;
+use app\admin\library\Property;
 
 class Number extends Common
 {
@@ -54,6 +52,7 @@ class Number extends Common
             'deposit' => $this->request->post('deposit/d', 0),
             'lease_type' => $this->request->post('lease_type/d', 0),
             'management' => $this->request->post('management/d', 0),
+            'network' => $this->request->post('network/d', 0),
             'garbage_fee' => $this->request->post('garbage_fee/d', 0),
             'daily_rent' => $this->request->post('daily_rent/d', 0),
             'water_price' => $this->request->post('water_price/f', 0.0),
