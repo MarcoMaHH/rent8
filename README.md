@@ -4,7 +4,7 @@
 
 [rent8-最常用出租屋管理系统-微信小程序端](https://gitee.com/MarcoMaHH/rent8_wechat)
 
-[使用说明](https://blog.csdn.net/m0_61078449/article/details/142572124)
+[rent8-最常用出租屋管理系统-使用说明](https://blog.csdn.net/m0_61078449/article/details/142572124)
 
 ---
 
