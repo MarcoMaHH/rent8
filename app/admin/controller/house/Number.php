@@ -4,7 +4,6 @@ namespace app\admin\controller\house;
 
 use app\admin\controller\Common;
 use app\admin\model\HouseNumber as NumberModel;
-use app\admin\model\HouseTenant as TenantModel;
 use app\admin\model\HouseBilling as BillingModel;
 use app\admin\model\AdminUser as UserModel;
 use app\common\house\Number as NumberAction;
