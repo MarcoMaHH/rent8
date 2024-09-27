@@ -74,6 +74,9 @@
     <t-form-item label="管理费" name="management">
       <t-input-number v-model="formData.management" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
     </t-form-item>
+    <t-form-item label="网络费" name="network">
+      <t-input-number v-model="formData.network" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    </t-form-item>
     <t-form-item label="卫生费" name="garbage_fee">
       <t-input-number v-model="formData.garbage_fee" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
     </t-form-item>
@@ -119,6 +122,9 @@
     </t-form-item>
     <t-form-item label="管理费" name="management">
       <t-input-number v-model="formData.management" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="网络费" name="network">
+      <t-input-number v-model="formData.network" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="卫生费" name="garbage_fee">
       <t-input-number v-model="formData.garbage_fee" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
@@ -251,6 +257,7 @@
       lease_type: [{ required: true, message: '必填' }],
       deposit: [{ required: true, message: '必填', trigger: 'blur' }],
       management: [{ required: true, message: '必填', trigger: 'blur' }],
+      network: [{ required: true, message: '必填', trigger: 'blur' }],
       garbage_fee: [{ required: true, message: '必填', trigger: 'blur' }],
       daily_rent: [{ required: true, message: '必填', trigger: 'blur' }],
       water_price: [{ required: true, message: '必填', trigger: 'blur' }],
@@ -312,7 +319,7 @@
           this.$message.warning('请先新增房产');
         } else {
           this.$refs.numberForm.reset();
-          this.formData = { 'house_property_id': this.houseDef, 'management': 0, 'garbage_fee': 0, 'lease_type': '1' };
+          this.formData = { 'house_property_id': this.houseDef, 'management': 0, 'network': 0, 'garbage_fee': 0, 'lease_type': '1' };
           this.formHeader = this.houseName + ' - 新增房间';
           this.dialogVisible = true;
         }
@@ -324,7 +331,7 @@
         } else {
           this.$refs.addMoreForm1.reset();
           this.$refs.addMoreForm2.reset();
-          this.formData = { 'house_property_id': this.houseDef, 'quantity': 2, 'management': 0, 'garbage_fee': 0, 'lease_type': '1' };
+          this.formData = { 'house_property_id': this.houseDef, 'quantity': 2, 'management': 0, 'network': 0, 'garbage_fee': 0, 'lease_type': '1' };
           this.formHeader = this.houseName + ' - 批量新增房间';
           this.activeForm = 0;
           this.addMoreVisible = true;
