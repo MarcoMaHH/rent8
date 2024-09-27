@@ -89,7 +89,56 @@ class Number
         }
     }
 
-    public static function checkout($id)
+    public static function checkout($number_id, $leave_time)
     {
+        if (!$number_data = NumberModel::find($number_id)) {
+            return ['flag' => false, 'msg' => '退房失败，房间不存在'];
+        }
+        $transFlag = true;
+        Db::startTrans();
+        try {
+            $number_update = [
+                'rent_mark' => 'N',
+                'tenant_id' => '',
+                'checkin_time' => null,
+                'lease' => 0,
+            ];
+            $number_data->save($number_update);
+            TenantModel::where('house_property_id', $number_data->house_property_id)
+            ->where('house_number_id', $number_id)
+            ->where('leave_time', 'null')
+            ->data(['leave_time' => $leave_time, 'mark' => 'Y'])
+            ->update();
+            $billing_data = BillingModel::find($number_data->receipt_number);
+            $datediff = intval((strtotime($leave_time) - strtotime($billing_data->start_time)) / (60 * 60 * 24));
+            $note = '';
+            $rental = 0;
+            if ($datediff > 0) {
+                $rental = $datediff * $number_data->daily_rent;
+                $note = '租金为' . $datediff . '*' . $number_data->daily_rent . '=' . $rental . '。';
+            }
+            $billing_update = [
+                'start_time' => $leave_time,
+                'meter_reading_time' => $leave_time,
+                'end_time' => null,
+                'rental' => $rental,
+                'deposit' => 0 - $number_data->deposit,
+                'management' => 0,
+                'network' => 0,
+                'garbage_fee' => 0,
+                'note' => $note,
+            ];
+            $billing_data->save($billing_update);
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            $transFlag = false;
+            // 回滚事务
+            Db::rollback();
+            return ['flag' => false, 'msg' => $e->getMessage()];
+        }
+        if ($transFlag) {
+            return ['flag' => true, 'msg' => '退房成功'];
+        }
     }
 }

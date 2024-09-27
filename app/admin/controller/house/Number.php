@@ -173,43 +173,12 @@ class Number extends Common
     {
         $number_id = $this->request->param('id/d', 0);
         $leave_time = $this->request->param('leave_time/s', date('Y-m-d'), 'trim');
-        if (!$number_data = NumberModel::find($number_id)) {
-            return $this->returnError('修改失败，记录不存在');
+        $result = NumberAction::checkout($number_id, $leave_time);
+        if ($result['flag']) {
+            return $this->returnSuccess($result['msg']);
+        } else {
+            return $this->returnError($result['msg']);
         }
-        $number_update = [
-            'rent_mark' => 'N',
-            'tenant_id' => '',
-            'checkin_time' => null,
-            // 'payment_time' => date('Y-m-d'),
-            'lease' => 0,
-        ];
-        $number_data->save($number_update);
-        TenantModel::where('house_property_id', $number_data->house_property_id)
-        ->where('house_number_id', $number_id)
-        ->where('leave_time', 'null')
-        ->data(['leave_time' => $leave_time, 'mark' => 'Y'])
-        ->update();
-        $billing_data = BillingModel::find($number_data->receipt_number);
-        $datediff = intval((strtotime($leave_time) - strtotime($billing_data->start_time)) / (60 * 60 * 24));
-        $note = '';
-        $rental = 0;
-        if ($datediff > 0) {
-            $rental = $datediff * $number_data->daily_rent;
-            $note = '租金为' . $datediff . '*' . $number_data->daily_rent . '=' . $rental . '。';
-        }
-        $billing_update = [
-            'start_time' => $leave_time,
-            'meter_reading_time' => $leave_time,
-            'end_time' => null,
-            'rental' => $rental,
-            'deposit' => 0 - $number_data->deposit,
-            'management' => 0,
-            'network' => 0,
-            'garbage_fee' => 0,
-            'note' => $note,
-        ];
-        $billing_data->save($billing_update);
-        return $this->returnSuccess('退房成功');
     }
 
     //其他页面查询numberId
