@@ -60,6 +60,7 @@ class Number
                 'rental' => $number_data['rental'] * $lease_type,
                 'deposit' => $number_data['deposit'],
                 'management' => $number_data['management'] * $lease_type,
+                'network' => $number_data['network'] * $lease_type,
                 'garbage_fee' => $number_data['garbage_fee'] * $lease_type,
                 'total_money' => $number_data['deposit'] + $number_data['rental'] * $lease_type + $number_data['management'] * $lease_type + $number_data['garbage_fee'] * $lease_type,
                 'note' => $note
