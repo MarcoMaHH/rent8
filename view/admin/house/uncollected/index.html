@@ -66,11 +66,14 @@
     <t-form-item label="押金" name="deposit">
       <t-input-number v-model="formData.deposit" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
     </t-form-item>
-    <t-form-item label="卫生费" name="garbage_fee">
-      <t-input-number v-model="formData.garbage_fee" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
-    </t-form-item>
     <t-form-item label="管理费" name="management">
       <t-input-number v-model="formData.management" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="网络费" name="network">
+      <t-input-number v-model="formData.network" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="卫生费" name="garbage_fee">
+      <t-input-number v-model="formData.garbage_fee" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="其他费用" name="other_charges">
       <t-input-number v-model="formData.other_charges" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
@@ -123,12 +126,12 @@
     <div class="container">
       <div class="box">租金：{{ formData.rental }}元</div>
       <div class="box">押金：{{ formData.deposit }}元</div>
-      <div class="box">卫生费：{{ formData.garbage_fee }}元</div>
+      <div class="box">管理费：{{ formData.management }}元</div>
     </div>
     <div class="container">
-      <div class="box">管理费：{{ formData.management }}元</div>
+      <div class="box">网络费：{{ formData.network }}元</div>
+      <div class="box">卫生费：{{ formData.garbage_fee }}元</div>
       <div class="box">其他费用：{{ formData.other_charges }}元</div>
-      <div class="box"></div>
     </div>
     <div class="container">合计人民币(大写)：{{ formData.total_money2 }} (¥：{{ formData.total_money }} 元)</div>
     <div class="container">备注：{{ formData.note }}</div>
@@ -237,13 +240,18 @@
         { required: true, message: '押金不能为空', trigger: 'blur' },
         { max: 99999999, message: '最大值为99999999', type: 'error', trigger: 'blur' },
       ],
-      garbage_fee: [
-        { required: true, message: '卫生费不能为空', trigger: 'blur' },
+      management: [
+        { required: true, message: '管理费不能为空', trigger: 'blur' },
         { min: 0, message: '输入字数应在0到99999999之间', type: 'error', trigger: 'blur' },
         { max: 99999999, message: '输入字数应在0到99999999之间', type: 'error', trigger: 'blur' },
       ],
-      management: [
-        { required: true, message: '管理费不能为空', trigger: 'blur' },
+      network: [
+        { required: true, message: '网络费不能为空', trigger: 'blur' },
+        { min: 0, message: '输入字数应在0到99999999之间', type: 'error', trigger: 'blur' },
+        { max: 99999999, message: '输入字数应在0到99999999之间', type: 'error', trigger: 'blur' },
+      ],
+      garbage_fee: [
+        { required: true, message: '卫生费不能为空', trigger: 'blur' },
         { min: 0, message: '输入字数应在0到99999999之间', type: 'error', trigger: 'blur' },
         { max: 99999999, message: '输入字数应在0到99999999之间', type: 'error', trigger: 'blur' },
       ],
