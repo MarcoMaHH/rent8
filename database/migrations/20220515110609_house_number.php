@@ -58,9 +58,14 @@ class HouseNumber extends Migrator
             ['null' => false, 'default' => 0, 'comment' => '管理费']
         )
         ->addColumn(
+            'network',
+            'integer',
+            ['null' => false, 'default' => 0, 'comment' => '网络费']
+        )
+        ->addColumn(
             'garbage_fee',
             'integer',
-            ['null' => false, 'default' => 0, 'comment' => '垃圾费']
+            ['null' => false, 'default' => 0, 'comment' => '卫生费']
         )
         ->addColumn(
             'daily_rent',
