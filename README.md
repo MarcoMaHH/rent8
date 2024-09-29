@@ -55,10 +55,11 @@
 
 1. 建立数据库`rent`
 2. `git clone https://gitee.com/MarcoMaHH/rent8.git`
-3. 将.example.env改为.env，并修改数据库用户名和密码
-4. 在根目录执行`composer install`
-5. `php think migrate:run`
-6. `php think seed:run`
+3. `cd rent8`
+4. 将.example.env改为.env，并修改数据库用户名和密码
+5. `composer install`
+6. `php think migrate:run`
+7. `php think seed:run`
 
 [最常用出租屋管理系统rent8安装记录-腾讯云宝塔版 For小小白,大神请忽略](https://blog.csdn.net/m0_61078449/article/details/142316854)
 
