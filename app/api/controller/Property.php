@@ -38,4 +38,39 @@ class Property extends Common
         $property->saveAll($result);
         return $this->returnSuccess('切换成功');
     }
+
+    public function edit()
+    {
+        $id = $this->request->param('id/d', 0);
+        if ($id) {
+            if (!$data = PropertyModel::find($id)) {
+                return $this->returnError('记录不存在。');
+            }
+        }
+        $returnData = [
+            "code" => 1,
+            "data" => $data
+        ];
+        return \json($returnData);
+    }
+
+    public function save()
+    {
+        $id = $this->request->post('id/d', 0);
+        $data = [
+            'name' => $this->request->post('name/s', '', 'trim'),
+            'address' => $this->request->post('address/s', '', 'trim'),
+        ];
+        if ($id) {
+            if (!$role = PropertyModel::find($id)) {
+                return $this->returnError('修改失败，记录不存在');
+            }
+            $role->save($data);
+            return $this->returnSuccess('修改成功');
+        }
+        $loginUser = $this->auth->getLoginUser();
+        $data['admin_user_id'] = $loginUser['id'];
+        PropertyModel::create($data);
+        return $this->returnSuccess('添加成功');
+    }
 }
