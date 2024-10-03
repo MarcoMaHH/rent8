@@ -143,8 +143,8 @@ class Index extends Common
             ->where('accounting_date', $setDate)
             ->sum('amount');
             \array_push($charData, ['month' => $setDate, 'project' => '收入', 'money' => $income]);
-            \array_push($charData, ['month' => $setDate, 'project' => '支出', 'money' => intval($spending)]);
-            \array_push($charData, ['month' => $setDate, 'project' => '利润', 'money' => $income - intval($spending)]);
+            \array_push($charData, ['month' => $setDate, 'project' => '支出', 'money' => $spending]);
+            \array_push($charData, ['month' => $setDate, 'project' => '利润', 'money' => $income - $spending]);
         }
         return $this->returnResult($charData);
     }
