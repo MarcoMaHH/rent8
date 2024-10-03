@@ -5,6 +5,7 @@ namespace app\api\controller;
 use app\api\validate\User as UserValidate;
 use app\admin\model\AdminUser as UserModel;
 use think\facade\Request;
+use GuzzleHttp\Client;
 
 class User extends Common
 {
@@ -84,5 +85,10 @@ class User extends Common
     {
         $this->auth->logout();
         return $this->returnSuccess('退出成功');
+    }
+
+    public function getOpenid()
+    {
+
     }
 }
