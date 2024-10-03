@@ -56,7 +56,7 @@
 1. 建立数据库`rent`
 2. `git clone https://gitee.com/MarcoMaHH/rent8.git`
 3. `cd rent8`
-4. 将.example.env改为.env，并修改数据库用户名和密码
+4. 将.example.env改为.env，并修改其中的数据库用户名和密码,如果使用微信小程序，则还需要填写appid和appsecret。
 5. `composer install`
 6. `php think migrate:run`
 7. `php think seed:run`
