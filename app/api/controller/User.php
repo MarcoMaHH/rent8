@@ -9,7 +9,7 @@ use GuzzleHttp\Client;
 
 class User extends Common
 {
-    protected $checkLoginExclude = ['login', 'loginWechat', 'register', 'renewal'];
+    protected $checkLoginExclude = ['login', 'loginWechat', 'register', 'renewal', 'getOpenid'];
 
     public function login()
     {
@@ -89,6 +89,25 @@ class User extends Common
 
     public function getOpenid()
     {
+        $appId = env('APP_ID');
+        $appSecret = env('APP_SECRET');
+        $code = '微信小程序返回的code';
+        $url = "https://api.weixin.qq.com/sns/jscode2session?appid={$appId}&secret={$appSecret}&js_code={$code}&grant_type=authorization_code";
 
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        $res = curl_exec($ch);
+        curl_close($ch);
+
+        $data = json_decode($res, true);
+
+        if (isset($data['openid'])) {
+            $openid = $data['openid'];
+            echo "OpenID: " . $openid;
+        } else {
+            echo "获取OpenID失败";
+        }
     }
 }
