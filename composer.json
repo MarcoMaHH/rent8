@@ -28,7 +28,8 @@
         "topthink/think-multi-app": "^1.0",
         "phpoffice/phpword": "^1.2",
         "topthink/think-view": "^2.0",
-        "liliuwei/thinkphp-jump": "2.*"
+        "liliuwei/thinkphp-jump": "2.*",
+        "guzzlehttp/guzzle": "^7.9"
     },
     "require-dev": {
         "symfony/var-dumper": ">=4.2",

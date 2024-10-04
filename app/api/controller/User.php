@@ -89,25 +89,43 @@ class User extends Common
 
     public function getOpenid()
     {
+        // 微信小程序配置
         $appId = env('APP_ID');
         $appSecret = env('APP_SECRET');
-        $code = '微信小程序返回的code';
-        $url = "https://api.weixin.qq.com/sns/jscode2session?appid={$appId}&secret={$appSecret}&js_code={$code}&grant_type=authorization_code";
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        $res = curl_exec($ch);
-        curl_close($ch);
+        // 用户登录时微信返回的code
+        $code = '0c1FMiml2FyHfe47mhol29gHHd0FMimP'; // 这里应该是你从小程序端获取的code
 
-        $data = json_decode($res, true);
+        // 创建GuzzleHttp客户端
+        $client = new Client();
 
-        if (isset($data['openid'])) {
-            $openid = $data['openid'];
-            echo "OpenID: " . $openid;
-        } else {
-            echo "获取OpenID失败";
+        try {
+            // 构造微信登录凭证校验接口URL
+            $url = "https://api.weixin.qq.com/sns/jscode2session";
+            $response = $client->request('GET', $url, [
+                'verify' => false, // 禁用 SSL 证书验证
+                'query' => [
+                    'appid' => $appId,
+                    'secret' => $appSecret,
+                    'js_code' => $code,
+                    'grant_type' => 'authorization_code'
+                ]
+            ]);
+
+            $body = $response->getBody()->getContents();
+            $result = json_decode($body, true);
+
+            if (isset($result['openid'])) {
+                $openid = $result['openid'];
+                echo "OpenID: " . $openid . "\n";
+                // 你可以在这里将openid保存到数据库或进行其他操作
+            } else {
+                echo "Failed to get OpenID: " . $body . "\n";
+            }
+
+        } catch (Exception $e) {
+            echo 'Error: ' . $e->getMessage() . "\n";
         }
+
     }
 }
