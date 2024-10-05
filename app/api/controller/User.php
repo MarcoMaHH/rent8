@@ -79,19 +79,47 @@ class User extends Common
 
     public function register()
     {
-        $openid = Request::header('x-wx-openid');
         $data = [
             'username' => $this->request->post('name/s', '', 'trim'),
-            'admin_role_id' => 4,
+            'admin_role_id' => 2,
             'expiration_date' => date("Y-m-d H:i:s", strtotime(" +30 day")),
             'password' => $this->request->post('password/s', '', 'trim'),
-            'openid' => $openid,
         ];
         if ($user = UserModel::where('username', $data['username'])->select()->toArray()) {
             return $this->returnError('用户名已存在');
         }
-        UserModel::create($data);
-        return $this->returnSuccess('注册成功');
+
+        $appId = env('APP_ID');
+        $appSecret = env('APP_SECRET');
+        $code = \json_decode($this->request->post('code/s', '', 'trim'));
+        $client = new Client();
+        try {
+            // 构造微信登录凭证校验接口URL
+            $url = "https://api.weixin.qq.com/sns/jscode2session";
+            $response = $client->request('GET', $url, [
+                'verify' => false, // 禁用 SSL 证书验证
+                'query' => [
+                    'appid' => $appId,
+                    'secret' => $appSecret,
+                    'js_code' => $code,
+                    'grant_type' => 'authorization_code'
+                ]
+            ]);
+            $body = $response->getBody()->getContents();
+            $result = json_decode($body, true);
+            if (isset($result['openid'])) {
+                $data['openid'] = $result['openid'];
+                UserModel::create($data);
+                return $this->returnSuccess('注册成功');
+            } else {
+                return $this->returnError('账号续期失败');
+            }
+
+        } catch (Exception $e) {
+            return $this->returnError($e->getMessage());
+        }
+
+
     }
 
     public function renewal()
