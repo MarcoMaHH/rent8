@@ -59,10 +59,8 @@ class User extends Common
                     'grant_type' => 'authorization_code'
                 ]
             ]);
-
             $body = $response->getBody()->getContents();
             $result = json_decode($body, true);
-
             if (isset($result['openid'])) {
                 $openid = $result['openid'];
                 $result = $this->auth->loginWechat($openid);
@@ -98,12 +96,38 @@ class User extends Common
 
     public function renewal()
     {
-        $openid = Request::header('x-wx-openid');
-        if ($user = UserModel::where('openid', $openid)->find()) {
-            $user->save(['expiration_date' => date("Y-m-d H:i:s", strtotime("+15 day", strtotime($user->expiration_date)))]);
-            return $this->returnSuccess('续期成功');
+        $appId = env('APP_ID');
+        $appSecret = env('APP_SECRET');
+        $code = \json_decode($this->request->post('code/s', '', 'trim'));
+        $client = new Client();
+        try {
+            // 构造微信登录凭证校验接口URL
+            $url = "https://api.weixin.qq.com/sns/jscode2session";
+            $response = $client->request('GET', $url, [
+                'verify' => false, // 禁用 SSL 证书验证
+                'query' => [
+                    'appid' => $appId,
+                    'secret' => $appSecret,
+                    'js_code' => $code,
+                    'grant_type' => 'authorization_code'
+                ]
+            ]);
+            $body = $response->getBody()->getContents();
+            $result = json_decode($body, true);
+            if (isset($result['openid'])) {
+                $openid = $result['openid'];
+                if ($user = UserModel::where('openid', $openid)->find()) {
+                    $user->save(['expiration_date' => date("Y-m-d H:i:s", strtotime("+15 day", strtotime($user->expiration_date)))]);
+                    return $this->returnSuccess('续期成功');
+                }
+                return $this->returnError('用户未绑定微信');
+            } else {
+                return $this->returnError('账号续期失败');
+            }
+
+        } catch (Exception $e) {
+            return $this->returnError($e->getMessage());
         }
-        return $this->returnError('用户未绑定微信');
     }
 
     public function logout()
