@@ -9,7 +9,7 @@ use GuzzleHttp\Client;
 
 class User extends Common
 {
-    protected $checkLoginExclude = ['login', 'loginWechat', 'register', 'renewal', 'getOpenid'];
+    protected $checkLoginExclude = ['login', 'loginWechat', 'register', 'renewal'];
 
     public function login()
     {
@@ -43,15 +43,42 @@ class User extends Common
 
     public function loginWechat()
     {
-        $openid = Request::header('x-wx-openid');
-        $result = $this->auth->loginWechat($openid);
-        if (!$result) {
-            return $this->returnError($this->auth->getError());
+        $appId = env('APP_ID');
+        $appSecret = env('APP_SECRET');
+        $code = $this->request->post('code/s', '', 'trim');
+        $client = new Client();
+        try {
+            // 构造微信登录凭证校验接口URL
+            $url = "https://api.weixin.qq.com/sns/jscode2session";
+            $response = $client->request('GET', $url, [
+                'verify' => false, // 禁用 SSL 证书验证
+                'query' => [
+                    'appid' => $appId,
+                    'secret' => $appSecret,
+                    'js_code' => $code,
+                    'grant_type' => 'authorization_code'
+                ]
+            ]);
+
+            $body = $response->getBody()->getContents();
+            $result = json_decode($body, true);
+
+            if (isset($result['openid'])) {
+                $openid = $result['openid'];
+                $result = $this->auth->loginWechat($openid);
+                if (!$result) {
+                    return $this->returnError($this->auth->getError());
+                }
+                return $this->returnWechat($result, 0, '登陆成功。');
+            } else {
+                return $this->returnError('微信登陆失败');
+            }
+
+        } catch (Exception $e) {
+            return $this->returnError($e->getMessage());
         }
-        $loginUser = $this->auth->getLoginUser();
-        $user = UserModel::find($loginUser['id']);
-        $user->save(['login_date' => date("Y-m-d H:i:s")]);
-        return $this->returnWechat($result, 0, '登陆成功。');
+
+
     }
 
     public function register()
@@ -85,47 +112,5 @@ class User extends Common
     {
         $this->auth->logout();
         return $this->returnSuccess('退出成功');
-    }
-
-    public function getOpenid()
-    {
-        // 微信小程序配置
-        $appId = env('APP_ID');
-        $appSecret = env('APP_SECRET');
-
-        // 用户登录时微信返回的code
-        $code = '0c1FMiml2FyHfe47mhol29gHHd0FMimP'; // 这里应该是你从小程序端获取的code
-
-        // 创建GuzzleHttp客户端
-        $client = new Client();
-
-        try {
-            // 构造微信登录凭证校验接口URL
-            $url = "https://api.weixin.qq.com/sns/jscode2session";
-            $response = $client->request('GET', $url, [
-                'verify' => false, // 禁用 SSL 证书验证
-                'query' => [
-                    'appid' => $appId,
-                    'secret' => $appSecret,
-                    'js_code' => $code,
-                    'grant_type' => 'authorization_code'
-                ]
-            ]);
-
-            $body = $response->getBody()->getContents();
-            $result = json_decode($body, true);
-
-            if (isset($result['openid'])) {
-                $openid = $result['openid'];
-                echo "OpenID: " . $openid . "\n";
-                // 你可以在这里将openid保存到数据库或进行其他操作
-            } else {
-                echo "Failed to get OpenID: " . $body . "\n";
-            }
-
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage() . "\n";
-        }
-
     }
 }
