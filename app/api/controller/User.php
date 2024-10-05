@@ -118,8 +118,6 @@ class User extends Common
         } catch (Exception $e) {
             return $this->returnError($e->getMessage());
         }
-
-
     }
 
     public function renewal()
