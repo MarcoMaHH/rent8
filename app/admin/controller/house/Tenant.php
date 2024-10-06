@@ -25,9 +25,12 @@ class Tenant extends Common
         $conditions = array(
             ['a.house_property_id', '=', $house_property_id]
         );
-        $house_number_id = $this->request->param('house_number_id/d', 0);
-        if ($house_number_id) {
-            \array_push($conditions, ['a.house_number_id', '=', $house_number_id]);
+        $parameter = $this->request->param('parameter/s', 0);
+        if ($parameter) {
+            \array_push($conditions, ['a.name', 'like', '%' . $parameter . '%']);
+            \array_push($conditions, ['b.name', 'like', '%' . $parameter . '%']);
+            \array_push($conditions, ['a.phone', 'like', '%' . $parameter . '%']);
+            \array_push($conditions, ['a.id_card_number', 'like', '%' . $parameter . '%']);
         }
         $count = TenantModel::where($conditions)->alias('a')->count();
         $tenants = TenantModel::where($conditions)->alias('a')
@@ -123,7 +126,7 @@ class Tenant extends Common
     {
         $id = $this->request->param('id/d', 0);
         $photo = PhotoModel::where('tenant_id', $id)->select();
-        foreach($photo as $value) {
+        foreach ($photo as $value) {
             $value['name'] = $value['url'];
         }
         return $this->returnResult($photo);
