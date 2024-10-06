@@ -25,10 +25,10 @@ class Tenant extends Common
         $conditions = array(
             ['a.house_property_id', '=', $house_property_id]
         );
-        // $house_number_id = $this->request->param('house_number_id/d', 0);
-        // if ($house_number_id) {
-        //     \array_push($conditions, ['a.house_number_id', '=', $house_number_id]);
-        // }
+        $house_number_id = $this->request->param('house_number_id/d', 0);
+        if ($house_number_id) {
+            \array_push($conditions, ['a.house_number_id', '=', $house_number_id]);
+        }
         $count = TenantModel::where($conditions)->alias('a')->count();
         $tenants = TenantModel::where($conditions)->alias('a')
         ->join('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
