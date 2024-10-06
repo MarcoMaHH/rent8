@@ -22,23 +22,23 @@ class Tenant extends Common
     {
         $loginUser = $this->auth->getLoginUser();
         $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
-        $conditions = array();
+        $conditions = array(
+            ['a.house_property_id', '=', $house_property_id]
+        );
         $parameter = $this->request->param('parameter/s', 0);
         if ($parameter) {
-            \array_push($conditions, ['a.name', 'like', '%' . $parameter . '%']);
-            // \array_push($conditions, ['b.name', 'like', '%' . $parameter . '%']);
-            // \array_push($conditions, ['a.phone', 'like', '%' . $parameter . '%']);
-            // \array_push($conditions, ['a.id_card_number', 'like', '%' . $parameter . '%']);
+            \array_push($conditions, ['a.name', 'like', '%' . $parameter . '%', 'or']);
+            \array_push($conditions, ['b.name', 'like', '%' . $parameter . '%', 'or']);
+            \array_push($conditions, ['a.phone', 'like', '%' . $parameter . '%', 'or']);
+            \array_push($conditions, ['a.id_card_number', 'like', '%' . $parameter . '%', 'or']);
         }
         $count = TenantModel::alias('a')
         ->join('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
-        ->where('a.house_property_id', '=', $house_property_id)
-        ->whereOr($conditions)->count();
+        ->where($conditions)->count();
         $tenants = TenantModel::alias('a')
         ->join('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
         ->join('HouseProperty c', 'a.house_property_id = c.id')
-        ->where('a.house_property_id', '=', $house_property_id)
-        ->whereOr($conditions)
+        ->where($conditions)
         ->field("a.*,b.name as number_name, c.name as property_name")
         ->order(['mark','leave_time' => 'desc','number_name'])
         ->select();
