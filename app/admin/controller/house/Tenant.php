@@ -25,12 +25,14 @@ class Tenant extends Common
         $conditions = array(
             ['a.house_property_id', '=', $house_property_id]
         );
-        $parameter = $this->request->param('parameter/s', 0);
+        $parameter = $this->request->param('parameter/s', '');
         if ($parameter) {
-            \array_push($conditions, ['a.name', 'like', '%' . $parameter . '%', 'or']);
-            \array_push($conditions, ['b.name', 'like', '%' . $parameter . '%', 'or']);
-            \array_push($conditions, ['a.phone', 'like', '%' . $parameter . '%', 'or']);
-            \array_push($conditions, ['a.id_card_number', 'like', '%' . $parameter . '%', 'or']);
+            $conditions[] = function ($query) use ($parameter) {
+                $query->where('a.name', 'like', "%{$parameter}%")
+                        ->whereOr('b.name', 'like', "%{$parameter}%")
+                        ->whereOr('a.phone', 'like', "%{$parameter}%")
+                        ->whereOr('a.id_card_number', 'like', "%{$parameter}%");
+            };
         }
         $count = TenantModel::alias('a')
         ->join('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
