@@ -1,12 +1,26 @@
 {extend name="common/layout" /}
 {block name="main"}
 <t-card class="list-card-container" :bordered="false">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+    <!-- 新建按钮位于左侧 -->
+    <div></div>
+    <!-- 搜索输入框和搜索按钮位于右侧，被包裹在另一个flex容器中 -->
+    <div style="display: flex; justify-content: flex-end; width: 300px; /* 可根据需要调整宽度 */">
+      <div style="flex-grow: 1; margin-right: 5px;">
+        <t-input v-model="searchValue" placeholder="请输入房号" clearable @enter="handleSearch" />
+      </div>
+      <t-button theme="primary" @click="handleSearch">
+        <template #icon><t-icon name="search" /></template>
+      </t-button>
+    </div>
+  </div>
+
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
     active-row-type="single" :hover="true" :loading="tableLoading" :pagination="pagination">
     <template #op="slotProps">
       <t-space>
-        <t-button size="small" theme="warning" @click="handlePhoto(slotProps.row)">证件照片</t-button>
         <t-button size="small" @click="handleEdit(slotProps.row)">修改</t-button>
+        <t-button size="small" theme="warning" @click="handlePhoto(slotProps.row)">证件照片</t-button>
       </t-space>
     </template>
   </t-table>
@@ -94,6 +108,8 @@
     uploadData: {},
     fileList: [],
     selectId: 0,
+    // 搜索框
+    searchValue: '',
   };
   function f() {
     return {
@@ -102,7 +118,7 @@
       },
       queryTable: function () {
         this.tableLoading = true;
-        axiosGet("{:url('query')}").then(response => {
+        axiosGet("{:url('query')}", { 'parameter': this.searchValue }).then(response => {
           if (response.code == 1) {
             this.tableData = response.data;
           } else {
@@ -168,6 +184,10 @@
         } else {
           this.$message.error('上传失败');
         }
+      },
+      // 搜索
+      handleSearch() {
+        this.queryTable();
       },
     }
   }
