@@ -80,6 +80,7 @@ class Tenant extends Common
             'native_place' => $this->request->post('native_place/s', '', 'trim'),
             'work_units' => $this->request->post('work_units/s', '', 'trim'),
             'note' => $this->request->post('note/s', '', 'trim'),
+            'checkin_time' => $this->request->post('checkin_time/s', '', 'trim'),
         ];
         if ($id) {
             if (!$tenant = TenantModel::find($id)) {
