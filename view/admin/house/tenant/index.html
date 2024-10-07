@@ -60,6 +60,9 @@
     <t-form-item label="工作单位" name="work_units">
       <t-input v-model="formData.work_units" :style="{ width: '480px' }" placeholder="请输入" />
     </t-form-item>
+    <t-form-item label="备注" name="note">
+      <t-textarea v-model="formData.note" :style="{ width: '480px' }" placeholder="请输入" autosize />
+    </t-form-item>
     <t-form-item style="float: right">
       <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px;">取消</t-button>
       <t-button theme="primary" type="submit">确定</t-button>
@@ -68,7 +71,7 @@
 </t-dialog>
 {/block}
 
-{block name="script"}
+{block name="script"}  
 <script>
   const data = {
     tableData: [],
@@ -83,6 +86,7 @@
       { title: '户口所在地', colKey: 'native_place', width: 80 },
       { title: '现工作单位', colKey: 'work_units', width: 100, ellipsis: true },
       { title: '联系电话', colKey: 'phone', width: 95 },
+      { title: '备注', colKey: 'note', width: 95 },
       { title: '入住日期', colKey: 'checkin_time', width: 80 },
       { title: '离开日期', colKey: 'leave_time', width: 80 },
       { title: '操作', colKey: 'op', width: 110, fixed: 'right', },
