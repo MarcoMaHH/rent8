@@ -36,11 +36,11 @@
 <!-- 新增FORM -->
 <t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false" top="30px">
   <t-form ref="tenantForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
+    <t-form-item label="入住日期" name="checkin_time">
+      <t-input v-model="formData.checkin_time" :style="{ width: '480px' }" readonly />
+    </t-form-item>
     <t-form-item label="姓名" name="name">
       <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" />
-    </t-form-item>
-    <t-form-item label="入住日期" name="checkin_time">
-      <t-date-picker v-model="formData.checkin_time" mode="date" :style="{ width: '480px' }" clearable />
     </t-form-item>
     <t-form-item label="性别" name="sex">
       <t-radio-group v-model="formData.sex">
@@ -71,7 +71,7 @@
 </t-dialog>
 {/block}
 
-{block name="script"}  
+{block name="script"}
 <script>
   const data = {
     tableData: [],
