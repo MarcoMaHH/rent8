@@ -77,6 +77,11 @@ class HouseTenant extends Migrator
             'string',
             ['limit' => 225, 'null' => true, 'default' => '', 'comment' => '工作单位']
         )
+        ->addColumn(
+            'note',
+            'string',
+            ['limit' => 255, 'null' => true, 'default' => '', 'comment' => '备注']
+        )
         ->addColumn('checkin_time', 'timestamp', ['null' => true, 'comment' => '入住时间'])
         ->addColumn('leave_time', 'timestamp', ['null' => true, 'comment' => '离开时间'])
         ->addTimestamps()
