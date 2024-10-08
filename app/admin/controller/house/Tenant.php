@@ -42,7 +42,7 @@ class Tenant extends Common
         ->join('HouseProperty c', 'a.house_property_id = c.id')
         ->where($conditions)
         ->field("a.*,b.name as number_name, c.name as property_name")
-        ->order(['mark','leave_time' => 'desc','number_name'])
+        ->order(['mark','leave_time' => 'desc','checkin_time' => 'desc'])
         ->select();
         foreach ($tenants as $value) {
             $value['checkin_time'] = \substr($value['checkin_time'], 0, 10);
