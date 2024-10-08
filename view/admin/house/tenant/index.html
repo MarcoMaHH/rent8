@@ -125,6 +125,7 @@
         axiosGet("{:url('query')}", { 'parameter': this.searchValue }).then(response => {
           if (response.code == 1) {
             this.tableData = response.data;
+            this.pagination.total = response.count;
           } else {
             this.$message.error('系统出错了!!!');
           }
