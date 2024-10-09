@@ -30,9 +30,11 @@
 
 ![到账账单-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/collect.jpg)
 
-![用户管理-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/electricity.jpg)
+![租客档案-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/tenant.jpg)
 
-![用户管理-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/annual.jpg)
+![电费账单-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/electricity.jpg)
+
+![年度报表-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/annual.jpg)
 
 ![用户管理-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/user.jpg)
 
