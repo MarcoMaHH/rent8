@@ -6,7 +6,7 @@
     <t-icon class="collapsed-icon" name="view-list" />
   </t-button>
   <div style="margin:0 0 0 15px;">
-    <t-select v-model="houseDef" label="房产：" placeholder="请选择房产" auto-width @change="changeHouse">
+    <t-select v-model="houseDef" label="房产：" placeholder="请选择房产" auto-width @change="changeHouse" filterable>
       <t-option v-for="item in houseList" :key="item.id" :value="item.id" :label="item.name"></t-option>
     </t-select>
   </div>
