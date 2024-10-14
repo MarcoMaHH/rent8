@@ -79,7 +79,10 @@
     formData: {},
     formHeader: '',
     rules: {
-      total_money: [{ required: true, message: '必填', trigger: 'blur' }],
+      total_money: [
+        { required: true, message: '必填', trigger: 'blur' },
+        { min: 0, message: '金额不能负数', type: 'error', trigger: 'blur' },
+      ],
       accounting_date: [{ required: true, message: '必填' }],
       circulate_mark: [{ required: true, message: '必填' }],
       type: [{ required: true, message: '必填' }],
