@@ -51,6 +51,7 @@ class Electricity extends Common
             ->field('sum(amount) as amount, sum(dosage) as dosage')
             ->select()->toArray();
             if (count($detail)) {
+                $value['detail_dosage'] = $detail[0]['dosage'];
                 if ($detail[0]['amount']) {
                     $value['detail_sum'] = round($detail[0]['amount'], 2);
                     $value['difference_sum'] = $value['master_sum'] - $value['detail_sum'];
@@ -58,7 +59,6 @@ class Electricity extends Common
                 } else {
                     $value['detail_sum'] = null;
                 }
-                $value['detail_dosage'] = $detail[0]['dosage'];
             }
             if ($value['start_month']) {
                 $value['start_month'] = \substr($value['start_month'], 0, 10);
