@@ -6,11 +6,13 @@
       <template #icon><t-icon name="add" /></template>
       新建
     </t-button>
-    <t-select v-model="role_id" placeholder="请选择角色" style="width: 150px;display: inline-block;" @change="roleChange">
-      <t-option v-for="(item, index) in roleData" :key="index" :value="item.id" :label="item.name">
-        {{ item.name }}
-      </t-option>
-    </t-select>
+    <span style="float: right;">
+      <t-select v-model="role_id" placeholder="请选择角色" style="width: 150px;display: inline-block;" @change="roleChange">
+        <t-option v-for="(item, index) in roleData" :key="index" :value="item.id" :label="item.name">
+          {{ item.name }}
+        </t-option>
+      </t-select>
+    </span>
   </div>
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
     active-row-type="single" :hover="true" :loading="tableLoading" :pagination="pagination" @page-change="onPageChange">
