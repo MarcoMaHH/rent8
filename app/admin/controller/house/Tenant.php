@@ -35,10 +35,10 @@ class Tenant extends Common
             };
         }
         $count = TenantModel::alias('a')
-        ->join('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
+        ->leftjoin('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
         ->where($conditions)->count();
         $tenants = TenantModel::alias('a')
-        ->join('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
+        ->leftjoin('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
         ->join('HouseProperty c', 'a.house_property_id = c.id')
         ->where($conditions)
         ->field("a.*,b.name as number_name, c.name as property_name")
