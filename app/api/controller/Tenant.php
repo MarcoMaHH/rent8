@@ -11,8 +11,6 @@ use app\admin\library\Property;
 
 class Tenant extends Common
 {
-    // protected $checkLoginExclude = ['query'];
-
     public function query()
     {
         $loginUser = $this->auth->getLoginUser();
@@ -55,48 +53,6 @@ class Tenant extends Common
         return $this->returnWechat($tenants, $count);
     }
 
-    // 上传照片信息
-    public function upload()
-    {
-        $way = $this->request->post('way/s', '', 'trim');
-        // 获取表单上传文件 例如上传了001.jpg
-        $file = request()->file('file');
-        $name = $file->getOriginalName();
-        // 上传到本地服务器
-        $savename = \think\facade\Filesystem::disk('public')->putFileAs($way, $file, time() . substr(strrchr($name, '.'), 0));
-        $data = [
-            'tenant_id' => $way,
-            'url' => '/storage/' . $savename
-        ];
-        PhotoModel::create($data);
-    }
-
-    // 查询照片信息
-    public function queryPhoto()
-    {
-        $id = $this->request->param('id/d', 0);
-        $photo = PhotoModel::where('tenant_id', $id)->select();
-        foreach ($photo as $value) {
-            $value['name'] = $value['url'];
-            $value['url'] = 'http://' . $_SERVER['HTTP_HOST'] . $value['url'];
-        }
-        return $this->returnWechat($photo);
-    }
-
-    // 删除照片
-    public function deletePhoto()
-    {
-        $id = $this->request->post('id/d', 0);
-        if (!$photo = PhotoModel::find($id)) {
-            return $this->returnError('删除失败，记录不存在。');
-        }
-        $photo->delete();
-        $photoName = explode('/', $photo['url']);
-        $photoUrl =  app()->getRootPath();
-        unlink($photoUrl . '\public\storage\\' . $photoName[2] . '\\' . $photoName[3]);
-        return $this->returnSuccess('删除成功。');
-    }
-
     public function save()
     {
         $id = $this->request->post('id/d', 0);
@@ -109,7 +65,7 @@ class Tenant extends Common
             'id_card_number' => $this->request->post('id_card_number/s', '', 'trim'),
             'native_place' => $this->request->post('native_place/s', '', 'trim'),
             'work_units' => $this->request->post('work_units/s', '', 'trim'),
-            'checkin_time' => $this->request->post('checkin_time/s', \date('Ymd'), 'trim'),
+            // 'checkin_time' => $this->request->post('checkin_time/s', \date('Ymd'), 'trim'),
         ];
         if ($id) {
             if (!$tenant = TenantModel::find($id)) {
@@ -118,7 +74,5 @@ class Tenant extends Common
             $tenant->save($data);
             return $this->returnSuccess('修改成功');
         }
-        // TenantModel::create($data);
-        // $this->success('添加成功');
     }
 }
