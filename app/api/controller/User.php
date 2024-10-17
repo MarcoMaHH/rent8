@@ -112,7 +112,7 @@ class User extends Common
                 UserModel::create($data);
                 return $this->returnSuccess('注册成功');
             } else {
-                return $this->returnError('账号续期失败');
+                return $this->returnError('注册失败');
             }
 
         } catch (Exception $e) {
