@@ -53,6 +53,39 @@ class Tenant extends Common
         return $this->returnWechat($tenants, $count);
     }
 
+    public function edit()
+    {
+        $id = $this->request->param('id/d', 0);
+        if ($id) {
+            if (!$data = TenantModel::find($id)) {
+                return $this->returnError('租客不存在。');
+            }
+        }
+        $property_name = PropertyModel::find($data->house_property_id);
+        $data['property_name'] = $property_name->name;
+        $number_name = NumberModel::find($data->house_number_id);
+        $data['number_name'] = $number_name->name;
+        if ($data['id_card_number']) {
+            $data['age'] = date("Y") - \substr($data['id_card_number'], 6, 4);
+        }
+        switch ($data['sex']) {
+            case 'F':
+                $data['sex_name'] = '女';
+                break;
+            case 'M':
+                $data['sex_name'] = '男';
+                break;
+            default:
+                $data['sex_name'] = '';
+                break;
+        }
+        $returnData = [
+            "code" => 1,
+            "data" => $data
+        ];
+        return \json($returnData);
+    }
+
     public function save()
     {
         $id = $this->request->post('id/d', 0);
@@ -61,8 +94,8 @@ class Tenant extends Common
             'house_number_id' => $this->request->post('house_number_id/d', 0),
             'name' => $this->request->post('name/s', '', 'trim'),
             'sex' => $this->request->post('sex/s', '', 'trim'),
-            'phone' => $this->request->post('phone/s', '', 'trim'),
-            'id_card_number' => $this->request->post('id_card_number/s', '', 'trim'),
+            'phone' => $this->request->post('phone/d', '', 'trim'),
+            'id_card_number' => $this->request->post('id_card_number/d', '', 'trim'),
             'native_place' => $this->request->post('native_place/s', '', 'trim'),
             'work_units' => $this->request->post('work_units/s', '', 'trim'),
             // 'checkin_time' => $this->request->post('checkin_time/s', \date('Ymd'), 'trim'),
