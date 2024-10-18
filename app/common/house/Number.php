@@ -36,7 +36,7 @@ class Number
     public static function checkin($data)
     {
         $checkin_time = $data['checkin_time'];
-        $data['name'] = '新租客';
+        $data['name'] = $checkin_time . '入住租客';
         if (!$number_data = NumberModel::find($data['house_number_id'])) {
             return ['flag' => false, 'msg' => '入住失败，房间不存在'];
         }
