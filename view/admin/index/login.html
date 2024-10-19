@@ -39,6 +39,20 @@
     <t-space direction="vertical">
       <t-loading :loading="loading" text="登录中..." fullscreen />
     </t-space>
+    <div class="login-header ">
+      <div></div>
+      <div class="operations-container">
+        <t-button theme="default" shape="square" variant="text" @click="navToGitHub">
+          <t-icon name="logo-github" class="icon" />
+        </t-button>
+        <t-button theme="default" shape="square" variant="text" @click="navToHelper">
+          <t-icon name="help-circle" class="icon" />
+        </t-button>
+        <t-button theme="default" shape="square" variant="text" @click="toggleSettingPanel">
+          <t-icon name="setting" class="icon" />
+        </t-button>
+      </div>
+    </div>
 
     <div class="login-container">
       <div class="title-container">

@@ -178,3 +178,22 @@
         display: none;
     }
 }
+
+.login-header {
+    padding: 0 var(--td-comp-paddingLR-xl);
+    display        : flex;
+    justify-content: space-between;
+    align-items    : center;
+    backdrop-filter: blur(10px);
+    color          : var(--td-text-color-primary);
+    height         : var(--td-comp-size-xxxl);
+
+    .operations-container {
+        display    : flex;
+        align-items: center;
+
+        .t-button {
+            margin-left: var(--td-comp-margin-l);
+        }
+    }
+}
