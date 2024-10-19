@@ -42,14 +42,11 @@
     <div class="login-header ">
       <div></div>
       <div class="operations-container">
-        <t-button theme="default" shape="square" variant="text" @click="navToGitHub">
+        <t-button theme="default" shape="square" variant="text" @click="navToGitee">
           <t-icon name="logo-github" class="icon" />
         </t-button>
         <t-button theme="default" shape="square" variant="text" @click="navToHelper">
           <t-icon name="help-circle" class="icon" />
-        </t-button>
-        <t-button theme="default" shape="square" variant="text" @click="toggleSettingPanel">
-          <t-icon name="setting" class="icon" />
         </t-button>
       </div>
     </div>
@@ -145,7 +142,13 @@
             });
             console.error('请求失败：', error);
           }
-        }
+        },
+        navToGitee: function () {
+          window.open('https://gitee.com/MarcoMaHH/rent8');
+        },
+        navToHelper: function () {
+          window.open('https://blog.csdn.net/m0_61078449/article/details/142572124');
+        },
       }
     };
     const app = Vue.createApp(App);
