@@ -12,6 +12,13 @@
   </div>
   <template #operations>
     <div style="margin-bottom:3px; margin-right: 10px;">
+      <t-popup content="微信小程序" overlayClassName="overlay">
+        <t-button theme="default" shape="square" variant="text" @click="navToGitee">
+          <t-icon name="logo-wechat-stroke" />
+        </t-button>
+      </t-popup>
+    </div>
+    <div style="margin-bottom:3px; margin-right: 10px;">
       <t-popup content="代码仓库" overlayClassName="overlay">
         <t-button theme="default" shape="square" variant="text" @click="navToGitee">
           <t-icon name="logo-github" />
