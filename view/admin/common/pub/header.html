@@ -13,7 +13,7 @@
   <template #operations>
     <div style="margin-bottom:3px; margin-right: 10px;">
       <t-popup content="微信小程序" overlayClassName="overlay">
-        <t-button theme="default" shape="square" variant="text" @click="navToGitee">
+        <t-button theme="default" shape="square" variant="text" @click="miniProgram">
           <t-icon name="logo-wechat-stroke" />
         </t-button>
       </t-popup>
@@ -64,6 +64,10 @@
       </t-form-item>
     </t-form>
   </t-space>
+</t-dialog>
+
+<t-dialog v-model:visible="miniProgramVisible" header="微信小程序" width="20%">
+  <t-image src="https://tdesign.gtimg.com/demo/demo-image-1.png" :style="{ width: '120px', height: '120px' }" />
 </t-dialog>
 
 <t-loading :loading="loading" text="加载中..." fullscreen />

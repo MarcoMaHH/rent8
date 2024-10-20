@@ -47,6 +47,7 @@
       houseList: [],
       loading: false,
       passwordVisible: false,
+      miniProgramVisible: false,
       passwordData: {},
       passwordRules: {
         password: [
@@ -79,6 +80,9 @@
               });
             }
           });
+        },
+        miniProgram: function () {
+          this.miniProgramVisible = true;
         },
         changePassword: function () {
           this.passwordVisible = true;
