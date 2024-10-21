@@ -19,7 +19,7 @@ class Number
             if (!$number = NumberModel::find($id)) {
                 return ['flag' => false, 'msg' => '房间不存在'];
             }
-            if (NumberModel::where('name', $data['name'])->where('id', '<>', $id)->find()) {
+            if (NumberModel::where('name', $data['name'])->where('id', '<>', $id)->where('house_property_id', $data['house_property_id'])->find()) {
                 return ['flag' => false, 'msg' => '房间名已存在'];
             }
             $number->save($data);

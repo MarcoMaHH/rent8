@@ -4,6 +4,7 @@ namespace app\admin\controller\house;
 
 use app\admin\controller\Common;
 use app\admin\model\HouseProperty as PropertyModel;
+use app\common\house\Property as PropertyAction;
 use app\admin\validate\HouseProperty as PropertyValidate;
 use think\facade\View;
 
@@ -41,19 +42,12 @@ class Property extends Common
             'phone' => $this->request->post('phone/s', null, 'trim'),
             'id_card' => $this->request->post('id_card/s', null, 'trim'),
         ];
-        if ($id) {
-            if (!$role = PropertyModel::find($id)) {
-                return $this->returnError('修改失败，记录不存在。');
-            }
-            $role->save($data);
-            return $this->returnSuccess('修改成功');
+        $result = PropertyAction::save($id, $data);
+        if ($result['flag']) {
+            return $this->returnSuccess($result['msg']);
+        } else {
+            return $this->returnError($result['msg']);
         }
-        $loginUser = $this->auth->getLoginUser();
-        $data['admin_user_id'] = $loginUser['id'];
-        $data['firstly'] = 'Y';
-        PropertyModel::where('admin_user_id', $loginUser['id'])->update(['firstly' => 'N']);
-        PropertyModel::create($data);
-        return $this->returnSuccess('添加成功');
     }
 
     public function delete()
