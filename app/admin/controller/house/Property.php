@@ -67,7 +67,7 @@ class Property extends Common
             return $this->returnError('删除失败，' . $validate->getError() . '。');
         }
         $property->delete();
-        return $this->returnSuccess('删除成功。');
+        return $this->returnSuccess('删除成功');
     }
 
     public function sort()
