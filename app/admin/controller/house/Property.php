@@ -23,6 +23,16 @@ class Property extends Common
         return $this->returnResult($property);
     }
 
+    public function queryPropertyAll()
+    {
+        $loginUser = $this->auth->getLoginUser();
+        $property = PropertyModel::where('admin_user_id', $loginUser['id'])
+        ->field('id,name')
+        ->select();
+        $property[] = ['id' => 0, 'name' => '全部'];
+        return $this->returnResult($property);
+    }
+
     public function save()
     {
         $id = $this->request->post('id/d', 0);

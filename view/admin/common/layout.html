@@ -109,7 +109,7 @@
           });
         },
         queryHouse: function () {
-          axiosGet("{:url('house.property/queryProperty')}").then(response => {
+          axiosGet("{:url('house.property/queryPropertyAll')}").then(response => {
             if (response.code == 1) {
               this.houseList = response.data;
               for (let index = 0; index < this.houseList.length; index++) {
