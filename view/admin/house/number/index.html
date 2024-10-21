@@ -270,12 +270,12 @@
     return {
       init: function () {
         this.tableLoading = true;
-        axiosGet("{:url('query')}", { 'name': this.searchValue }).then(response => {
+        axiosGet("{:url('queryNumber')}", { 'name': this.searchValue }).then(response => {
           if (response.code == 1) {
             this.tableData = response.data;
             this.pagination.total = response.count;
           } else {
-            this.$message.error('系统出错了!!!');
+            this.$message.error('系统出错');
           }
           this.tableLoading = false;
         });
