@@ -11,16 +11,30 @@ class Property
      */
     public static function getProperty($user = null)
     {
-        $result = [];
+        $preferredPropertyId = null;
+        $allPropertyIds = [];
+
         if ($user) {
-            $properties = PropertyModel::where('admin_user_id', $user)->select()->toArray();
-            if ($properties) {
-                foreach ($properties as $key => $value) {
-                    $result[] = $value['id'];
-                }
+            $properties = PropertyModel::where('admin_user_id', $user)
+                                       ->field('id,firstly')
+                                       ->select()
+                                       ->toArray();
+
+            $allPropertyIds = array_map(function ($property) {
+                return $property['id'];
+            }, $properties);
+
+            $preferredProperty = array_filter($properties, function ($property) {
+                return $property['firstly'] === 'Y';
+            });
+
+            if (!empty($preferredProperty)) {
+                $preferredPropertyId = reset($preferredProperty)['id'];
             }
         }
-        return $result;
+
+        return $preferredPropertyId ? $preferredPropertyId : $allPropertyIds;
+
     }
 
     /**
