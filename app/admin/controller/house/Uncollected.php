@@ -64,7 +64,7 @@ class Uncollected extends Common
         $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
         $meter_reading_time = $this->request->param('meter_reading_time/s', '', 'trim');
         $conditions = array(
-            ['a.house_property_id', '=', $house_property_id],
+            ['a.house_property_id', 'in', $house_property_id],
             ['a.start_time', '< time', 'today+10 days'],
             ['a.accounting_date', 'null', ''],
         );
