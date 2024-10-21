@@ -11,11 +11,13 @@ class Property
      */
     public static function getProperty($user = null)
     {
-        $result = 0;
+        $result = [];
         if ($user) {
-            $properties = PropertyModel::where('admin_user_id', $user)->order(['firstly' => 'desc', 'id'])->find();
+            $properties = PropertyModel::where('admin_user_id', $user)->select()->toArray();
             if ($properties) {
-                $result = $properties['id'];
+                foreach ($properties as $key => $value) {
+                    $result[] = $value['id'];
+                }
             }
         }
         return $result;
@@ -29,7 +31,7 @@ class Property
     public static function convert_case_number($num)
     {
         //判断$num是否存在
-        if(!$num) {
+        if (!$num) {
             return '零元';
         }
         $flag = false;
@@ -44,7 +46,7 @@ class Property
         $tem_num = $num * 100;
         //判断数字长度
         $tem_num_len = strlen($tem_num);
-        if($tem_num_len > 14) {
+        if ($tem_num_len > 14) {
             return '数字太大了吧，有这么大的金钱吗';
         }
 
@@ -70,11 +72,11 @@ class Property
         $right_num_len = strlen($right_num) ?? 0;
 
         //循环计算亿万元等
-        for($i = 0; $i < $left_num_len; $i++) {
+        for ($i = 0; $i < $left_num_len; $i++) {
             //循环单个文字
             $key_ = substr($left_num, $i, 1);
             //判断数字不等于0或数字等于0与金额单位为亿、万、元，就返回完整单位的字符串
-            if($key_ !== '0' || ($key_ == '0' && ($danwei[$danwei_len - $left_num_len + $i] == '亿' || $danwei[$danwei_len - $left_num_len + $i] == '万' || $danwei[$danwei_len - $left_num_len + $i] == '元'))) {
+            if ($key_ !== '0' || ($key_ == '0' && ($danwei[$danwei_len - $left_num_len + $i] == '亿' || $danwei[$danwei_len - $left_num_len + $i] == '万' || $danwei[$danwei_len - $left_num_len + $i] == '元'))) {
                 $daxie = $daxie . $dint[$key_] . $danwei[$danwei_len - $left_num_len + $i];
             } else {
                 //否则就不含单位
@@ -83,9 +85,9 @@ class Property
         }
 
         //循环计算角分
-        for($i = 0; $i < $right_num_len; $i++) {
+        for ($i = 0; $i < $right_num_len; $i++) {
             $key_ = substr($right_num, $i, 1);
-            if($key_ > 0) {
+            if ($key_ > 0) {
                 $daxie = $daxie . $dint[$key_] . $danwei1[$i];
             }
         }
@@ -94,11 +96,11 @@ class Property
         $daxie_len = strlen($daxie);
         //设置文字切片从0开始，utf-8汉字占3个字符
         $j = 0;
-        while($daxie_len > 0) {
+        while ($daxie_len > 0) {
             //每次切片两个汉字
             $str = substr($daxie, $j, 6);
             //判断切片后的文字不等于零万、零元、零亿、零零
-            if($str == '零万' || $str == '零元' || $str == '零亿' || $str == '零零') {
+            if ($str == '零万' || $str == '零元' || $str == '零亿' || $str == '零零') {
                 //重新切片
                 $left = substr($daxie, 0, $j);
                 $right = substr($daxie, $j + 3);

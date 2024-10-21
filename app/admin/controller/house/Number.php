@@ -25,7 +25,7 @@ class Number extends Common
         $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
         $name = $this->request->param('name/s', '', 'trim');
         $conditions = array(
-            ['a.house_property_id', '=', $house_property_id],
+            ['a.house_property_id', 'in', $house_property_id],
         );
         if ($name != '') {
             \array_push($conditions, ['a.name', 'like', '%' . $name . '%']);
