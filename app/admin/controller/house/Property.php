@@ -18,7 +18,6 @@ class Property extends Common
     {
         $loginUser = $this->auth->getLoginUser();
         $property = PropertyModel::where('admin_user_id', $loginUser['id'])
-        ->order('firstly')
         ->select();
         return $this->returnResult($property);
     }
@@ -26,7 +25,7 @@ class Property extends Common
     public function queryPropertyAll()
     {
         $loginUser = $this->auth->getLoginUser();
-        $property = PropertyModel::where('admin_user_id', $loginUser['id'])
+        $property = PropertyModel::where('admin_user_id', 'in', $loginUser['id'])
         ->field('id,name,firstly')
         ->select();
         return $this->returnResult($property);
