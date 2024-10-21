@@ -19,6 +19,7 @@ class Property extends Common
     {
         $loginUser = $this->auth->getLoginUser();
         $property = PropertyModel::where('admin_user_id', $loginUser['id'])
+        ->order('id')
         ->select();
         return $this->returnResult($property);
     }
@@ -28,6 +29,7 @@ class Property extends Common
         $loginUser = $this->auth->getLoginUser();
         $property = PropertyModel::where('admin_user_id', $loginUser['id'])
         ->field('id,name,firstly')
+        ->order('id')
         ->select();
         return $this->returnResult($property);
     }

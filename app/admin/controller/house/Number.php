@@ -34,7 +34,7 @@ class Number extends Common
         ->alias('a')
         ->join('HouseProperty b', 'a.house_property_id = b.id')
         ->field('a.*,b.name as property_name')
-        ->order('a.name')
+        ->order('a.house_property_id, a.name')
         ->select();
         foreach ($numbers as $value) {
             if ($value['lease']) {
