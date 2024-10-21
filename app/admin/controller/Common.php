@@ -45,7 +45,7 @@ class Common extends BaseController
             return;
         }
         if (!$this->auth->isLogin()) {
-            return $this->error('尚未登录', '/admin/index/login');
+            return $this->error('请重新登录', '/admin/index/login');
         }
         if (!$this->auth->checkAuth($controller, $action)) {
             return $this->error('您没有操作权限', '/admin/index/login');
