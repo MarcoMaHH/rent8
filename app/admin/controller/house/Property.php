@@ -14,7 +14,7 @@ class Property extends Common
         return View::fetch();
     }
 
-    public function query()
+    public function queryProperty()
     {
         $loginUser = $this->auth->getLoginUser();
         $property = PropertyModel::where('admin_user_id', $loginUser['id'])

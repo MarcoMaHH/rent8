@@ -136,7 +136,7 @@
   function f() {
     return {
       init: function () {
-        axiosGet("{:url('queryHouse')}").then(response => {
+        axiosGet("{:url('queryHouseInfo')}").then(response => {
           if (response.code == 1) {
             this.cardData = response.data;
           } else {

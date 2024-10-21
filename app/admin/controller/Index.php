@@ -17,7 +17,7 @@ class Index extends Common
         return View::fetch();
     }
 
-    public function queryHouse()
+    public function queryHouseInfo()
     {
         $loginUser = $this->auth->getLoginUser();
         $property_count = PropertyModel::where('admin_user_id', $loginUser['id'])->count();
