@@ -25,7 +25,7 @@ class Property extends Common
     public function queryPropertyAll()
     {
         $loginUser = $this->auth->getLoginUser();
-        $property = PropertyModel::where('admin_user_id', 'in', $loginUser['id'])
+        $property = PropertyModel::where('admin_user_id', $loginUser['id'])
         ->field('id,name,firstly')
         ->select();
         return $this->returnResult($property);
