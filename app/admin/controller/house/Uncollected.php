@@ -29,7 +29,7 @@ class Uncollected extends Common
         $loginUser = $this->auth->getLoginUser();
         $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
         $conditions = array(
-            ['a.house_property_id', '=', $house_property_id],
+            ['a.house_property_id', 'in', $house_property_id],
             ['a.start_time', '< time', 'today+5 days'],
             ['a.accounting_date', 'null', ''],
         );
