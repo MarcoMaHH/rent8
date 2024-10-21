@@ -42,7 +42,8 @@
     this.token = '{$layout_token}';
     const common_data = {
       isCollapse: false,
-      houseDef: null,
+      houseDef: 0,
+      houseName: '',
       houseList: [],
       loading: false,
       passwordVisible: false,
@@ -112,9 +113,11 @@
             if (response.code == 1) {
               this.houseList = response.data;
               this.houseDef = 0;
+              this.houseName = '';
               for (let index = 0; index < this.houseList.length; index++) {
                 if (this.houseList[index].firstly == 'Y') {
                   this.houseDef = this.houseList[index].id;
+                  this.houseName = this.houseList[index].name;
                   this.buttonDisabled = false;
                   break;
                 }
