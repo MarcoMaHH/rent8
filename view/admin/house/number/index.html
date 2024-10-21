@@ -319,7 +319,7 @@
       handleEdit(row) {
         this.$refs.numberForm.reset();
         this.formData = { ...row };
-        this.formHeader = this.houseName + ' - 修改房间';
+        this.formHeader = row.property_name + ' - 修改房间';
         this.dialogVisible = true;
       },
       // 保存
