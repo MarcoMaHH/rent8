@@ -27,9 +27,8 @@ class Property extends Common
     {
         $loginUser = $this->auth->getLoginUser();
         $property = PropertyModel::where('admin_user_id', $loginUser['id'])
-        ->field('id,name')
+        ->field('id,name,firstly')
         ->select();
-        $property[] = ['id' => 0, 'name' => '全部'];
         return $this->returnResult($property);
     }
 
