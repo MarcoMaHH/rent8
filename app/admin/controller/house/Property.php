@@ -46,14 +46,14 @@ class Property extends Common
                 return $this->returnError('修改失败，记录不存在。');
             }
             $role->save($data);
-            return $this->returnSuccess('修改成功。');
+            return $this->returnSuccess('修改成功');
         }
         $loginUser = $this->auth->getLoginUser();
         $data['admin_user_id'] = $loginUser['id'];
         $data['firstly'] = 'Y';
         PropertyModel::where('admin_user_id', $loginUser['id'])->update(['firstly' => 'N']);
         PropertyModel::create($data);
-        return $this->returnSuccess('添加成功。');
+        return $this->returnSuccess('添加成功');
     }
 
     public function delete()

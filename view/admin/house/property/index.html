@@ -71,9 +71,10 @@
     return {
       init: function () {
         this.tableLoading = true;
-        axiosGet("{:url('query')}").then(response => {
+        axiosGet("{:url('queryProperty')}").then(response => {
           if (response.code == 1) {
             this.tableData = response.data;
+            this.queryHouse();
           } else {
             this.$message.error('系统出错了!!!');
           }
