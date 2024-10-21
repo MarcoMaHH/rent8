@@ -42,7 +42,8 @@ class Property extends Common
             'phone' => $this->request->post('phone/s', null, 'trim'),
             'id_card' => $this->request->post('id_card/s', null, 'trim'),
         ];
-        $result = PropertyAction::save($id, $data);
+        $loginUser = $this->auth->getLoginUser();
+        $result = PropertyAction::save($id, $data, $loginUser['id']);
         if ($result['flag']) {
             return $this->returnSuccess($result['msg']);
         } else {
