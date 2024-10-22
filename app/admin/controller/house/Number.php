@@ -227,9 +227,9 @@ class Number extends Common
     {
         $house_property_id = Property::getProperty();
         if (count($house_property_id) > 1) {
-            return $this->returnResult([]);
+            return $this->returnResult();
         } else {
-            $number = NumberModel::where('house_property_id', $house_property_id)
+            $number = NumberModel::where('house_property_id', 'in', $house_property_id)
             ->order('name')
             ->field('id as value,name as label')
             ->select()

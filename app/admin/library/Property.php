@@ -35,7 +35,7 @@ class Property
             }
         }
 
-        return $preferredPropertyId ? $preferredPropertyId : $allPropertyIds;
+        return $preferredPropertyId ? [$preferredPropertyId] : $allPropertyIds;
 
     }
 
