@@ -222,18 +222,15 @@ class Number extends Common
         return $this->returnResult($number_info);
     }
 
-    // //其他页面查询numberId
-    // public function queryNumberId()
-    // {
-    //     $loginUser = $this->auth->getLoginUser();
-    //     $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
-    //     $number = NumberModel::where('house_property_id', $house_property_id)
-    //     ->order('name')
-    //     ->field('id as value,name as label')
-    //     ->select()
-    //     ->toArray();
-    //     return $this->returnResult($number);
-    // }
-
-
+    //其他页面查询numberId
+    public function queryNumberId()
+    {
+        $house_property_id = Property::getProperty();
+        $number = NumberModel::where('house_property_id', $house_property_id)
+        ->order('name')
+        ->field('id as value,name as label')
+        ->select()
+        ->toArray();
+        return $this->returnResult($number);
+    }
 }
