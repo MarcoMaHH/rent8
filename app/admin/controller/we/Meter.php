@@ -21,10 +21,9 @@ class Meter extends Common
 
     public function query()
     {
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
+        $house_property_id = Property::getProperty();
         $conditions = array(
-            ['a.house_property_id', '=', $house_property_id]
+            ['a.house_property_id', 'in', $house_property_id]
         );
         $count = MeterModel::where($conditions)->alias('a')->count();
         $meters = MeterModel::where($conditions)->alias('a')
