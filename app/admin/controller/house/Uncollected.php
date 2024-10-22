@@ -56,7 +56,7 @@ class Uncollected extends Common
         $order = $this->request->param('order/s', '', 'trim');
         $field = $this->request->param('field/s', '', 'trim');
         if (!$order) {
-            $field = 'a.start_time';
+            $field = 'a.start_time, a.house_property_id, b.name';
             $order = 'asc';
         }
         $house_property_id = Property::getProperty();
@@ -164,8 +164,7 @@ class Uncollected extends Common
     public function centralized()
     {
         $type = $this->request->param('type/s');
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = Property::getProperty($loginUser['id']);
+        $house_property_id = Property::getProperty();
         $conditions = array(
             ['a.house_property_id', 'in', $house_property_id],
             ['a.start_time', '< time', 'today+10 days'],
