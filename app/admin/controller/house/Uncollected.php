@@ -26,8 +26,7 @@ class Uncollected extends Common
     // 抄表日期选项
     public function queryReadingTime()
     {
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
+        $house_property_id = Property::getProperty();
         $conditions = array(
             ['a.house_property_id', 'in', $house_property_id],
             ['a.start_time', '< time', 'today+5 days'],
@@ -52,7 +51,7 @@ class Uncollected extends Common
     }
 
     //主页面 table查询
-    public function query()
+    public function queryUncollected()
     {
         $order = $this->request->param('order/s', '', 'trim');
         $field = $this->request->param('field/s', '', 'trim');
@@ -60,8 +59,7 @@ class Uncollected extends Common
             $field = 'a.start_time';
             $order = 'asc';
         }
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
+        $house_property_id = Property::getProperty();
         $meter_reading_time = $this->request->param('meter_reading_time/s', '', 'trim');
         $conditions = array(
             ['a.house_property_id', 'in', $house_property_id],

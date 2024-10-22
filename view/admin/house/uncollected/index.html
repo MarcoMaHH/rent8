@@ -294,7 +294,7 @@
       },
       queryTable: function () {
         this.tableLoading = true;
-        axiosGet("{:url('query')}", { 'order': this.order, 'field': this.field, 'meter_reading_time': this.readingTime })
+        axiosGet("{:url('queryUncollected')}", { 'order': this.order, 'field': this.field, 'meter_reading_time': this.readingTime })
           .then(response => {
             if (response.code == 1) {
               this.tableData = response.data;
