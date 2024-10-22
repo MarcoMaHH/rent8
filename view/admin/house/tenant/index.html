@@ -160,7 +160,7 @@
         this.selectId = row.id;
         this.queryPhoto();
         this.formHeader = row.property_name + '-' + row.number_name + '-' + row.name;
-        this.uploadData = { way: row.id }
+        this.uploadData = { way: row.id, house_property_id: row.house_property_id }
         this.photoVisible = true;
       },
       queryPhoto() {

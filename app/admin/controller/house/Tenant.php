@@ -20,10 +20,9 @@ class Tenant extends Common
 
     public function query()
     {
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
+        $house_property_id = Property::getProperty();
         $conditions = array(
-            ['a.house_property_id', '=', $house_property_id]
+            ['a.house_property_id', 'in', $house_property_id]
         );
         $parameter = $this->request->param('parameter/s', '');
         if ($parameter) {
@@ -116,8 +115,7 @@ class Tenant extends Common
         $name = $file->getOriginalName();
         // 上传到本地服务器
         $savename = \think\facade\Filesystem::disk('public')->putFileAs($way, $file, time().substr(strrchr($name, '.'), 0));
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = Property::getProperty($loginUser['id']);
+        $house_property_id = $this->request->post('house_property_id/s', null, 'trim');
         $data = [
             'house_property_id' => $house_property_id,
             'tenant_id' => $way,
