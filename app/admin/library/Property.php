@@ -15,7 +15,7 @@ class Property
         $preferredPropertyId = null;
         $allPropertyIds = [];
 
-        $user = Auth::getInstance()->getLoginUser();
+        $user = Auth::getInstance()->getLoginUser()['id'];
         if ($user) {
             $properties = PropertyModel::where('admin_user_id', $user)
                                        ->field('id,firstly')

@@ -21,8 +21,7 @@ class Number extends Common
 
     public function queryNumber()
     {
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = Property::getProperty($loginUser['id']);
+        $house_property_id = Property::getProperty();
         $name = $this->request->param('name/s', '', 'trim');
         $conditions = array(
             ['a.house_property_id', 'in', $house_property_id],
@@ -206,7 +205,24 @@ class Number extends Common
         fclose($file_type);
     }
 
-        // //其他页面查询numberId
+    // 房间管理页面-获取房间信息
+    public function getMessage()
+    {
+        $loginUser = $this->auth->getLoginUser();
+        $house_property_id =  Property::getProperty();
+        $user = UserModel::find($loginUser['id']);
+        $number_count =  $user->houseNumber->where('house_property_id', $house_property_id)->count();
+        $empty_count =  $user->houseNumber->where('rent_mark', 'N')->where('house_property_id', $house_property_id)->count();
+        $occupancy = $number_count == 0 ? '0%' : round((($number_count - $empty_count) / $number_count) * 100).'%';
+        $number_info = [
+            'occupancy' => $occupancy,
+            'rented' => $number_count - $empty_count,
+            'empty' => $empty_count,
+        ];
+        return $this->returnResult($number_info);
+    }
+
+    // //其他页面查询numberId
     // public function queryNumberId()
     // {
     //     $loginUser = $this->auth->getLoginUser();
@@ -219,19 +235,5 @@ class Number extends Common
     //     return $this->returnResult($number);
     // }
 
-    //     public function getMessage()
-    // {
-    //     $loginUser = $this->auth->getLoginUser();
-    //     $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
-    //     $user = UserModel::find($loginUser['id']);
-    //     $number_count =  $user->houseNumber->where('house_property_id', $house_property_id)->count();
-    //     $empty_count =  $user->houseNumber->where('rent_mark', 'N')->where('house_property_id', $house_property_id)->count();
-    //     $occupancy = $number_count == 0 ? '0%' : round((($number_count - $empty_count) / $number_count) * 100).'%';
-    //     $number_info = [
-    //         'occupancy' => $occupancy,
-    //         'rented' => $number_count - $empty_count,
-    //         'empty' => $empty_count,
-    //     ];
-    //     return $this->returnResult($number_info);
-    // }
+
 }
