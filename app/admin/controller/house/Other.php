@@ -21,8 +21,8 @@ class Other extends Common
     {
         $loginUser = $this->auth->getLoginUser();
         $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
-        $count = OtherModel::where('house_property_id', $house_property_id)->count();
-        $numbers = OtherModel::where('a.house_property_id', $house_property_id)
+        $count = OtherModel::where('house_property_id', 'in', $house_property_id)->count();
+        $numbers = OtherModel::where('a.house_property_id', 'in', $house_property_id)
         ->alias('a')
         ->leftJoin('HouseProperty b', 'a.house_property_id = b.id')
         ->field('a.*,b.name as property_name')
@@ -70,10 +70,10 @@ class Other extends Common
                 return $this->returnError('修改失败，记录不存在。');
             }
             $electricity->save($data);
-            return $this->returnSuccess('修改成功。');
+            return $this->returnSuccess('修改成功');
         }
         OtherModel::create($data);
-        return $this->returnSuccess('添加成功。');
+        return $this->returnSuccess('添加成功');
     }
 
     public function delete()

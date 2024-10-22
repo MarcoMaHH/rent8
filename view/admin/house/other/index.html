@@ -131,7 +131,7 @@
       handleEdit(row) {
         this.$refs.otherForm.reset();
         this.formData = { ...row };
-        this.formHeader = this.houseName + ' - 修改其他收支';
+        this.formHeader = row.property_name + ' - 修改其他收支';
         this.dialogVisible = true;
       },
       handleDelete(row) {

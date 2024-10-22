@@ -18,7 +18,7 @@ class Tenant extends Common
         return View::fetch();
     }
 
-    public function query()
+    public function queryTenant()
     {
         $house_property_id = Property::getProperty();
         $conditions = array(

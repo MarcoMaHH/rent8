@@ -122,7 +122,7 @@
       },
       queryTable: function () {
         this.tableLoading = true;
-        axiosGet("{:url('query')}", { 'parameter': this.searchValue }).then(response => {
+        axiosGet("{:url('queryTenant')}", { 'parameter': this.searchValue }).then(response => {
           if (response.code == 1) {
             this.tableData = response.data;
             this.pagination.total = response.count;
