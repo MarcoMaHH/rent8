@@ -183,7 +183,8 @@ class Uncollected extends Common
         $data = BillingModel::where($conditions)
         ->alias('a')
         ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
-        ->field('a.*, b.name')
+        ->join('HouseProperty c', 'c.id = a.house_property_id')
+        ->field('a.*, b.name as number_name, c.name as property_name')
         ->order('b.name')
         ->select();
         return $this->returnResult($data);

@@ -181,12 +181,12 @@
 <t-dialog v-model:visible="concentratedVisible" :header="formHeader" :width="680" :footer="false" top="5px">
   <t-form ref="concentratedForm" :label-width="100" @submit="concentratedSave">
     <t-form-item v-if="concentratedType == 'E'" v-for="(domain, index) in concentratedData" :key="domain.id"
-      :label="domain.name + '-'+ domain.electricity_meter_last_month">
+      :label="domain.property_name + '-' + domain.number_name + '-'+ domain.electricity_meter_last_month">
       <t-input-number v-model="domain.electricity_meter_this_month" :style="{ width: '480px' }" theme="normal"
         placeholder="请输入" />
     </t-form-item>
     <t-form-item v-if="concentratedType == 'W'" v-for="(domain, index) in concentratedData" :key="domain.id"
-      :label="domain.name + '-'+ domain.water_meter_last_month">
+      :label="domain.property_name + '-' + domain.number_name + '-'+ domain.water_meter_last_month">
       <t-input-number v-model="domain.water_meter_this_month" :style="{ width: '480px' }" theme="normal"
         placeholder="请输入" />
     </t-form-item>
@@ -414,9 +414,9 @@
       // 集中抄表
       concentrated(val) {
         if (val == 'E') {
-          this.formHeader = '集中抄电'
+          this.formHeader = '集中抄电 （房产-房号-上期表度数）';
         } else if (val == 'W') {
-          this.formHeader = '集中抄水'
+          this.formHeader = '集中抄水 （房产-房号-上期表度数）';
         }
         this.concentratedType = val
         this.concentratedVisible = true
