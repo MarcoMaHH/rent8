@@ -16,15 +16,14 @@ class Collected extends Common
         return View::fetch();
     }
 
-    public function query()
+    public function queryCollected()
     {
         $page = $this->request->param('page/d', LAYUI_PAGE);
         $limit = $this->request->param('limit/d', LAYUI_LIMIT);
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
+        $house_property_id = Property::getProperty();
         $house_number_id = $this->request->param('house_number_id/d', 0);
         $conditions = array(
-            ['a.house_property_id', '=', $house_property_id],
+            ['a.house_property_id', 'in', $house_property_id],
             ['a.accounting_date', 'not null', '']
         );
         if ($house_number_id) {
@@ -55,9 +54,8 @@ class Collected extends Common
 
     public function sum()
     {
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
-        $sum = BillingModel::where('house_property_id', $house_property_id)
+        $house_property_id = Property::getProperty();
+        $sum = BillingModel::where('house_property_id', 'in', $house_property_id)
         ->whereTime('accounting_date', 'today')
         ->sum('total_money');
         return $this->returnResult([], 1, $sum);

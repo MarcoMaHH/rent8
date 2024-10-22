@@ -5,7 +5,7 @@
     <t-button theme="primary" @click="handleFilter">
       <template #icon><t-icon name="unfold-more" /></template> 明细账单
     </t-button>
-    今日到账总金额：{{sum}}
+    今日到账总金额：{{sum}} 元
     <span style="float: right;">
       <t-select placeholder="请选择房间名" clearable style="width: 140px;display: inline-block;" @change="changeDate">
         <t-option v-for="(item, index) in numberData" :key="index" :value="item.value" :label="item.label">
@@ -102,7 +102,7 @@
           'limit': this.pagination.pageSize,
           'page': this.pagination.current
         };
-        axiosGet("{:url('query')}", params).then(response => {
+        axiosGet("{:url('queryCollected')}", params).then(response => {
           if (response.code == 1) {
             this.tableData = response.data;
             this.pagination.total = response.count;
