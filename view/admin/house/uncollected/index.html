@@ -176,7 +176,6 @@
   </div>
 </t-dialog>
 
-
 <!-- 集中抄表 -->
 <t-dialog v-model:visible="concentratedVisible" :header="formHeader" :width="680" :footer="false" top="5px">
   <t-form ref="concentratedForm" :label-width="100" @submit="concentratedSave">
@@ -420,7 +419,7 @@
         }
         this.concentratedType = val
         this.concentratedVisible = true
-        axiosGet("{:url('centralized')}", { type: val, house_property_id: this.houseDef }).then(response => {
+        axiosGet("{:url('centralized')}", { type: val }).then(response => {
           if (response.code == 1) {
             this.concentratedData = response.data;
           } else {

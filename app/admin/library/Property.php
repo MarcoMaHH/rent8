@@ -3,17 +3,19 @@
 namespace app\admin\library;
 
 use app\admin\model\HouseProperty as PropertyModel;
+use app\admin\library\Auth;
 
 class Property
 {
     /**
-     * 获取默认房产id
+     * 获取房产id
      */
-    public static function getProperty($user = null)
+    public static function getProperty()
     {
         $preferredPropertyId = null;
         $allPropertyIds = [];
 
+        $user = Auth::getInstance()->getLoginUser();
         if ($user) {
             $properties = PropertyModel::where('admin_user_id', $user)
                                        ->field('id,firstly')

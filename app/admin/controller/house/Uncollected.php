@@ -166,7 +166,8 @@ class Uncollected extends Common
     public function centralized()
     {
         $type = $this->request->param('type/s');
-        $house_property_id = $this->request->param('house_property_id/d', 0);
+        $loginUser = $this->auth->getLoginUser();
+        $house_property_id = Property::getProperty($loginUser['id']);
         $conditions = array(
             ['a.house_property_id', 'in', $house_property_id],
             ['a.start_time', '< time', 'today+10 days'],
