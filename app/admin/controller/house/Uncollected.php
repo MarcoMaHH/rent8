@@ -168,7 +168,7 @@ class Uncollected extends Common
         $type = $this->request->param('type/s');
         $house_property_id = $this->request->param('house_property_id/d', 0);
         $conditions = array(
-            ['a.house_property_id', '=', $house_property_id],
+            ['a.house_property_id', 'in', $house_property_id],
             ['a.start_time', '< time', 'today+10 days'],
             ['a.accounting_date', 'null', ''],
             ['a.end_time', 'not null', ''],
