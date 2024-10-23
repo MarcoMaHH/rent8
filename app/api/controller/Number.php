@@ -11,18 +11,16 @@ use app\admin\library\Property;
 
 class Number extends Common
 {
-    public function query()
+    public function queryNumber()
     {
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
-        $numbers = NumberModel::where('a.house_property_id', $house_property_id)
+        $house_property_id = Property::getProperty();
+        $numbers = NumberModel::where('a.house_property_id', 'in', $house_property_id)
         ->alias('a')
         ->join('HouseProperty b', 'a.house_property_id = b.id')
         ->field('a.*,b.name as property_name')
         ->order('a.name')
         ->select();
-        $today = date("Y-m-d");
-        return $this->returnWechat($numbers, 0, $today);
+        return $this->returnWechat($numbers);
     }
 
     public function edit()
