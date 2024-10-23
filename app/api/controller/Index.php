@@ -9,7 +9,7 @@ use app\admin\model\AdminUser as UserModel;
 
 class Index extends Common
 {
-    public function query()
+    public function queryIndex()
     {
         $loginUser = $this->auth->getLoginUser();
         $property = PropertyModel::where('admin_user_id', $loginUser['id'])->select()->toArray();
