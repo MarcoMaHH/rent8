@@ -16,6 +16,17 @@ class Property extends Common
         return $this->returnWechat($properties);
     }
 
+    // hearder查询全部房产
+    public function queryPropertyAll()
+    {
+        $loginUser = $this->auth->getLoginUser();
+        $property = PropertyModel::where('admin_user_id', $loginUser['id'])
+        ->field('id,name,firstly')
+        ->order('firstly, id')
+        ->select();
+        return $this->returnWechat($property);
+    }
+
     public function sort()
     {
         $id = $this->request->param('id/d', 0);
