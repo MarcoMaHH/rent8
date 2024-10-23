@@ -57,4 +57,15 @@ class Property extends Common
             return $this->returnError($result['msg']);
         }
     }
+
+    public function delete()
+    {
+        $id = $this->request->param('id/d', 0);
+        $result = PropertyAction::delete($id);
+        if ($result['flag']) {
+            return $this->returnSuccess($result['msg']);
+        } else {
+            return $this->returnError($result['msg']);
+        }
+    }
 }
