@@ -96,7 +96,7 @@
   function f() {
     return {
       init: function () {
-        axiosGet("{:url('we.meter/queryMeterId')}", {'typg': 'W'}).then(response => {
+        axiosGet("{:url('we.meter/queryMeterId')}", {'type': 'W'}).then(response => {
           if (response.code == 1) {
             this.meterData = response.data;
             if (response.data.length > 0) {
