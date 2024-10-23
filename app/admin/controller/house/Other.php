@@ -17,7 +17,7 @@ class Other extends Common
         return View::fetch();
     }
 
-    public function query()
+    public function queryOther()
     {
         $loginUser = $this->auth->getLoginUser();
         $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));

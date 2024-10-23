@@ -72,7 +72,7 @@
     return {
       init: function () {
         this.tableLoading = true;
-        axiosGet("{:url('query')}").then(response => {
+        axiosGet("{:url('queryMeter')}").then(response => {
           if (response.code == 1) {
             this.tableData = response.data;
           } else {
@@ -91,7 +91,7 @@
       },
       handleAdd() {
         this.$refs.meterForm.reset();
-        this.formData = { 'name': this.houseName + '-水电表' };
+        this.formData = { 'name': this.houseName + '-水电表', 'house_property_id': this.houseDef };
         this.formHeader = this.houseName + ' - 新增水电表';
         this.dialogVisible = true;
         this.numberCheckbox = [];
@@ -99,6 +99,7 @@
       handleSave() {
         this.$refs.meterForm.validate().then((valid) => {
           if (valid == true) {
+            console.log(this.formData);
             this.formData.house_number_id = this.numberCheckbox.join();
             axiosPost("{:url('save')}", this.formData).then(response => {
               if (response.state == 'success') {

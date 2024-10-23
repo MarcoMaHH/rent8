@@ -95,7 +95,7 @@
       },
       queryTable: function () {
         this.tableLoading = true;
-        axiosGet("{:url('query')}").then(response => {
+        axiosGet("{:url('queryOther')}").then(response => {
           if (response.code == 1) {
             this.tableData = response.data;
             this.pagination.total = response.count;
