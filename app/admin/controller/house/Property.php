@@ -5,7 +5,6 @@ namespace app\admin\controller\house;
 use app\admin\controller\Common;
 use app\admin\model\HouseProperty as PropertyModel;
 use app\common\house\Property as PropertyAction;
-use app\admin\validate\HouseProperty as PropertyValidate;
 use think\facade\View;
 
 class Property extends Common
@@ -57,15 +56,12 @@ class Property extends Common
     public function delete()
     {
         $id = $this->request->param('id/d', 0);
-        if (!$property = PropertyModel::find($id)) {
-            return $this->returnError('删除失败，记录不存在。');
+        $result = PropertyAction::delete($id);
+        if ($result['flag']) {
+            return $this->returnSuccess($result['msg']);
+        } else {
+            return $this->returnError($result['msg']);
         }
-        $validate = new PropertyValidate();
-        if (!$validate->scene('delete')->check(['id' => $id])) {
-            return $this->returnError('删除失败，' . $validate->getError() . '。');
-        }
-        $property->delete();
-        return $this->returnSuccess('删除成功');
     }
 
     public function sort()

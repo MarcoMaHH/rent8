@@ -16,7 +16,7 @@ class HouseProperty extends Validate
     public function checkNumberIsEmpty($value, $rule)
     {
         if (NumberModel::field('id')->where('house_property_id', $value)->find()) {
-            return '该房产已被用户使用';
+            return '房产还有房间';
         }
         return true;
     }
