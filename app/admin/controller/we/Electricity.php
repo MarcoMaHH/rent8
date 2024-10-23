@@ -23,10 +23,9 @@ class Electricity extends Common
     //查询电费
     public function queryElectricity()
     {
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
+        $house_property_id = Property::getProperty();
         $conditions = array(
-            ['b.house_property_id', '=', $house_property_id],
+            ['b.house_property_id', 'in', $house_property_id],
             ['b.type', '=', TYPE_ELECTRICITY]
         );
         $meter_id = $this->request->param('meter_id/s', '', 'trim');
@@ -71,27 +70,14 @@ class Electricity extends Common
         return $this->returnResult($water, $count);
     }
 
-    // 查询电表
-    public function queryMeter()
-    {
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
-        $electricity = MeterModel::where(
-            ['house_property_id' => $house_property_id,
-            'type' => TYPE_ELECTRICITY]
-        )->select();
-        return $this->returnResult($electricity);
-    }
-
     // 保存电费
     public function save()
     {
         $id = $this->request->post('id/d', 0);
         $meter_id = $this->request->param('meter_id/d', 0);
-        $loginUser = $this->auth->getLoginUser();
         $data = [
             'meter_id' => $meter_id,
-            'house_property_id' => Property::getProperty($loginUser['id']),
+            'house_property_id' => $this->request->post('house_property_id/s', null, 'trim'),
             'start_month' => $this->request->post('start_month/s', '', 'trim'),
             'end_month' => $this->request->post('end_month/s', '', 'trim'),
             'master_dosage' => $this->request->param('master_dosage/d', 0),

@@ -75,10 +75,9 @@ class Water extends Common
     {
         $id = $this->request->post('id/d', 0);
         $meter_id = $this->request->param('meter_id/d', 0);
-        $loginUser = $this->auth->getLoginUser();
         $data = [
                 'meter_id' => $meter_id,
-                'house_property_id' => Property::getProperty($loginUser['id']),
+                'house_property_id' => $this->request->post('house_property_id/s', null, 'trim'),
                 'start_month' => $this->request->post('start_month/s', '', 'trim'),
                 'end_month' => $this->request->post('end_month/s', '', 'trim'),
                 'master_dosage' => $this->request->param('master_dosage/d', 0),

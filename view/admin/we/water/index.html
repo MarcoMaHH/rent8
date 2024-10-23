@@ -96,7 +96,7 @@
   function f() {
     return {
       init: function () {
-        axiosGet("{:url('we.meter/queryMeterId')}", {'type': 'W'}).then(response => {
+        axiosGet("{:url('we.meter/queryMeterId')}", { 'type': 'W' }).then(response => {
           if (response.code == 1) {
             this.meterData = response.data;
             if (response.data.length > 0) {
@@ -125,7 +125,7 @@
       },
       handleAdd() {
         this.$refs.waterForm.reset();
-        this.formData = { 'meter_id': this.meter_id };
+        this.formData = { 'meter_id': this.meter_id, 'house_property_id': this.houseDef };
         this.formHeader = this.houseName + '水表 - 新增水费';;
         this.dialogVisible = true;
       },
