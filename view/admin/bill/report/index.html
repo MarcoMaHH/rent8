@@ -84,7 +84,7 @@
 {block name="script"}
 <script>
   const data = {
-    cardData: {},
+    cardData: { 'income': 0, 'spending': 0, 'profit': 0, 'empty_count': 0, 'occupancy': 0, 'number_count': 0 },
   };
   function f() {
     return {
@@ -92,7 +92,9 @@
         let that = this
         axiosGet("{:url('queryReport')}").then(response => {
           if (response.code == 1) {
-            that.cardData = response.data;
+            if (response.data.length > 0) {
+              that.cardData = response.data[0];
+            }
           } else {
             that.$message.error('系统出错了!!!');
           }

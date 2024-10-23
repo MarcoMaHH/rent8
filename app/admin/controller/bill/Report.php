@@ -46,7 +46,7 @@ class Report extends Common
                 'number_count' => $number_count,
                 'empty_count' => $empty_count,
             ];
-            return $this->returnResult($house_info);
+            return $this->returnResult([$house_info]);
         }
     }
 
