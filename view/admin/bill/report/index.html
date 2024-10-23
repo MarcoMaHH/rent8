@@ -90,7 +90,7 @@
     return {
       init: function () {
         let that = this
-        axiosGet("{:url('query')}").then(response => {
+        axiosGet("{:url('queryReport')}").then(response => {
           if (response.code == 1) {
             that.cardData = response.data;
           } else {
