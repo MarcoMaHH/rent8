@@ -91,4 +91,20 @@ class Meter extends Common
             return $this->returnSuccess('删除成功。');
         }
     }
+
+    //其他页面查询-全部房产时，不可用
+    public function queryMeterId()
+    {
+        $house_property_id = Property::getProperty();
+        if (count($house_property_id) > 1) {
+            return $this->returnResult();
+        } else {
+            $type = $this->request->param('type/s',  null, 'trim');
+            $meter = MeterModel::where([
+                'house_property_id' => $house_property_id,
+                'type' => $type
+            ])->select();
+            return $this->returnResult($meter);
+        }
+    }
 }

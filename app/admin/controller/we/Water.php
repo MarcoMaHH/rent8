@@ -21,12 +21,11 @@ class Water extends Common
     }
 
     //查询水费
-    public function query()
+    public function queryWater()
     {
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
+        $house_property_id = Property::getProperty();
         $conditions = array(
-            ['b.house_property_id', '=', $house_property_id],
+            ['b.house_property_id', 'in', $house_property_id],
             ['b.type', '=', TYPE_WATER]
         );
         $meter_id = $this->request->param('meter_id/s', '', 'trim');
@@ -69,18 +68,6 @@ class Water extends Common
             \array_push($result, $value);
         }
         return $this->returnResult($water, $count);
-    }
-
-    // 查询水表
-    public function queryMeter()
-    {
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
-        $electricity = MeterModel::where(
-            ['house_property_id' => $house_property_id,
-            'type' => TYPE_WATER]
-        )->select();
-        return $this->returnResult($electricity);
     }
 
     // 保存水费

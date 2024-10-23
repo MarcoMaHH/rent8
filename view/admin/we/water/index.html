@@ -96,7 +96,7 @@
   function f() {
     return {
       init: function () {
-        axiosGet("{:url('queryMeter')}").then(response => {
+        axiosGet("{:url('we.meter/queryMeterId')}", {'typg': 'W'}).then(response => {
           if (response.code == 1) {
             this.meterData = response.data;
             if (response.data.length > 0) {
@@ -109,7 +109,7 @@
         });
       },
       queryTable: function () {
-        axiosGet("{:url('query')}", { 'meter_id': this.meter_id }).then(response => {
+        axiosGet("{:url('queryWater')}", { 'meter_id': this.meter_id }).then(response => {
           if (response.code == 1) {
             this.tableData = response.data;
             this.pagination.total = response.count;
