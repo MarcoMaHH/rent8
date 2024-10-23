@@ -30,4 +30,24 @@ class Property
         PropertyModel::create($data);
         return ['flag' => true, 'msg' => '添加成功'];
     }
+
+    public static function sort($id, $admin_user_id)
+    {
+        $data = PropertyModel::where('admin_user_id', $admin_user_id)->select()->toArray();
+        $result = [];
+        foreach ($data as $value) {
+            $temp = array(
+                'id' => $value['id']
+            );
+            if ($value['id'] === $id) {
+                $temp['firstly'] = 'Y';
+            } else {
+                $temp['firstly'] = 'N';
+            }
+            \array_push($result, $temp);
+        }
+        $property = new PropertyModel();
+        $property->saveAll($result);
+        return ['flag' => true, 'msg' => '切换成功'];
+    }
 }

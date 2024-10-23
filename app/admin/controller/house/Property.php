@@ -24,6 +24,7 @@ class Property extends Common
         return $this->returnResult($property);
     }
 
+    // hearder查询全部房产
     public function queryPropertyAll()
     {
         $loginUser = $this->auth->getLoginUser();
@@ -69,23 +70,12 @@ class Property extends Common
 
     public function sort()
     {
-        $id = $this->request->post('id/d', 0);
-        $loginUser = $this->auth->getLoginUser();
-        $data = PropertyModel::where('admin_user_id', $loginUser['id'])->select()->toArray();
-        $result = [];
-        foreach ($data as $value) {
-            $temp = array(
-                'id' => $value['id']
-            );
-            if ($value['id'] === $id) {
-                $temp['firstly'] = 'Y';
-            } else {
-                $temp['firstly'] = 'N';
-            }
-            \array_push($result, $temp);
+        $id = $this->request->param('id/d', 0);
+        $result = PropertyAction::sort($id, $this->auth->getLoginUser()['id']);
+        if ($result['flag']) {
+            return $this->returnSuccess($result['msg']);
+        } else {
+            return $this->returnError($result['msg']);
         }
-        $property = new PropertyModel();
-        $property->saveAll($result);
-        return $this->returnSuccess('切换成功');
     }
 }
