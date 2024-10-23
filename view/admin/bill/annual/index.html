@@ -1,7 +1,7 @@
 {extend name="common/layout" /}
 {block name="main"}
 <t-card class="list-card-container" :bordered="false">
-  <t-button theme="primary" style="margin-bottom: 10px;" @click="handleArrange" :disabled="buttonDisabled">
+  <t-button theme="primary" style="margin-bottom: 10px;" @click="handleArrange">
     整理数据
   </t-button>
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
