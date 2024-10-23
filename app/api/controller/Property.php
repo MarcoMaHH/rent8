@@ -47,18 +47,14 @@ class Property extends Common
         $id = $this->request->post('id/d', 0);
         $data = [
             'name' => $this->request->post('name/s', '', 'trim'),
-            'address' => $this->request->post('address/s', '', 'trim'),
+            // 'address' => $this->request->post('address/s', '', 'trim'),
         ];
-        if ($id) {
-            if (!$role = PropertyModel::find($id)) {
-                return $this->returnError('修改失败，记录不存在');
-            }
-            $role->save($data);
-            return $this->returnSuccess('修改成功');
-        }
         $loginUser = $this->auth->getLoginUser();
-        $data['admin_user_id'] = $loginUser['id'];
-        PropertyModel::create($data);
-        return $this->returnSuccess('添加成功');
+        $result = PropertyAction::save($id, $data, $loginUser['id']);
+        if ($result['flag']) {
+            return $this->returnSuccess($result['msg']);
+        } else {
+            return $this->returnError($result['msg']);
+        }
     }
 }
