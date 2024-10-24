@@ -14,9 +14,20 @@ class Number extends Common
     public function queryNumber()
     {
         $house_property_id = Property::getProperty();
-        $numbers = NumberModel::where('a.house_property_id', 'in', $house_property_id)
-        ->alias('a')
+        $conditions = array(
+            ['a.house_property_id', 'in', $house_property_id]
+        );
+        $parameter = $this->request->param('parameter/s', '');
+        if ($parameter) {
+            $conditions[] = function ($query) use ($parameter) {
+                $query->where('a.name', 'like', "%{$parameter}%")
+                        ->whereOr('b.name', 'like', "%{$parameter}%");
+            };
+        }
+        $house_property_id = Property::getProperty();
+        $numbers = NumberModel::alias('a')
         ->join('HouseProperty b', 'a.house_property_id = b.id')
+        ->where($conditions)
         ->field('a.*, b.name as property_name')
         ->order('a.name')
         ->select();
