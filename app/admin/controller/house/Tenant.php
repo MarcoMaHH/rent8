@@ -83,7 +83,7 @@ class Tenant extends Common
         ];
         if ($id) {
             if (!$tenant = TenantModel::find($id)) {
-                return $this->returnError('修改失败，记录不存在');
+                return $this->returnError('修改失败，租客不存在');
             }
             $tenant->save($data);
             return $this->returnSuccess('修改成功');

@@ -89,7 +89,7 @@ class Tenant extends Common
     {
         $id = $this->request->post('id/d', 0);
         $data = [
-            'house_property_id' => $this->request->post('house_property_id/d', 0),
+            'house_property_id' => $this->request->post('house_property_id/s', null),
             'house_number_id' => $this->request->post('house_number_id/d', 0),
             'name' => $this->request->post('name/s', '', 'trim'),
             'sex' => $this->request->post('sex/s', '', 'trim'),
@@ -101,7 +101,7 @@ class Tenant extends Common
         ];
         if ($id) {
             if (!$tenant = TenantModel::find($id)) {
-                return $this->returnError('删除失败，记录不存在。');
+                return $this->returnError('删除失败，租客不存在');
             }
             $tenant->save($data);
             return $this->returnSuccess('修改成功');
