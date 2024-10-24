@@ -52,10 +52,9 @@ class Uncollected extends Common
     // 抄表日期选项
     public function queryReadingTime()
     {
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
+        $house_property_id = Property::getProperty();
         $conditions = array(
-            ['a.house_property_id', '=', $house_property_id],
+            ['a.house_property_id', 'in', $house_property_id],
             ['a.start_time', '< time', 'today+5 days'],
             ['a.accounting_date', 'null', ''],
         );

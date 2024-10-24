@@ -2,7 +2,7 @@
 
 namespace app\api\controller;
 
-use app\admin\library\Property;
+use app\api\library\Property;
 use app\admin\model\HouseBilling as BillingModel;
 use app\admin\model\HouseNumber as NumberModel;
 use app\admin\model\HouseProperty as PropertyModel;
@@ -44,9 +44,8 @@ class Collected extends Common
 
     public function sum()
     {
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
-        $sum = BillingModel::where('house_property_id', $house_property_id)
+        $house_property_id = Property::getProperty();
+        $sum = BillingModel::where('house_property_id', 'in', $house_property_id)
         ->whereTime('accounting_date', 'today')
         ->sum('total_money');
         return $this->returnWechat([], 1, $sum);
