@@ -6,22 +6,21 @@ use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseNumber as NumberModel;
 use app\admin\model\HouseBilling as BillingModel;
 use app\common\house\Uncollected as UncollectedAction;
-use app\admin\library\Property;
+use app\api\library\Property;
 use app\admin\library\Date;
 
 class Uncollected extends Common
 {
     protected $checkLoginExclude = ['report'];
     //主页面 table查询
-    public function query()
+    public function queryUncollected()
     {
         $field = 'a.start_time';
         $order = 'asc';
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
+        $house_property_id = Property::getProperty();
         $meter_reading_time = $this->request->param('meter_reading_time/s', '', 'trim');
         $conditions = array(
-            ['a.house_property_id', '=', $house_property_id],
+            ['a.house_property_id', 'in', $house_property_id],
             ['a.start_time', '< time', 'today+5 days'],
             ['a.accounting_date', 'null', ''],
         );
@@ -47,7 +46,7 @@ class Uncollected extends Common
                 $value['end_time'] = \substr($value['end_time'], 0, 10);
             }
         }
-        return $this->returnWechat($datas, 0, $house_property_id);
+        return $this->returnWechat($datas);
     }
 
     // 抄表日期选项
