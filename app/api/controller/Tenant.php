@@ -15,7 +15,7 @@ class Tenant extends Common
     {
         $house_property_id = Property::getProperty();
         $conditions = array(
-            ['a.house_property_id', '=', $house_property_id],
+            ['a.house_property_id', 'in', $house_property_id],
             ['a.mark', '=', 'N'],
         );
         // $house_number_id = $this->request->param('house_number_id/d', 0);
