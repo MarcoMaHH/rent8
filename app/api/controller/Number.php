@@ -138,4 +138,19 @@ class Number extends Common
             return $this->returnWechat($number);
         }
     }
+
+    public function delete()
+    {
+        $id = $this->request->param('id/d', null);
+        $result = NumberAction::delete($id);
+        if ($result['flag']) {
+            return $this->returnSuccess($result['msg']);
+        } else {
+            return $this->returnError($result['msg']);
+        }
+
+        if (!$number = NumberModel::find($id)) {
+            return $this->returnError('删除失败,房间不存在。');
+        }
+    }
 }
