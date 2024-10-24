@@ -132,7 +132,6 @@ class Number extends Common
     public function checkin()
     {
         $data = [
-            'house_property_id' => $this->request->post('house_property_id/d', 0),
             'house_number_id' => $this->request->post('house_number_id/d', 0),
             'checkin_time' => $this->request->post('checkin_time/s', '', 'trim'),
         ];

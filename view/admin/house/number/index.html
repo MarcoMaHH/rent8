@@ -398,8 +398,9 @@
         this.formHeader = '租客入住';
         this.checkInVisible = true;
         this.formData = {
-          'house_property_id': row.house_property_id, 'house_property_name': row.property_name,
-          'house_number_id': row.id, 'house_number_name': row.name,
+          'house_property_name': row.property_name,
+          'house_number_id': row.id,
+          'house_number_name': row.name,
         };
       },
       checkIn() {

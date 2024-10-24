@@ -40,6 +40,7 @@ class Number
         if (!$number_data = NumberModel::find($data['house_number_id'])) {
             return ['flag' => false, 'msg' => '入住失败，房间不存在'];
         }
+        $data['house_property_id'] = $number_data['house_property_id'];
         // 账单资料
         $note = "单据开出中途退房，一律不退房租。 \n" .
                 "到期如果不续租，超期将按每天" . $number_data['daily_rent'] . "元计算。" ;
