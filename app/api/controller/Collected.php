@@ -9,13 +9,12 @@ use app\admin\model\HouseProperty as PropertyModel;
 
 class Collected extends Common
 {
-    public function query()
+    public function queryCollected()
     {
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
+        $house_property_id = Property::getProperty();
         $house_number_id = $this->request->param('house_number_id/d', 0);
         $conditions = array(
-            ['a.house_property_id', '=', $house_property_id],
+            ['a.house_property_id', 'in', $house_property_id],
             ['a.accounting_date', 'not null', '']
         );
         if ($house_number_id) {
