@@ -7,7 +7,7 @@ use app\admin\model\HouseNumber as NumberModel;
 use app\admin\model\HouseTenant as TenantModel;
 use app\admin\model\HouseBilling as BillingModel;
 use app\common\house\Number as NumberAction;
-use app\admin\library\Property;
+use app\api\library\Property;
 
 class Number extends Common
 {
@@ -17,7 +17,7 @@ class Number extends Common
         $numbers = NumberModel::where('a.house_property_id', 'in', $house_property_id)
         ->alias('a')
         ->join('HouseProperty b', 'a.house_property_id = b.id')
-        ->field('a.*,b.name as property_name')
+        ->field('a.*, b.name as property_name')
         ->order('a.name')
         ->select();
         return $this->returnWechat($numbers);
@@ -28,7 +28,7 @@ class Number extends Common
         $id = $this->request->param('id/d', 0);
         if ($id) {
             if (!$data = NumberModel::find($id)) {
-                return $this->returnError('记录不存在。');
+                return $this->returnError('房间不存在');
             }
         }
         $property_name = PropertyModel::find($data->house_property_id);

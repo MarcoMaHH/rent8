@@ -43,7 +43,7 @@ class Property extends Common
         $id = $this->request->param('id/d', 0);
         if ($id) {
             if (!$data = PropertyModel::find($id)) {
-                return $this->returnError('记录不存在。');
+                return $this->returnError('房产不存在');
             }
         }
         $returnData = [
