@@ -102,29 +102,16 @@ class Number extends Common
 
     public function delete()
     {
-        $id = $this->request->param('id/d', 0);
-        if (!$number = NumberModel::find($id)) {
-            return $this->returnError('删除失败,房间不存在。');
+        $id = $this->request->param('id/d', null);
+        $result = NumberAction::delete($id);
+        if ($result['flag']) {
+            return $this->returnSuccess($result['msg']);
+        } else {
+            return $this->returnError($result['msg']);
         }
 
-        // 开始事务
-        $transFlag = true;
-        Db::startTrans();
-        try {
-            BillingModel::where('house_property_id', $number['house_property_id'])
-            ->where('house_number_id', $number['id'])
-            ->delete();
-            $number->delete();
-            // 提交事务
-            Db::commit();
-        } catch (\Exception $e) {
-            $transFlag = false;
-            // 回滚事务
-            Db::rollback();
-            return $this->returnError($e->getMessage());
-        }
-        if ($transFlag) {
-            return $this->returnSuccess('删除成功');
+        if (!$number = NumberModel::find($id)) {
+            return $this->returnError('删除失败,房间不存在。');
         }
     }
 

@@ -145,4 +145,31 @@ class Number
             return ['flag' => true, 'msg' => '退房成功'];
         }
     }
+
+    public static function delete($id)
+    {
+        if (!$number = NumberModel::find($id)) {
+            return ['flag' => false, 'msg' => '删除失败,房间不存在'];
+        }
+
+        // 开始事务
+        $transFlag = true;
+        Db::startTrans();
+        try {
+            BillingModel::where('house_property_id', $number['house_property_id'])
+            ->where('house_number_id', $number['id'])
+            ->delete();
+            $number->delete();
+            // 提交事务
+            Db::commit();
+        } catch (\Exception $e) {
+            $transFlag = false;
+            // 回滚事务
+            Db::rollback();
+            return ['flag' => false, 'msg' => $e->getMessage()];
+        }
+        if ($transFlag) {
+            return ['flag' => true, 'msg' => '删除成功'];
+        }
+    }
 }
