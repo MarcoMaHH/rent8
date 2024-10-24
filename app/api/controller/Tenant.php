@@ -7,7 +7,7 @@ use app\admin\model\HouseTenant as TenantModel;
 use app\admin\model\TenantPhoto as PhotoModel;
 use app\admin\model\HouseNumber as NumberModel;
 use app\admin\validate\HouseTenant as TenantValidate;
-use app\admin\library\Property;
+use app\api\library\Property;
 
 class Tenant extends Common
 {

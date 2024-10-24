@@ -2,7 +2,7 @@
 
 namespace app\api\controller;
 
-use app\admin\library\Property;
+use app\api\library\Property;
 use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\BillSum as SumModel;
 use app\admin\model\AdminUser as UserModel;
