@@ -12,13 +12,16 @@ class Collected extends Common
     public function queryCollected()
     {
         $house_property_id = Property::getProperty();
-        $house_number_id = $this->request->param('house_number_id/d', 0);
         $conditions = array(
             ['a.house_property_id', 'in', $house_property_id],
             ['a.accounting_date', 'not null', '']
         );
-        if ($house_number_id) {
-            \array_push($conditions, ['a.house_number_id', '=', $house_number_id]);
+        $parameter = $this->request->param('parameter/s', '');
+        if ($parameter) {
+            $conditions[] = function ($query) use ($parameter) {
+                $query->where('b.name', 'like', "%{$parameter}%")
+                        ->whereOr('c.name', 'like', "%{$parameter}%");
+            };
         }
         $billing = BillingModel::where($conditions)
         ->alias('a')
