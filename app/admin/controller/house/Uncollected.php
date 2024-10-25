@@ -192,36 +192,13 @@ class Uncollected extends Common
     public function saveCentralized()
     {
         $data = $this->request->post('data');
-        $house_property_id = $this->request->post('house_property_id/d', 0);
         $type = $this->request->post('type/s', 0);
-        foreach ($data as $key => $value) {
-            if ($value) {
-                if (!$billing = BillingModel::find($key)) {
-                    return $this->returnError('修改失败，记录不存在');
-                }
-                $number_data = NumberModel::where('house_property_id', $billing->house_property_id)
-                ->where('id', $billing->house_number_id)
-                ->find();
-                $data = array();
-                $data['meter_reading_time'] = date('Y-m-d', time());
-                if ($type == TYPE_ELECTRICITY) {
-                    $data['electricity_meter_this_month'] = $value;
-                    $data['electricity_consumption'] = $value - $billing['electricity_meter_last_month'];
-                    $data['electricity'] = $data['electricity_consumption'] * $number_data->electricity_price;
-                    $data['total_money'] = round($billing['water'] + $data['electricity'] + $billing['rental']
-                        + $billing['deposit'] + $billing['other_charges'] + $billing['management'] + $billing['network'] + $billing['garbage_fee'], 2);
-                    $billing->save($data);
-                } elseif ($type == TYPE_WATER) {
-                    $data['water_meter_this_month'] = $value;
-                    $data['water_consumption'] = $value - $billing['water_meter_last_month'];
-                    $data['water'] = $data['water_consumption'] * $number_data->water_price;
-                    $data['total_money'] = round($data['water'] + $billing['electricity'] + $billing['rental']
-                        + $billing['deposit'] + $billing['other_charges'] + $billing['management'] + $billing['network'] + $billing['garbage_fee'], 2);
-                    $billing->save($data);
-                }
-            }
+        $result = UncollectedAction::saveCentralized($data, $type);
+        if ($result['flag']) {
+            return $this->returnSuccess($result['msg']);
+        } else {
+            return $this->returnError($result['msg']);
         }
-        return $this->returnSuccess('修改成功');
     }
 
     // 延期

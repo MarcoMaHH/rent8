@@ -170,4 +170,50 @@ class Uncollected extends Common
             return $this->returnError($result['msg']);
         }
     }
+
+    //集中抄水电表
+    public function centralized()
+    {
+        $type = $this->request->param('type/s');
+        $house_property_id = Property::getProperty();
+        $conditions = array(
+            ['a.house_property_id', 'in', $house_property_id],
+            ['a.start_time', '< time', 'today+10 days'],
+            ['a.accounting_date', 'null', ''],
+            ['a.end_time', 'not null', ''],
+            ['a.electricity_meter_last_month', 'not null', ''],
+            ['a.water_meter_last_month', 'not null', ''],
+        );
+        if ($type == TYPE_ELECTRICITY) {
+            array_push($conditions, ['a.electricity_meter_this_month', 'null', '']);
+        } elseif ($type == TYPE_WATER) {
+            array_push($conditions, ['a.water_meter_this_month', 'null', '']);
+        }
+        $data = BillingModel::where($conditions)
+        ->alias('a')
+        ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
+        ->join('HouseProperty c', 'c.id = a.house_property_id')
+        ->field('a.*, b.name as number_name, c.name as property_name')
+        ->order('b.name')
+        ->select();
+
+        $returnData = [
+            "code" => 1,
+            "data" => $data
+        ];
+        return \json($returnData);
+    }
+
+    //保存集中抄表
+    public function saveCentralized()
+    {
+        $data = $this->request->post('data');
+        $type = $this->request->post('type/s', 0);
+        $result = UncollectedAction::saveCentralized($data, $type);
+        if ($result['flag']) {
+            return $this->returnSuccess($result['msg']);
+        } else {
+            return $this->returnError($result['msg']);
+        }
+    }
 }
