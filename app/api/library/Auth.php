@@ -148,10 +148,14 @@ class Auth
         if ($user->openid) {
             $this->setError('该账号已绑定微信');
             return false;
-        } else {
-            $data = ['openid' => $openid];
-            $user->save($data);
-            return true;
         }
+        $openidSearch = UserModel::where('openid', $openid)->find();
+        if ($openidSearch) {
+            $this->setError('该微信已绑定账号');
+            return false;
+        }
+        $data = ['openid' => $openid];
+        $user->save($data);
+        return true;
     }
 }
