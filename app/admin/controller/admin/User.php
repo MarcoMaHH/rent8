@@ -64,29 +64,29 @@ class User extends Common
                 return $this->returnError('修改失败，' . $validate->getError() . '。');
             }
             if (!$user = UserModel::find($id)) {
-                return $this->returnError('修改失败，记录不存在。');
+                return $this->returnError('修改失败，用户不存在');
             }
             $user->save($data);
-            return $this->returnSuccess('修改成功。');
+            return $this->returnSuccess('修改成功');
         }
         if (!$validate->scene('insert')->check($data)) {
             return $this->returnError('添加失败,' . $validate->getError() . '。');
         }
         UserModel::create($data);
-        return $this->returnSuccess('添加成功。');
+        return $this->returnSuccess('添加成功');
     }
 
     public function delete()
     {
         $id = $this->request->param('id/d', 0);
         if (!$user = UserModel::find($id)) {
-            return $this->returnError('删除失败，记录不存在。');
+            return $this->returnError('删除失败，用户不存在');
         }
         $transFlag = true;
         Db::startTrans();
         try {
             $user->delete();
-            
+
             $propertyIds = PropertyModel::where('admin_user_id', $id)->column('id');
             // 删除关联表数据
             WeDetailModel::where('house_property_id', 'in', $propertyIds)->delete();
@@ -121,7 +121,18 @@ class User extends Common
             return $this->returnError($e->getMessage());
         }
         if ($transFlag) {
-            return $this->returnSuccess('删除成功。');
+            return $this->returnSuccess('删除成功');
         }
+    }
+
+    public function removeWechat()
+    {
+        $id = $this->request->param('id/d', 0);
+        if (!$user = UserModel::find($id)) {
+            return $this->returnError('解绑失败，用户不存在');
+        }
+        $user->wechat_openid = null;
+        $user->save();
+        return $this->returnSuccess('解绑成功');
     }
 }
