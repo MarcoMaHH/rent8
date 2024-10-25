@@ -124,7 +124,7 @@ class User extends Common
     {
         $appId = env('APP_ID');
         $appSecret = env('APP_SECRET');
-        $code = \json_decode($this->request->post('code/s', '', 'trim'));
+        $code = $this->request->post('code/s', '', 'trim');
         $client = new Client();
         try {
             // 构造微信登录凭证校验接口URL
