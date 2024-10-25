@@ -60,12 +60,12 @@ class HouseTenant extends Migrator
         ->addColumn(
             'phone',
             'string',
-            ['limit' => 11, 'null' => true, 'comment' => '电话号码']
+            ['limit' => 11, 'null' => true, 'default' => '', 'comment' => '电话号码']
         )
         ->addColumn(
             'id_card_number',
             'string',
-            ['limit' => 18, 'null' => true, 'comment' => '身份证号码']
+            ['limit' => 18, 'null' => true, 'default' => '', 'comment' => '身份证号码']
         )
         ->addColumn(
             'native_place',
