@@ -17,6 +17,10 @@ class Number extends Common
         $conditions = array(
             ['a.house_property_id', 'in', $house_property_id]
         );
+        $state = $this->request->param('state/s', '');
+        if ($state) {
+            \array_push($conditions, ['a.rent_mark', '=', $state]);
+        }
         $parameter = $this->request->param('parameter/s', '');
         if ($parameter) {
             $conditions[] = function ($query) use ($parameter) {
