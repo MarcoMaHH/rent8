@@ -28,6 +28,13 @@ class Uncollected extends Common
             \array_push($conditions, ['a.meter_reading_time', '=', $meter_reading_time]);
             $field = 'b.name';
         }
+        $parameter = $this->request->param('parameter/s', '');
+        if ($parameter) {
+            $conditions[] = function ($query) use ($parameter) {
+                $query->where('b.name', 'like', "%{$parameter}%")
+                        ->whereOr('c.name', 'like', "%{$parameter}%");
+            };
+        }
         $datas = BillingModel::where($conditions)
         ->alias('a')
         ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
