@@ -156,6 +156,41 @@ class User extends Common
         }
     }
 
+    public function bindWechat()
+    {
+        $appId = env('APP_ID');
+        $appSecret = env('APP_SECRET');
+        $code = \json_decode($this->request->post('code/s', '', 'trim'));
+        $client = new Client();
+        try {
+            // 构造微信登录凭证校验接口URL
+            $url = "https://api.weixin.qq.com/sns/jscode2session";
+            $response = $client->request('GET', $url, [
+                'verify' => false, // 禁用 SSL 证书验证
+                'query' => [
+                    'appid' => $appId,
+                    'secret' => $appSecret,
+                    'js_code' => $code,
+                    'grant_type' => 'authorization_code'
+                ]
+            ]);
+            $body = $response->getBody()->getContents();
+            $result = json_decode($body, true);
+            if (isset($result['openid'])) {
+                $openid = $result['openid'];
+                $result = $this->auth->bindWechat($openid);
+                if (!$result) {
+                    return $this->returnError($this->auth->getError());
+                }
+                return $this->returnSuccess('绑定成功');
+            } else {
+                return $this->returnError('账号绑定失败');
+            }
+        } catch (Exception $e) {
+            return $this->returnError($e->getMessage());
+        }
+    }
+
     public function logout()
     {
         $this->auth->logout();

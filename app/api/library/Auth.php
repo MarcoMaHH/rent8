@@ -140,4 +140,18 @@ class Auth
         Session::delete($this->sessionName);
         return true;
     }
+
+    public function bindWechat($openid)
+    {
+        $loginUser = $this->getLoginUser();
+        $user = UserModel::find($loginUser['id']);
+        if ($user->openid) {
+            $this->setError('该账号已绑定微信');
+            return false;
+        } else {
+            $data = ['openid' => $openid];
+            $user->save($data);
+            return true;
+        }
+    }
 }
