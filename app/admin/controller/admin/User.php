@@ -131,8 +131,7 @@ class User extends Common
         if (!$user = UserModel::find($id)) {
             return $this->returnError('解绑失败，用户不存在');
         }
-        $user->wechat_openid = null;
-        $user->save();
+        $user->save(['openid' => '']);
         return $this->returnSuccess('解绑成功');
     }
 }
