@@ -46,7 +46,7 @@ class Report extends Common
     {
         $house_property_id = Property::getProperty();
         if (count($house_property_id) > 1) {
-            return $this->returnWechat();
+            return $this->returnWechat(['series' => [], 'categories' => []]);
         } else {
             $loginUser = $this->auth->getLoginUser();
             $monthData = array();
