@@ -21,7 +21,7 @@ class Property extends Common
     {
         $loginUser = $this->auth->getLoginUser();
         $property = PropertyModel::where('admin_user_id', $loginUser['id'])
-        ->field('id,name,firstly')
+        ->field('id as value,name as label, firstly')
         ->order('firstly, id')
         ->select();
         return $this->returnWechat($property);
