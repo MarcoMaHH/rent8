@@ -23,7 +23,9 @@ class Property extends Common
         $property = PropertyModel::where('admin_user_id', $loginUser['id'])
         ->field('id as value,name as label, firstly')
         ->order('firstly, id')
-        ->select();
+        ->select()
+        ->toArray();
+        array_unshift($property, ['value' => 0, 'label' => '全部房产', 'firstly' => 'N' ]);
         return $this->returnWechat($property);
     }
 
