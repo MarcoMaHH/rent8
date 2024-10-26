@@ -30,7 +30,9 @@ class Property extends Common
         $property = PropertyModel::where('admin_user_id', $loginUser['id'])
         ->field('id,name,firstly')
         ->order('firstly, id')
-        ->select();
+        ->select()
+        ->toArray();
+        array_unshift($property, ['id' => 0, 'name' => '全部', 'firstly' => 'N' ]);
         return $this->returnResult($property);
     }
 

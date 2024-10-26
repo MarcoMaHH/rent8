@@ -113,7 +113,6 @@
             if (response.code == 1) {
               this.houseList = response.data;
               this.houseDef = 0;
-              this.houseName = '全部（后面删除）';
               for (let index = 0; index < this.houseList.length; index++) {
                 if (this.houseList[index].firstly == 'Y') {
                   this.houseDef = this.houseList[index].id;
@@ -122,7 +121,6 @@
                   break;
                 }
               }
-              this.houseList.unshift({ id: 0, name: '全部' });
             } else {
               this.$message.error('系统出错了!!!');
             }
