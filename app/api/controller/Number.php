@@ -116,8 +116,8 @@ class Number extends Common
         $data = [
             'house_number_id' => $this->request->post('house_number_id/d', 0),
             'checkin_time' => $this->request->post('checkin_time/s', '', 'trim'),
-            'phone' => '',
-            'id_card_number' => '',
+            // 'phone' => '',
+            // 'id_card_number' => '',
         ];
         $result = NumberAction::checkin($data);
         if ($result['flag']) {
