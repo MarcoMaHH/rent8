@@ -143,67 +143,35 @@ class Uncollected
         }
     }
 
-    public static function saveCentralized($inputData, $type)
+    public static function saveCentralized($data, $type)
     {
-        $updatedBillings = []; // 存储需要更新的账单信息
-        $propertyIds = []; // 存储房屋属性ID以减少查询次数
-
-        // 预处理输入数据，收集房屋属性ID
-        foreach ($inputData as $key => $value) {
-            if ($value) {
-                $billing = BillingModel::find($key);
-                if (!$billing) {
+        foreach ($data as $value) {
+            if (count($value) > 0) {
+                if (!$billing = BillingModel::find($value['id'])) {
                     return ['flag' => false, 'msg' => '修改失败，账单不存在'];
                 }
-                $propertyIds[$billing->house_property_id] = true; // 确保唯一性
-                $updatedBillings[$key] = [
-                    'type' => $type,
-                    'value' => $value,
-                    'billing' => $billing
-                ];
+                $number_data = NumberModel::where('house_property_id', $billing->house_property_id)
+                ->where('id', $billing->house_number_id)
+                ->find();
+                $data = array();
+                $data['meter_reading_time'] = date('Y-m-d', time());
+                if ($type == TYPE_ELECTRICITY) {
+                    $data['electricity_meter_this_month'] = $value['value'];
+                    $data['electricity_consumption'] = $value['value'] - $billing['electricity_meter_last_month'];
+                    $data['electricity'] = $data['electricity_consumption'] * $number_data->electricity_price;
+                    $data['total_money'] = round($billing['water'] + $data['electricity'] + $billing['rental']
+                        + $billing['deposit'] + $billing['other_charges'] + $billing['management'] + $billing['network'] + $billing['garbage_fee'], 2);
+                    $billing->save($data);
+                } elseif ($type == TYPE_WATER) {
+                    $data['water_meter_this_month'] = $value['value'];
+                    $data['water_consumption'] = $value['value'] - $billing['water_meter_last_month'];
+                    $data['water'] = $data['water_consumption'] * $number_data->water_price;
+                    $data['total_money'] = round($data['water'] + $billing['electricity'] + $billing['rental']
+                        + $billing['deposit'] + $billing['other_charges'] + $billing['management'] + $billing['network'] + $billing['garbage_fee'], 2);
+                    $billing->save($data);
+                }
             }
         }
-
-        // 一次性查询所有相关的房屋号码数据
-        $numberDatas = NumberModel::whereIn('house_property_id', array_keys($propertyIds))->select();
-        
-        // 如果集合类没有提供 indexBy 方法，你可以手动构建索引数组
-        $indexedNumberDatas = [];
-        foreach ($numberDatas as $numberData) {
-            $indexedNumberDatas[$numberData['house_property_id']] = $numberData;
-        }
-
-        // 更新账单
-        foreach ($updatedBillings as $update) {
-            $billing = $update['billing'];
-            $numberData = $numberDatas[$billing->house_property_id] ?? null;
-            if (!$numberData) {
-                // 处理房屋号码数据不存在的情况
-                continue; // 或者返回错误信息，视业务需求而定
-            }
-
-            $data = [
-                'meter_reading_time' => date('Y-m-d'),
-            ];
-
-            if ($update['type'] == TYPE_ELECTRICITY) {
-                $data['electricity_meter_this_month'] = $update['value'];
-                $data['electricity_consumption'] = $update['value'] - $billing['electricity_meter_last_month'];
-                $data['electricity'] = $data['electricity_consumption'] * $numberData->electricity_price;
-            } elseif ($update['type'] == TYPE_WATER) {
-                $data['water_meter_this_month'] = $update['value'];
-                $data['water_consumption'] = $update['value'] - $billing['water_meter_last_month'];
-                $data['water'] = $data['water_consumption'] * $numberData->water_price;
-            }
-
-            // 重新计算总金额
-            $data['total_money'] = round($billing['water'] + ($update['type'] == TYPE_ELECTRICITY ? $data['electricity'] : $billing['electricity']) +
-                $billing['rental'] + $billing['deposit'] + $billing['other_charges'] + $billing['management'] +
-                $billing['network'] + $billing['garbage_fee'], 2);
-
-            $billing->save($data);
-        }
-
         return ['flag' => true, 'msg' => '修改成功'];
     }
 }

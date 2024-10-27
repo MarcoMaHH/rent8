@@ -207,7 +207,7 @@ class Uncollected extends Common
     //保存集中抄表
     public function saveCentralized()
     {
-        $data = $this->request->post('data');
+        $data = \json_decode($this->request->post('data'));
         $type = $this->request->post('type/s', 0);
         $result = UncollectedAction::saveCentralized($data, $type);
         if ($result['flag']) {

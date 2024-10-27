@@ -429,17 +429,17 @@
       },
       // 集中抄表保存
       concentratedSave() {
-        let postData = {}
+        let postData = []
         if (this.concentratedType == 'E') {
           this.concentratedData.forEach(element => {
             if (element.electricity_meter_this_month) {
-              postData[element.id] = element.electricity_meter_this_month
+              postData.push({ id: element.id, value: element.electricity_meter_this_month });
             }
           });
         } else if (this.concentratedType == 'W') {
           this.concentratedData.forEach(element => {
             if (element.water_meter_this_month) {
-              postData[element.id] = element.water_meter_this_month
+              postData.push({ id: element.id, value: element.water_meter_this_month });
             }
           });
         }
