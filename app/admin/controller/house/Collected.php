@@ -21,16 +21,22 @@ class Collected extends Common
         $page = $this->request->param('page/d', LAYUI_PAGE);
         $limit = $this->request->param('limit/d', LAYUI_LIMIT);
         $house_property_id = Property::getProperty();
-        $house_number_id = $this->request->param('house_number_id/d', 0);
         $conditions = array(
             ['a.house_property_id', 'in', $house_property_id],
             ['a.accounting_date', 'not null', '']
         );
-        if ($house_number_id) {
-            \array_push($conditions, ['a.house_number_id', '=', $house_number_id]);
+        $parameter = $this->request->param('parameter/s', '');
+        if ($parameter) {
+            $conditions[] = function ($query) use ($parameter) {
+                $query->where('b.name', 'like', "%{$parameter}%")
+                        ->whereOr('c.name', 'like', "%{$parameter}%");
+            };
         }
-        $count = BillingModel::where($conditions)
-        ->alias('a')->count();
+        $count = BillingModel::alias('a')
+        ->join('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
+        ->join('HouseProperty c', 'c.id = a.house_property_id')
+        ->where($conditions)
+        ->count();
         $billing = BillingModel::where($conditions)
         ->alias('a')
         ->join('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
@@ -39,7 +45,7 @@ class Collected extends Common
         ->order(['a.accounting_date' => 'desc','number_name'])
         ->page($page, $limit)
         ->select();
-        foreach ($billing as  $value) {
+        foreach ($billing as $value) {
             $value['accounting_date'] = \substr($value['accounting_date'], 0, 10);
             if ($value['end_time']) {
                 $value['lease'] = \substr($value['start_time'], 0, 10)  . '至' . \substr($value['end_time'], 0, 10);

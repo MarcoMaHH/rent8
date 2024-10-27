@@ -6,13 +6,14 @@
       <template #icon><t-icon name="unfold-more" /></template> 明细账单
     </t-button>
     今日到账总金额：{{sum}} 元
-    <span style="float: right;">
-      <t-select placeholder="请选择房间名" clearable style="width: 140px;display: inline-block;" @change="changeDate">
-        <t-option v-for="(item, index) in numberData" :key="index" :value="item.value" :label="item.label">
-          {{ item.label }}
-        </t-option>
-      </t-select>
-    </span>
+    <div style="display: flex; justify-content: flex-end; width: 250px; /* 可根据需要调整宽度 */">
+      <div style="flex-grow: 1; margin-right: 5px;">
+        <t-input v-model="searchValue" placeholder="请输入房产、房间" clearable @enter="handleSearch" />
+      </div>
+      <t-button theme="primary" @click="handleSearch">
+        <template #icon><t-icon name="search" /></template>
+      </t-button>
+    </div>
   </div>
 
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
@@ -64,8 +65,9 @@
       { title: '到账日期', colKey: 'accounting_date', width: 95, fixed: 'right' },
     ],
     sum: 0,
-    numberData: [],
     house_number_id: '',
+    // 搜索框
+    searchValue: '',
     // 分页
     pagination: {
       defaultPageSize: 10,
@@ -80,13 +82,6 @@
       init: function () {
         this.columns = this.columns1;
         this.queryTable();
-        axiosGet("{:url('house.number/queryNumberId')}").then(response => {
-          if (response.code == 1) {
-            this.numberData = response.data;
-          } else {
-            this.$message.error('系统出错了!!!');
-          }
-        });
         axiosGet("{:url('sum')}").then(response => {
           if (response.code == 1) {
             this.sum = response.msg;
@@ -98,7 +93,7 @@
       queryTable: function () {
         this.tableLoading = true;
         let params = {
-          'house_number_id': this.house_number_id,
+          'parameter': this.searchValue,
           'limit': this.pagination.pageSize,
           'page': this.pagination.current
         };
@@ -128,9 +123,8 @@
         }
         this.cloumnsFlag = !this.cloumnsFlag;
       },
-      // 切换房间
-      changeDate(val) {
-        this.house_number_id = val;
+      // 搜索
+      handleSearch() {
         this.queryTable();
       },
     }
