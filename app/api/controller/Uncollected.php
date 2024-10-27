@@ -208,7 +208,6 @@ class Uncollected extends Common
     public function saveCentralized()
     {
         $data = json_decode($this->request->post('data'));
-        var_dump($data);die;
         $type = $this->request->post('type/s', '');
         $arr = [];
         if (is_array($data)) {
