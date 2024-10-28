@@ -1,10 +1,17 @@
 {extend name="common/layout" /}
 {block name="main"}
 <t-card class="list-card-container" :bordered="false">
-  <t-button theme="primary" style="margin-bottom: 10px;" @click="handleAdd" :disabled="buttonDisabled">
-    <template #icon><t-icon name="add" /></template>
-    新建
-  </t-button>
+  <div style=" display: flex;align-items: center;margin-bottom: 10px;">
+    <t-button theme="primary" style="margin-right: 10px;" @click="handleAdd" :disabled="buttonDisabled">
+      <template #icon><t-icon name="add" /></template>
+      新建
+    </t-button>
+    <t-select placeholder="请选择类型" clearable @change="changeType" style="width: 150px;">
+      <t-option v-for="(item, index) in typeArr" :key="index" :value="item.value" :label="item.label">
+        {{ item.label }}
+      </t-option>
+    </t-select>
+  </div>
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
     active-row-type="single" :hover="true" :loading="tableLoading" :pagination="pagination">
     <template #op="slotProps">
@@ -87,6 +94,12 @@
       circulate_mark: [{ required: true, message: '必填' }],
       type: [{ required: true, message: '必填' }],
     },
+    type: '',
+    typeArr: [
+      { value: "D", label: "维修费" },
+      { value: "E", label: "工资" },
+      { value: "F", label: "其他" }
+    ],
   };
   function f() {
     return {
@@ -95,7 +108,7 @@
       },
       queryTable: function () {
         this.tableLoading = true;
-        axiosGet("{:url('queryOther')}").then(response => {
+        axiosGet("{:url('queryOther')}", { 'type': this.type }).then(response => {
           if (response.code == 1) {
             this.tableData = response.data;
             this.pagination.total = response.count;
@@ -157,6 +170,11 @@
             this.$message.error(response.msg);
           }
         });
+      },
+      // 切换抄表日期查询
+      changeType(val) {
+        this.type = val;
+        this.queryTable();
       },
     }
   }
