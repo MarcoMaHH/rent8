@@ -22,12 +22,15 @@ class Number extends Common
     public function queryNumber()
     {
         $house_property_id = Property::getProperty();
-        $name = $this->request->param('name/s', '', 'trim');
         $conditions = array(
             ['a.house_property_id', 'in', $house_property_id],
         );
-        if ($name != '') {
-            \array_push($conditions, ['a.name', 'like', '%' . $name . '%']);
+        $parameter = $this->request->param('parameter/s', '');
+        if ($parameter) {
+            $conditions[] = function ($query) use ($parameter) {
+                $query->where('a.name', 'like', "%{$parameter}%")
+                        ->whereOr('b.name', 'like', "%{$parameter}%");
+            };
         }
         $numbers = NumberModel::where($conditions)
         ->alias('a')
