@@ -19,16 +19,22 @@ class Other extends Common
 
     public function queryOther()
     {
-        $loginUser = $this->auth->getLoginUser();
-        $house_property_id = $this->request->param('house_property_id/d', Property::getProperty($loginUser['id']));
-        $count = OtherModel::where('house_property_id', 'in', $house_property_id)->count();
-        $numbers = OtherModel::where('a.house_property_id', 'in', $house_property_id)
-        ->alias('a')
+        $house_property_id = Property::getProperty();
+        $conditions = array(
+            ['a.house_property_id', 'in', $house_property_id],
+        );
+        $type = $this->request->param('type/s', '', 'trim');
+        if ($type) {
+            \array_push($conditions, ['a.type', '=', $type]);
+        }
+        $count = OtherModel::alias('a')->where($conditions)->count();
+        $numbers = OtherModel::alias('a')
         ->leftJoin('HouseProperty b', 'a.house_property_id = b.id')
         ->field('a.*,b.name as property_name')
+        ->where($conditions)
         ->order(['a.accout_mark','a.accounting_date' => 'desc'])
         ->select();
-        foreach ($numbers as  $value) {
+        foreach ($numbers as $value) {
             if ($value['accounting_date']) {
                 $value['accounting_date'] = \substr($value['accounting_date'], 0, 10);
             }
@@ -111,7 +117,7 @@ class Other extends Common
             'type' => TYPE_EXPENDITURE,
             'accounting_date' => $accounting_month,
         ])->find();
-        if($sum_data) {
+        if ($sum_data) {
             $sum_data->save([
                 'amount' => $sum_data->amount + $other['total_money'],
             ]);
