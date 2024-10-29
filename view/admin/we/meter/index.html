@@ -99,7 +99,6 @@
       handleSave() {
         this.$refs.meterForm.validate().then((valid) => {
           if (valid == true) {
-            console.log(this.formData);
             this.formData.house_number_id = this.numberCheckbox.join();
             axiosPost("{:url('save')}", this.formData).then(response => {
               if (response.state == 'success') {
