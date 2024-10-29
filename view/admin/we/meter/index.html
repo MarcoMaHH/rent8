@@ -26,10 +26,10 @@
 <t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false">
   <t-form ref="meterForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
     <t-form-item label="总表名称" name="name">
-      <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" />
+      <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" readonly />
     </t-form-item>
     <t-form-item label="类型" name="type">
-      <t-radio-group v-model="formData.type">
+      <t-radio-group v-model="formData.type" @change="onChange">
         <t-radio value="E">电表</t-radio>
         <t-radio value="W">水表</t-radio>
       </t-radio-group>
@@ -133,6 +133,13 @@
             this.$message.error(response.msg);
           }
         });
+      },
+      onChange(checkedValues) {
+        if (checkedValues === 'E') {
+          this.formData.name = this.houseName + '-电表';
+        } else {
+          this.formData.name = this.houseName + '-水表';
+        }
       },
     }
   }
