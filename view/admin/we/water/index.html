@@ -35,7 +35,7 @@
   <t-form ref="waterForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
     <t-form-item label="计费周期" name="cycle">
       <t-date-range-picker v-model="formData.cycle" disableDate="[]" allow-input clearable format="YYYY-MM-DD"
-        :style="{ width: '480px' }" @change="onChange" />
+        :style="{ width: '480px' }" />
     </t-form-item>
     <t-form-item label="总用量" name="master_dosage">
       <t-input-number v-model="formData.master_dosage" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
@@ -80,7 +80,7 @@
     meterData: [],
     meter_id: '',
     dialogVisible: false,
-    formData: {},
+    formData: { 'cycle': [] },
     formHeader: '',
     rules: {
       cycle: [{ required: true, message: '必填' }],
@@ -129,7 +129,7 @@
       handleSave() {
         this.$refs.waterForm.validate().then((valid) => {
           if (valid == true) {
-            if(this.formData.cycle[0] && this.formData.cycle[1]){
+            if (this.formData.cycle[0] && this.formData.cycle[1]) {
               this.formData.start_month = this.formData.cycle[0];
               this.formData.end_month = this.formData.cycle[1];
               axiosPost("{:url('save')}", this.formData).then(response => {
@@ -155,6 +155,7 @@
       handleEdit(row) {
         this.$refs.waterForm.reset();
         this.formData = { ...row };
+        this.formData.cycle = [row.start_month, row.end_month];
         this.formHeader = '修改总水费';
         this.dialogVisible = true;
       },
@@ -169,13 +170,6 @@
             this.$message.error(response.msg);
           }
         });
-      },
-      onChange(value, context) {
-        console.log('onChange:', value, context);
-        console.log(
-          'YYYYMMDD:',
-          context.dayjsValue.map((d) => d.format('YYYYMMDD')),
-        );
       },
     }
   }
