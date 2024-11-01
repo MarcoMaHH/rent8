@@ -33,11 +33,9 @@
 <!-- 新增FORM -->
 <t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false">
   <t-form ref="waterForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
-    <t-form-item label="开始日期" name="start_month">
-      <t-date-picker v-model="formData.start_month" mode="date" :style="{ width: '480px' }" clearable />
-    </t-form-item>
-    <t-form-item label="结束日期" name="end_month">
-      <t-date-picker v-model="formData.end_month" mode="date" :style="{ width: '480px' }" clearable />
+    <t-form-item label="计费周期" name="cycle">
+      <t-date-range-picker v-model="formData.cycle" disableDate="[]" allow-input clearable format="YYYY-MM-DD"
+        :style="{ width: '480px' }" @change="onChange" />
     </t-form-item>
     <t-form-item label="总用量" name="master_dosage">
       <t-input-number v-model="formData.master_dosage" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
@@ -85,8 +83,7 @@
     formData: {},
     formHeader: '',
     rules: {
-      start_month: [{ required: true, message: '必填' }],
-      end_month: [{ required: true, message: '必填' }],
+      cycle: [{ required: true, message: '必填' }],
       master_dosage: [{ required: true, message: '必填' }],
       master_sum: [{ required: true, message: '必填' }],
     },
@@ -125,24 +122,28 @@
       },
       handleAdd() {
         this.$refs.waterForm.reset();
-        this.formData = { 'meter_id': this.meter_id, 'house_property_id': this.houseDef };
+        this.formData = { 'meter_id': this.meter_id, 'house_property_id': this.houseDef, 'cycle': [] };
         this.formHeader = this.houseName + '水表 - 新增水费';;
         this.dialogVisible = true;
       },
       handleSave() {
         this.$refs.waterForm.validate().then((valid) => {
           if (valid == true) {
-            axiosPost("{:url('save')}", this.formData).then(response => {
-              if (response.state == 'success') {
-                this.$message.success(response.msg);
-                this.dialogVisible = false;
-                this.queryTable();
-              } else if (response.state == 'warning') {
-                this.$message.warning(response.msg);
-              } else {
-                this.$message.error(response.msg);
-              }
-            });
+            if(this.formData.cycle[0] && this.formData.cycle[1]){
+              this.formData.start_month = this.formData.cycle[0];
+              this.formData.end_month = this.formData.cycle[1];
+              axiosPost("{:url('save')}", this.formData).then(response => {
+                if (response.state == 'success') {
+                  this.$message.success(response.msg);
+                  this.dialogVisible = false;
+                  this.queryTable();
+                } else if (response.state == 'warning') {
+                  this.$message.warning(response.msg);
+                } else {
+                  this.$message.error(response.msg);
+                }
+              });
+            }
           }
         });
       },
@@ -168,6 +169,13 @@
             this.$message.error(response.msg);
           }
         });
+      },
+      onChange(value, context) {
+        console.log('onChange:', value, context);
+        console.log(
+          'YYYYMMDD:',
+          context.dayjsValue.map((d) => d.format('YYYYMMDD')),
+        );
       },
     }
   }
