@@ -92,10 +92,10 @@ class Electricity extends Common
                 return $this->returnError('修改失败，记录不存在。');
             }
             $water->save($data);
-            return $this->returnSuccess('修改成功。');
+            return $this->returnSuccess('修改成功');
         }
         WeBillModel::create($data);
-        return $this->returnSuccess('添加成功。');
+        return $this->returnSuccess('添加成功');
     }
 
     // // 删除
