@@ -34,7 +34,7 @@
 <t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false">
   <t-form ref="waterForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
     <t-form-item label="计费周期" name="cycle">
-      <t-date-range-picker v-model="formData.cycle" disableDate="[]" allow-input clearable format="YYYY-MM-DD"
+      <t-date-range-picker v-model="formData.cycle" allow-input clearable format="YYYY-MM-DD"
         :style="{ width: '480px' }" />
     </t-form-item>
     <t-form-item label="总用量" name="master_dosage">
