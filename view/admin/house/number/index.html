@@ -1,8 +1,7 @@
 {extend name="common/layout" /}
 {block name="main"}
 <t-card class="list-card-container" :bordered="false">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-    <!-- 新建按钮位于左侧 -->
+  <div style="margin-bottom: 10px;">
     <div>
       <t-button theme="primary" @click="handleAdd" :disabled="buttonDisabled">
         <template #icon><t-icon name="add" /></template>
@@ -12,10 +11,7 @@
         批量新建
       </t-button>
     </div>
-    已租房间: {{numberMessage.rented}}， 空闲房间: {{numberMessage.empty}}， 入住率: {{numberMessage.occupancy}}
-
-    <!-- 搜索输入框和搜索按钮位于右侧，被包裹在另一个flex容器中 -->
-    <div style="display: flex; justify-content: flex-end; width: 300px; /* 可根据需要调整宽度 */">
+    <div style="width: 300px;">
       <div style="flex-grow: 1; margin-right: 5px;">
         <t-input v-model="searchValue" placeholder="请输入房间、房号" clearable @enter="handleSearch" />
       </div>
@@ -23,6 +19,7 @@
         <template #icon><t-icon name="search" /></template>
       </t-button>
     </div>
+    已租房间: {{numberMessage.rented}}， 空闲房间: {{numberMessage.empty}}， 入住率: {{numberMessage.occupancy}}
   </div>
 
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
