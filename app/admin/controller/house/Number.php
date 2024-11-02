@@ -29,15 +29,15 @@ class Number extends Common
         if ($parameter) {
             $conditions[] = function ($query) use ($parameter) {
                 $query->where('a.name', 'like', "%{$parameter}%")
-                        ->whereOr('b.name', 'like', "%{$parameter}%");
+                    ->whereOr('b.name', 'like', "%{$parameter}%");
             };
         }
         $numbers = NumberModel::where($conditions)
-        ->alias('a')
-        ->join('HouseProperty b', 'a.house_property_id = b.id')
-        ->field('a.*,b.name as property_name')
-        ->order('a.house_property_id, a.name')
-        ->select();
+            ->alias('a')
+            ->join('HouseProperty b', 'a.house_property_id = b.id')
+            ->field('a.*,b.name as property_name')
+            ->order('a.house_property_id, a.name')
+            ->select();
         foreach ($numbers as $value) {
             if ($value['lease']) {
                 $value['rent_date'] = Date::getLease($value['checkin_time'], $value['lease'] - $value['lease_type'])[0];
@@ -85,7 +85,8 @@ class Number extends Common
             foreach ($numbdrData as $item) {
                 if (NumberModel::where('name', $item['name'])
                     ->where('house_property_id', $item['house_property_id'])
-                    ->find()) {
+                    ->find()
+                ) {
                     throw new \Exception('该房间已存在，请勿重复添加');
                 }
                 NumberModel::create($item);
@@ -152,18 +153,18 @@ class Number extends Common
         $number_id = $this->request->param('id/d', 0);
         // $number_id = 0;
         $number_data = NumberModel::where('a.id', $number_id)
-        ->alias('a')
-        ->join('HouseProperty b', 'a.house_property_id = b.id')
-        ->leftJoin('HouseTenant c', 'a.tenant_id = c.id')
-        ->field('a.*,b.address, b.landlord, b.id_card as landlordId, c.name as renter, c.id_card_number')
-        ->select()->toArray();
+            ->alias('a')
+            ->join('HouseProperty b', 'a.house_property_id = b.id')
+            ->leftJoin('HouseTenant c', 'a.tenant_id = c.id')
+            ->field('a.*,b.address, b.landlord, b.id_card as landlordId, c.name as renter, c.id_card_number')
+            ->select()->toArray();
         if (!$number_data) {
             return $this->returnError('房间不存在');
         }
         // var_dump($number_data);
-        $tmp = new \PhpOffice\PhpWord\TemplateProcessor('static/wordfile/contract.docx');//打开模板
-        $tmp->setValue('landlord', $number_data[0]['landlord']);//替换变量name
-        $tmp->setValue('landlordId', $number_data[0]['landlordId']);//替换变量name
+        $tmp = new \PhpOffice\PhpWord\TemplateProcessor('static/wordfile/contract.docx'); //打开模板
+        $tmp->setValue('landlord', $number_data[0]['landlord']); //替换变量name
+        $tmp->setValue('landlordId', $number_data[0]['landlordId']); //替换变量name
         $tmp->setValue('renter', $number_data[0]['renter']);
         $tmp->setValue('renterId', $number_data[0]['id_card_number']);
         $tmp->setValue('address', $number_data[0]['address'] . $number_data[0]['name']);
@@ -178,7 +179,7 @@ class Number extends Common
         $endDate = explode('-', Date::getLease($number_data[0]['checkin_time'], $number_data[0]['lease'] + 11 - $number_data[0]['lease_type'])[1]);
         $tmp->setValue('startDate', $startDate[0] . '年' . $startDate[1] . '月' . $startDate[2] . '日');
         $tmp->setValue('endDate', $endDate[0] . '年' . $endDate[1] . '月' . $endDate[2] . '日');
-        $tmp->saveAs('../tempfile/合同.docx');//另存为
+        $tmp->saveAs('../tempfile/合同.docx'); //另存为
         $file_url = '../tempfile/合同.docx';
         $file_name = basename($file_url);
         $file_type = explode('.', $file_url);
@@ -188,7 +189,7 @@ class Number extends Common
         header("Content-type: application/octet-stream");
         header("Accept-Ranges: bytes");
         header("Accept-Length: " . filesize($file_url));
-        header("Content-Disposition:attchment; filename=" . json_encode($number_data[0]['name'].'合同.docx'));
+        header("Content-Disposition:attchment; filename=" . json_encode($number_data[0]['name'] . '合同.docx'));
         //输出文件内容
         echo fread($file_type, filesize($file_url));
         fclose($file_type);
@@ -200,9 +201,9 @@ class Number extends Common
         $loginUser = $this->auth->getLoginUser();
         $house_property_id =  Property::getProperty();
         $user = UserModel::find($loginUser['id']);
-        $number_count =  $user->houseNumber->where('house_property_id', $house_property_id)->count();
-        $empty_count =  $user->houseNumber->where('rent_mark', 'N')->where('house_property_id', $house_property_id)->count();
-        $occupancy = $number_count == 0 ? '0%' : round((($number_count - $empty_count) / $number_count) * 100).'%';
+        $number_count =  $user->houseNumber->where('house_property_id', 'in', $house_property_id)->count();
+        $empty_count =  $user->houseNumber->where('rent_mark', 'N')->where('house_property_id', 'in', $house_property_id)->count();
+        $occupancy = $number_count == 0 ? '0%' : round((($number_count - $empty_count) / $number_count) * 100) . '%';
         $number_info = [
             'occupancy' => $occupancy,
             'rented' => $number_count - $empty_count,
@@ -219,10 +220,10 @@ class Number extends Common
             return $this->returnResult();
         } else {
             $number = NumberModel::where('house_property_id', 'in', $house_property_id)
-            ->order('name')
-            ->field('id as value,name as label')
-            ->select()
-            ->toArray();
+                ->order('name')
+                ->field('id as value,name as label')
+                ->select()
+                ->toArray();
             return $this->returnResult($number);
         }
     }
