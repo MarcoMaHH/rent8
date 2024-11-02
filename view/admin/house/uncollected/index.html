@@ -8,16 +8,16 @@
     <t-button theme="primary" style="margin-right: 10px;" @click="concentrated('W')">
       集中抄水
     </t-button>
-    <t-button theme="primary" style="margin-right: 10px;" @click="handlePrintAll">
-      <template #icon><t-icon name="print" /></template> 打印列表
-    </t-button>
+    <t-select placeholder="请选择抄表日期" clearable style="width: 140px;display: inline-block;" @change="changeDate">
+      <t-option v-for="(item, index) in readingTimeArr" :key="index" :value="item.meter_reading_time"
+        :label="item.meter_reading_time">
+        {{ item.meter_reading_time }}
+      </t-option>
+    </t-select>
     <span style="float: right;">
-      <t-select placeholder="请选择抄表日期" clearable style="width: 140px;display: inline-block;" @change="changeDate">
-        <t-option v-for="(item, index) in readingTimeArr" :key="index" :value="item.meter_reading_time"
-          :label="item.meter_reading_time">
-          {{ item.meter_reading_time }}
-        </t-option>
-      </t-select>
+      <t-button theme="primary" @click="handlePrintAll">
+        <template #icon><t-icon name="print" /></template> 打印列表
+      </t-button>
     </span>
 
   </div>
