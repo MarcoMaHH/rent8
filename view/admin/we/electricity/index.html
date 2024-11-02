@@ -6,14 +6,12 @@
       <template #icon><t-icon name="add" /></template>
       新建
     </t-button>
-    <span style="float: right;">
-      <t-select v-model="meter_id" placeholder="请选择电表" clearable style="width: 150px;display: inline-block;"
-        @change="meterChange">
-        <t-option v-for="(item, index) in meterData" :key="index" :value="item.id" :label="item.name">
-          {{ item.name }}
-        </t-option>
-      </t-select>
-    </span>
+    <t-select v-model="meter_id" placeholder="请选择电表" clearable style="width: 150px;display: inline-block;"
+      @change="meterChange">
+      <t-option v-for="(item, index) in meterData" :key="index" :value="item.id" :label="item.name">
+        {{ item.name }}
+      </t-option>
+    </t-select>
   </div>
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
     active-row-type="single" :hover="true" :loading="tableLoading" :pagination="pagination">
