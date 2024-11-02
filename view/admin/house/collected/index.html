@@ -2,12 +2,7 @@
 {block name="main"}
 <t-card class="list-card-container" :bordered="false">
   <div style="display: flex; align-items: center; margin-bottom: 10px;">
-    <div>
-      <t-button theme="primary" @click="handleFilter">
-        <template #icon><t-icon name="unfold-more" /></template> 明细账单
-      </t-button>
-    </div>
-    <div style="display: flex; align-items: center; width: 280px; margin-left: 10px;">
+    <div style="display: flex; align-items: center; width: 280px; ">
       <div style="flex-grow: 1; margin-right: 5px;">
         <t-input v-model="searchValue" placeholder="请输入房产、房间" clearable @enter="handleSearch" />
       </div>
@@ -15,8 +10,13 @@
         <template #icon><t-icon name="search" /></template>
       </t-button>
     </div>
-    <div style="margin-left: auto;"> <!-- 使用margin-left: auto来推至右侧 -->
-      今日到账总金额：{{sum}} 元
+    <div style="margin-left: auto;">
+      <div>
+        今日到账总金额：{{sum}} 元
+        <t-button theme="primary" @click="handleFilter" style="margin-left: 10px;">
+          <template #icon><t-icon name="unfold-more" /></template> 明细账单
+        </t-button>
+      </div>
     </div>
   </div>
 
