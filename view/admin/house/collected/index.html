@@ -10,13 +10,13 @@
         <template #icon><t-icon name="search" /></template>
       </t-button>
     </div>
+    <div style="flex-grow: 1; text-align: center;">
+      今日到账总金额：{{sum}} 元
+    </div>
     <div style="margin-left: auto;">
-      <div>
-        今日到账总金额：{{sum}} 元
-        <t-button theme="primary" @click="handleFilter" style="margin-left: 10px;">
-          <template #icon><t-icon name="unfold-more" /></template> 明细账单
-        </t-button>
-      </div>
+      <t-button theme="primary" @click="handleFilter" style="margin-left: 10px;">
+        <template #icon><t-icon name="unfold-more" /></template> 明细账单
+      </t-button>
     </div>
   </div>
 
