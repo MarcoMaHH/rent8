@@ -58,6 +58,7 @@ class Auth
             return false;
         }
         Session::set($this->sessionName, ['id' => $user->id]);
+        $user->save(['login_date' => date("Y-m-d H:i:s")]);
         return [
             'session_id' => Session::getId(),
             'id' => $user->id,
@@ -85,7 +86,7 @@ class Auth
             'id' => $user->id,
             'name' => $user->username,
             'role' => $user->admin_role_id,
-            'expiration_date' => $user->expiration_date,
+            'expiration_date' => substr($user->expiration_date, 0, 10),
         ];
     }
 

@@ -24,9 +24,6 @@ class User extends Common
         if (!$result) {
             return $this->returnError($this->auth->getError());
         }
-        $loginUser = $this->auth->getLoginUser();
-        $user = UserModel::find($loginUser['id']);
-        $user->save(['login_date' => date("Y-m-d H:i:s")]);
         return $this->returnWechat($result, 0, '登陆成功。');
     }
 
