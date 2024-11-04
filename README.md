@@ -24,7 +24,7 @@
 
 ![房号管理-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/number.jpg)
 
-![租聘合同-展示](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/contract.png)
+![租聘合同-展示](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/contract.jpg)
 
 ![未收账单-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/uncollect.jpg)
 
@@ -35,8 +35,6 @@
 ![租客档案-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/tenant.jpg)
 
 ![电费账单-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/electricity.jpg)
-
-![年度报表-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/annual.jpg)
 
 ![用户管理-页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/user.jpg)
 
