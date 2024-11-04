@@ -71,8 +71,7 @@ class User extends Common
             } else {
                 return $this->returnError('微信登陆失败');
             }
-
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->returnError($e->getMessage());
         }
     }
@@ -114,8 +113,7 @@ class User extends Common
             } else {
                 return $this->returnError('注册失败');
             }
-
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->returnError($e->getMessage());
         }
     }
@@ -150,8 +148,7 @@ class User extends Common
             } else {
                 return $this->returnError('账号续期失败');
             }
-
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->returnError($e->getMessage());
         }
     }
@@ -186,7 +183,7 @@ class User extends Common
             } else {
                 return $this->returnError('账号绑定失败');
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->returnError($e->getMessage());
         }
     }
