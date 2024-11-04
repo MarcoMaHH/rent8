@@ -20,12 +20,12 @@ class Annual extends Common
     {
         $loginUser = $this->auth->getLoginUser();
         $annual = AnnualModel::where('a.admin_user_id', $loginUser['id'])
-        ->alias('a')
-        ->join('HouseProperty c', 'c.id = a.house_property_id')
-        ->field('a.*, c.name as property_name')
-        ->order(['a.annual'=> 'desc', 'c.name'])
-        ->select()
-        ->toArray();
+            ->alias('a')
+            ->join('HouseProperty c', 'c.id = a.house_property_id')
+            ->field('a.*, c.name as property_name')
+            ->order(['a.annual' => 'desc', 'c.name'])
+            ->select()
+            ->toArray();
         foreach ($annual as $key => $value) {
             $annual[$key]['profit'] = $value['income'] - $value['expenditure'];
         }
@@ -33,11 +33,11 @@ class Annual extends Common
         $lasyYear = date('Y', strtotime('-1 year'));
         $propertys = PropertyModel::where('admin_user_id', $loginUser['id'])->select()->toArray();
         $allIncomes = SumModel::where('admin_user_id', $loginUser['id'])
-        ->where('type', 'I')
-        ->where('annual', $lasyYear)
-        ->field('annual, house_property_id, sum(amount) as amount')
-        ->group('annual, house_property_id')
-        ->select()->toArray();
+            ->where('type', 'I')
+            ->where('annual', $lasyYear)
+            ->field('annual, house_property_id, sum(amount) as amount')
+            ->group('annual, house_property_id')
+            ->select()->toArray();
         $allExpenditures = SumModel::where('admin_user_id', $loginUser['id'])
             ->where('type', 'E')
             ->where('annual', $lasyYear)
@@ -138,7 +138,8 @@ class Annual extends Common
                 if ($annual = AnnualModel::where('admin_user_id', $item['admin_user_id'])
                     ->where('house_property_id', $item['house_property_id'])
                     ->where('annual', $item['annual'])
-                    ->find()) {
+                    ->find()
+                ) {
                     $annual->income += $item['income'];
                     $annual->expenditure += $item['expenditure'];
                     $annual->save();
