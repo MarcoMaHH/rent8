@@ -1,17 +1,10 @@
 {extend name="common/layout" /}
 {block name="main"}
 <t-card class="list-card-container" :bordered="false">
-  <div style=" display: flex;align-items: center;margin-bottom: 10px;">
-    <t-button theme="primary" style="margin-right: 10px;" @click="handleAdd" :disabled="buttonDisabled">
-      <template #icon><t-icon name="add" /></template>
-      新建
-    </t-button>
-    <t-select placeholder="请选择类型" clearable @change="changeType" style="width: 150px;">
-      <t-option v-for="(item, index) in typeArr" :key="index" :value="item.value" :label="item.label">
-        {{ item.label }}
-      </t-option>
-    </t-select>
-  </div>
+  <t-button theme="primary" style="margin-bottom: 10px;" @click="handleAdd" :disabled="buttonDisabled">
+    <template #icon><t-icon name="add" /></template>
+    新建
+  </t-button>
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
     active-row-type="single" :hover="true" :loading="tableLoading" :pagination="pagination">
     <template #op="slotProps">
@@ -33,27 +26,18 @@
 <!-- 新增FORM -->
 <t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false">
   <t-form ref="otherForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
-    <t-form-item label="房间" name="type">
-      <t-select placeholder="请选择类型" clearable @change="changeType" style="width: 150px;">
-        <t-option v-for="(item, index) in typeArr" :key="index" :value="item.value" :label="item.label">
+    <t-form-item label="房间" name="house_number_id">
+      <t-select placeholder="请选择房间" clearable @change="changeNumbers" :style="{ width: '480px' }">
+        <t-option v-for="(item, index) in numbersArr" :key="index" :value="item.value" :label="item.label">
           {{ item.label }}
         </t-option>
       </t-select>
     </t-form-item>
-    <t-form-item label="金额" name="total_money">
-      <t-input-number v-model="formData.total_money" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    <t-form-item label="开始日期" name="start_date">
+      <t-date-picker v-model="formData.start_date" mode="date" :style="{ width: '480px' }" clearable />
     </t-form-item>
-    <t-form-item label="日期" name="accounting_date">
-      <t-date-picker v-model="formData.accounting_date" mode="date" :style="{ width: '480px' }" clearable />
-    </t-form-item>
-    <t-form-item label="是否重复" name="circulate_mark">
-      <t-radio-group v-model="formData.circulate_mark">
-        <t-radio value="Y">是</t-radio>
-        <t-radio value="N">否</t-radio>
-      </t-radio-group>
-    </t-form-item>
-    <t-form-item label="备注" name="note">
-      <t-textarea v-model="formData.note" :style="{ width: '480px' }" placeholder="请输入" autosize />
+    <t-form-item label="结束日期" name="end_date">
+      <t-date-picker v-model="formData.end_date" mode="date" :style="{ width: '480px' }" clearable />
     </t-form-item>
     <t-form-item style="float: right">
       <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px;">取消</t-button>
@@ -86,24 +70,13 @@
     formData: {},
     formHeader: '',
     rules: {
-      total_money: [
-        { required: true, message: '必填', trigger: 'blur' },
-        { min: 0, message: '金额不能负数', type: 'error', trigger: 'blur' },
-      ],
-      accounting_date: [{ required: true, message: '必填' }],
-      circulate_mark: [{ required: true, message: '必填' }],
-      type: [{ required: true, message: '必填' }],
+      house_number_id: [{ required: true, message: '必填' }],
+      start_date: [{ required: true, message: '必填' }],
+      end_date: [{ required: true, message: '必填' }],
     },
     numbersArr: [],
+
     numbers: '',
-
-
-    type: '',
-    typeArr: [
-      { value: "D", label: "维修费" },
-      { value: "E", label: "工资" },
-      { value: "F", label: "其他" }
-    ],
   };
   function f() {
     return {
@@ -175,22 +148,11 @@
           }
         });
       },
-      handleAccount(row) {
-        axiosPost("{:url('account')}", row).then(response => {
-          if (response.state == 'success') {
-            this.$message.success(response.msg);
-            this.queryTable();
-          } else if (response.state == 'warning') {
-            this.$message.warning(response.msg);
-          } else {
-            this.$message.error(response.msg);
-          }
-        });
-      },
       // 切换抄表日期查询
-      changeType(val) {
-        this.type = val;
-        this.queryTable();
+      changeNumbers(val) {
+        this.formData.house_number_id = val;
+        // this.type = val;
+        // this.queryTable();
       },
     }
   }
