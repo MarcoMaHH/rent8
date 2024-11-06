@@ -1,17 +1,20 @@
 {extend name="common/layout" /}
 {block name="main"}
 <t-card class="list-card-container" :bordered="false">
-  <t-button theme="primary" style="margin-bottom: 10px;" @click="handleAdd" :disabled="buttonDisabled">
-    <template #icon><t-icon name="add" /></template>
-    新建
-  </t-button>
+  <div style="display: flex; align-items: center; width: 280px; margin-bottom: 10px;">
+    <div style="flex-grow: 1; margin-right: 5px;">
+      <t-input v-model="searchValue" placeholder="请输入房产、房间" clearable @enter="handleSearch" />
+    </div>
+    <t-button theme="primary" @click="handleSearch">
+      <template #icon><t-icon name="search" /></template>
+    </t-button>
+  </div>
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
     active-row-type="single" :hover="true" :loading="tableLoading" :pagination="pagination">
     <template #op="slotProps">
       <t-space>
         <t-button size="small" @click="handleEdit(slotProps.row)">修改</t-button>
-        <t-popconfirm theme="danger" content="确认删除?"
-          @confirm="handleDelete(slotProps.row)">
+        <t-popconfirm theme="danger" content="确认删除?" @confirm="handleDelete(slotProps.row)">
           <t-button theme="danger" size="small">删除</t-button>
         </t-popconfirm>
       </t-space>
@@ -19,7 +22,7 @@
   </t-table>
 </t-card>
 
-<!-- 新增FORM -->
+<!-- 修改FORM -->
 <t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false">
   <t-form ref="otherForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
     <t-form-item label="房间名" name="house_number_id">
@@ -100,14 +103,6 @@
           }
           this.tableLoading = false;
         });
-      },
-      handleAdd() {
-        this.numbersArr = [];
-        this.$refs.otherForm.reset();
-        this.queryNumbers();
-        this.formData = { 'house_property_id': this.houseDef };
-        this.formHeader = this.houseName + ' - 新增合同';
-        this.dialogVisible = true;
       },
       handleSave() {
         this.$refs.otherForm.validate().then((valid) => {
