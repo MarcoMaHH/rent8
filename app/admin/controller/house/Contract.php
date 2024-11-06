@@ -37,8 +37,9 @@ class Contract extends Common
         $contract = ContractModel::alias('a')
             ->join('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
             ->join('HouseProperty c', 'c.id = a.house_property_id')
+            ->field('a.*,b.name as number_name, c.name as property_name')
             ->where($conditions)
-            // ->order(['a.accout_mark', 'a.accounting_date' => 'desc'])
+            ->order(['a.end_date'])
             ->select();
         foreach ($contract as $value) {
             if ($value['start_date']) {
