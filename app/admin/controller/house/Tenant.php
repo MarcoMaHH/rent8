@@ -3,9 +3,7 @@
 namespace app\admin\controller\house;
 
 use app\admin\controller\Common;
-use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseTenant as TenantModel;
-use app\admin\model\HouseNumber as NumberModel;
 use app\admin\model\TenantPhoto as PhotoModel;
 use app\admin\validate\HouseTenant as TenantValidate;
 use app\admin\library\Property;

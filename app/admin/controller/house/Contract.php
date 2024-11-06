@@ -3,20 +3,21 @@
 namespace app\admin\controller\house;
 
 use app\admin\controller\Common;
-use app\admin\model\HouseProperty as PropertyModel;
+use app\admin\model\HouseContract as ContractModel;
 use app\admin\model\HouseOther as OtherModel;
+use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\BillSum as SumModel;
 use app\admin\library\Property;
 use think\facade\View;
 
-class Other extends Common
+class Contract extends Common
 {
     public function index()
     {
         return View::fetch();
     }
 
-    public function queryOther()
+    public function queryContract()
     {
         $house_property_id = Property::getProperty();
         $conditions = array(
@@ -26,8 +27,8 @@ class Other extends Common
         if ($type) {
             \array_push($conditions, ['a.type', '=', $type]);
         }
-        $count = OtherModel::alias('a')->where($conditions)->count();
-        $numbers = OtherModel::alias('a')
+        $count = ContractModel::alias('a')->where($conditions)->count();
+        $numbers = ContractModel::alias('a')
         ->leftJoin('HouseProperty b', 'a.house_property_id = b.id')
         ->field('a.*,b.name as property_name')
         ->where($conditions)
