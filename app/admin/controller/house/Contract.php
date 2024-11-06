@@ -4,6 +4,7 @@ namespace app\admin\controller\house;
 
 use app\admin\controller\Common;
 use app\admin\model\HouseContract as ContractModel;
+use app\common\house\Contract as ContractAction;
 use app\admin\model\HouseOther as OtherModel;
 use app\admin\model\BillSum as SumModel;
 use app\admin\library\Property;
@@ -61,15 +62,12 @@ class Contract extends Common
             'start_date' => $this->request->post('start_date/s', '', 'trim'),
             'end_date' => $this->request->post('end_date/s', '', 'trim'),
         ];
-        if ($id) {
-            if (!$electricity = ContractModel::find($id)) {
-                return $this->returnError('修改失败，合同不存在。');
-            }
-            $electricity->save($data);
-            return $this->returnSuccess('修改成功');
+        $result = ContractAction::save($id, $data);
+        if ($result['flag']) {
+            return $this->returnSuccess($result['msg']);
+        } else {
+            return $this->returnError($result['msg']);
         }
-        ContractModel::create($data);
-        return $this->returnSuccess('添加成功');
     }
 
     public function delete()

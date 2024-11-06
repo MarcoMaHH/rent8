@@ -128,7 +128,8 @@
       handleEdit(row) {
         this.$refs.otherForm.reset();
         this.formData = { ...row };
-        this.formHeader = row.property_name + ' - 修改其他收支';
+        console.log(this.formData);
+        this.formHeader = row.property_name + ' - 修改合同';
         this.dialogVisible = true;
       },
       handleDelete(row) {
