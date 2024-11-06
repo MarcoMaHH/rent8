@@ -26,7 +26,7 @@
 <!-- 新增FORM -->
 <t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false">
   <t-form ref="otherForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
-    <t-form-item label="房间" name="house_number_id">
+    <t-form-item label="房间名" name="house_number_id">
       <t-select placeholder="请选择房间" clearable @change="changeNumbers" :style="{ width: '480px' }">
         <t-option v-for="(item, index) in numbersArr" :key="index" :value="item.value" :label="item.label">
           {{ item.label }}
