@@ -29,7 +29,7 @@ class HouseContract extends Migrator
     public function change()
     {
         $table = $this->table(
-            'house_tenant',
+            'house_contract',
             ['engine' => 'InnoDB', 'collation' => 'utf8mb4_general_ci']
         );
         $table->addColumn(
