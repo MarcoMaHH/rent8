@@ -5,8 +5,6 @@ namespace app\admin\controller\house;
 use app\admin\controller\Common;
 use app\admin\library\Property;
 use app\admin\model\HouseBilling as BillingModel;
-use app\admin\model\HouseNumber as NumberModel;
-use app\admin\model\HouseProperty as PropertyModel;
 use think\facade\View;
 
 class Collected extends Common

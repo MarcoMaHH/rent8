@@ -85,7 +85,7 @@
       },
       queryTable: function () {
         this.tableLoading = true;
-        axiosGet("{:url('queryOther')}", { 'type': this.type }).then(response => {
+        axiosGet("{:url('queryContract')}", { 'type': this.type }).then(response => {
           if (response.code == 1) {
             this.tableData = response.data;
             this.pagination.total = response.count;

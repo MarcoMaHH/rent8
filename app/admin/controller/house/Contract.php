@@ -22,36 +22,33 @@ class Contract extends Common
         $conditions = array(
             ['a.house_property_id', 'in', $house_property_id],
         );
-        $type = $this->request->param('type/s', '', 'trim');
-        if ($type) {
-            \array_push($conditions, ['a.type', '=', $type]);
+        $parameter = $this->request->param('parameter/s', '');
+        if ($parameter) {
+            $conditions[] = function ($query) use ($parameter) {
+                $query->where('b.name', 'like', "%{$parameter}%")
+                    ->whereOr('c.name', 'like', "%{$parameter}%");
+            };
         }
-        $count = ContractModel::alias('a')->where($conditions)->count();
-        $numbers = ContractModel::alias('a')
-            ->leftJoin('HouseProperty b', 'a.house_property_id = b.id')
-            ->field('a.*,b.name as property_name')
+        $count = ContractModel::alias('a')
+            ->join('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
+            ->join('HouseProperty c', 'c.id = a.house_property_id')
             ->where($conditions)
-            ->order(['a.accout_mark', 'a.accounting_date' => 'desc'])
+            ->count();
+        $contract = ContractModel::alias('a')
+            ->join('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
+            ->join('HouseProperty c', 'c.id = a.house_property_id')
+            ->where($conditions)
+            // ->order(['a.accout_mark', 'a.accounting_date' => 'desc'])
             ->select();
-        foreach ($numbers as $value) {
-            if ($value['accounting_date']) {
-                $value['accounting_date'] = \substr($value['accounting_date'], 0, 10);
+        foreach ($contract as $value) {
+            if ($value['start_date']) {
+                $value['start_date'] = \substr($value['start_date'], 0, 10);
             }
-            switch ($value['type']) {
-                case 'D':
-                    $value['type_name'] = '维修费 ';
-                    break;
-                case 'E':
-                    $value['type_name'] = '工资 ';
-                    break;
-                case 'F':
-                    $value['type_name'] = '其他 ';
-                    break;
-                default:
-                    break;
+            if ($value['end_date']) {
+                $value['end_date'] = \substr($value['end_date'], 0, 10);
             }
         }
-        return $this->returnResult($numbers, $count);
+        return $this->returnResult($contract, $count);
     }
 
     public function save()
