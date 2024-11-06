@@ -39,6 +39,8 @@ class AdminMenu extends Seeder
              'controller' => 'house.tenant', 'sort' => 5],
             ['id' => 16, 'pid' => 10, 'name' => '其他支出', 'icon' => '',
              'controller' => 'house.other', 'sort' => 6],
+            ['id' => 17, 'pid' => 10, 'name' => '合同管理', 'icon' => '',
+             'controller' => 'house.contract', 'sort' => 7],
             ['id' => 20, 'pid' => 0, 'name' => '水电管理', 'icon' => 'bill',
              'controller' => 'we', 'sort' => 2],
             ['id' => 21, 'pid' => 20, 'name' => '水电总表', 'icon' => '',
