@@ -6,6 +6,7 @@ use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseNumber as NumberModel;
 use app\admin\model\HouseTenant as TenantModel;
 use app\admin\model\HouseBilling as BillingModel;
+use app\admin\model\HouseContract as ContractModel;
 use think\facade\Db;
 
 class Number
@@ -80,6 +81,13 @@ class Number
                 'lease' => $lease_type,
             ];
             $number_data->save($update_data);
+            // 新增合同资料
+            $contract_data = [
+                'house_property_id' => $data['house_property_id'],
+                'house_number_id' => $data['house_number_id'],
+                'start_date' => $data['checkin_time'],
+            ];
+            ContractModel::create($contract_data);
             // 提交事务
             Db::commit();
         } catch (\Exception $e) {
