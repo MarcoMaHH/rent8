@@ -25,13 +25,6 @@
 <!-- 修改FORM -->
 <t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false">
   <t-form ref="otherForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
-    <t-form-item label="房间名" name="house_number_id">
-      <t-select placeholder="请选择房间" clearable @change="changeNumbers" :style="{ width: '480px' }">
-        <t-option v-for="(item, index) in numbersArr" :key="index" :value="item.value" :label="item.label">
-          {{ item.label }}
-        </t-option>
-      </t-select>
-    </t-form-item>
     <t-form-item label="开始日期" name="start_date">
       <t-date-picker v-model="formData.start_date" mode="date" :style="{ width: '480px' }" clearable />
     </t-form-item>
@@ -69,11 +62,9 @@
     formData: {},
     formHeader: '',
     rules: {
-      house_number_id: [{ required: true, message: '必填' }],
       start_date: [{ required: true, message: '必填' }],
       end_date: [{ required: true, message: '必填' }],
     },
-    numbersArr: [],
     // 搜索框
     searchValue: '',
   };
@@ -88,16 +79,6 @@
           if (response.code == 1) {
             this.tableData = response.data;
             this.pagination.total = response.count;
-          } else {
-            this.$message.error('系统出错了!!!');
-          }
-          this.tableLoading = false;
-        });
-      },
-      queryNumbers: function () {
-        axiosGet("{:url('house.number/queryNumberId')}").then(response => {
-          if (response.code == 1) {
-            this.numbersArr = response.data;
           } else {
             this.$message.error('系统出错了!!!');
           }
@@ -128,8 +109,7 @@
       handleEdit(row) {
         this.$refs.otherForm.reset();
         this.formData = { ...row };
-        console.log(this.formData);
-        this.formHeader = row.property_name + ' - 修改合同';
+        this.formHeader = row.property_name + '-' +row.number_name + ' - 修改合同';
         this.dialogVisible = true;
       },
       handleDelete(row) {
