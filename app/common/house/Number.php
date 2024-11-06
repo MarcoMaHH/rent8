@@ -141,6 +141,10 @@ class Number
                 'note' => $note,
             ];
             $billing_data->save($billing_update);
+            // 移除合同
+            ContractModel::where('house_property_id', $number_data->house_property_id)
+            ->where('house_number_id', $number_id)
+            ->delete();
             // 提交事务
             Db::commit();
         } catch (\Exception $e) {
