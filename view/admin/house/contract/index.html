@@ -74,8 +74,8 @@
       end_date: [{ required: true, message: '必填' }],
     },
     numbersArr: [],
-
-    numbers: '',
+    // 搜索框
+    searchValue: '',
   };
   function f() {
     return {
@@ -84,7 +84,7 @@
       },
       queryTable: function () {
         this.tableLoading = true;
-        axiosGet("{:url('queryContract')}", { 'type': this.type }).then(response => {
+        axiosGet("{:url('queryContract')}", { 'parameter': this.searchValue }).then(response => {
           if (response.code == 1) {
             this.tableData = response.data;
             this.pagination.total = response.count;
@@ -103,6 +103,10 @@
           }
           this.tableLoading = false;
         });
+      },
+      // 搜索
+      handleSearch() {
+        this.queryTable();
       },
       handleSave() {
         this.$refs.otherForm.validate().then((valid) => {
