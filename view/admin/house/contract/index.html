@@ -14,9 +14,6 @@
     <template #op="slotProps">
       <t-space>
         <t-button size="small" @click="handleEdit(slotProps.row)">修改</t-button>
-        <t-popconfirm theme="danger" content="确认删除?" @confirm="handleDelete(slotProps.row)">
-          <t-button theme="danger" size="small">删除</t-button>
-        </t-popconfirm>
       </t-space>
     </template>
   </t-table>
@@ -111,24 +108,6 @@
         this.formData = { ...row };
         this.formHeader = row.property_name + '-' +row.number_name + ' - 修改合同';
         this.dialogVisible = true;
-      },
-      handleDelete(row) {
-        axiosPost("{:url('delete')}", row).then(response => {
-          if (response.state == 'success') {
-            this.$message.success(response.msg);
-            this.queryTable();
-          } else if (response.state == 'warning') {
-            this.$message.warning(response.msg);
-          } else {
-            this.$message.error(response.msg);
-          }
-        });
-      },
-      // 切换抄表日期查询
-      changeNumbers(val) {
-        this.formData.house_number_id = val;
-        // this.type = val;
-        // this.queryTable();
       },
     }
   }
