@@ -10,10 +10,6 @@
     <template #op="slotProps">
       <t-space>
         <t-button size="small" @click="handleEdit(slotProps.row)">修改</t-button>
-        <t-popconfirm theme="warning" content="确认到账?"
-          @confirm="handleAccount(slotProps.row)">
-          <t-button theme="warning" size="small">到账</t-button>
-        </t-popconfirm>
         <t-popconfirm theme="danger" content="确认删除?"
           @confirm="handleDelete(slotProps.row)">
           <t-button theme="danger" size="small">删除</t-button>
