@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseBilling as BillingModel;
+use app\admin\model\HouseContract as ContractModel;
 use app\admin\model\BillSum as SumModel;
 use app\admin\model\AdminUser as UserModel;
 use think\facade\View;
@@ -20,7 +21,6 @@ class Index extends Common
     public function queryHouseInfo()
     {
         $loginUser = $this->auth->getLoginUser();
-        $property_count = PropertyModel::where('admin_user_id', $loginUser['id'])->count();
         $user = UserModel::find($loginUser['id']);
         $number_count =  $user->houseNumber->count();
         $empty_count =  $user->houseNumber->where('rent_mark', 'N')->count();
@@ -31,32 +31,22 @@ class Index extends Common
         }, $property);
         $accounting_month = date('Y-m');
         $income = SumModel::where('house_property_id', 'in', $result)
-        ->where('type', TYPE_INCOME)
-        ->where('accounting_date', $accounting_month)
-        ->sum('amount');
-        // todo
+            ->where('type', TYPE_INCOME)
+            ->where('accounting_date', $accounting_month)
+            ->sum('amount');
         $spending = SumModel::where('house_property_id', 'in', $result)
-        ->where('type', TYPE_EXPENDITURE)
-        ->where('accounting_date', $accounting_month)
-        ->sum('amount');
-        $currentDate = new \DateTime();
-        $format = $currentDate->format('Y-m-d H:i:s');
-        $overdue_todo = $user->houseBilling->where('accounting_date', null)
-        ->where('meter_reading_time', '=', '')
-        ->where('start_time', '<', $format)
-        ->count();
-        $overdue_uncollected = $user->houseBilling->where('accounting_date', null)
-        ->where('meter_reading_time', '!=', '')
-        ->where('start_time', '<', $format)
-        ->count();
+            ->where('type', TYPE_EXPENDITURE)
+            ->where('accounting_date', $accounting_month)
+            ->sum('amount');
+        $contract = ContractModel::where('house_property_id', 'in', $result)
+            ->whereNotNull('end_date')
+            ->count();
         $house_info = [
-            'property_count' => $property_count,
             'number_count' => $number_count,
             'empty_count' => $empty_count,
             'occupancy' => $occupancy,
             'profit' => $income - intval($spending),
-            'overdue_todo' => $overdue_todo,
-            'overdue_uncollected' => $overdue_uncollected,
+            'contract_count' => $contract,
         ];
         return $this->returnResult($house_info);
     }
@@ -74,12 +64,12 @@ class Index extends Common
             ['a.accounting_date', 'null', ''],
         );
         $remind = BillingModel::where($conditions)
-        ->alias('a')
-        ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
-        ->join('HouseProperty c', 'c.id = a.house_property_id')
-        ->field('a.id, a.house_property_id, a.start_time, b.name as number_name, c.name as property_name')
-        ->order(['a.start_time' => 'asc'])
-        ->select();
+            ->alias('a')
+            ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
+            ->join('HouseProperty c', 'c.id = a.house_property_id')
+            ->field('a.id, a.house_property_id, a.start_time, b.name as number_name, c.name as property_name')
+            ->order(['a.start_time' => 'asc'])
+            ->select();
         foreach ($remind as $value) {
             if ($value['start_time']) {
                 $value['start_time'] = \substr($value['start_time'], 0, 10);
@@ -135,13 +125,13 @@ class Index extends Common
             $month = clone $currentDate;
             $setDate = $month->modify("-{$i} month")->format('Y-m');
             $income = SumModel::where('house_property_id', 'in', $result)
-            ->where('type', TYPE_INCOME)
-            ->where('accounting_date', $setDate)
-            ->sum('amount');
+                ->where('type', TYPE_INCOME)
+                ->where('accounting_date', $setDate)
+                ->sum('amount');
             $spending = SumModel::where('house_property_id', 'in', $result)
-            ->where('type', TYPE_EXPENDITURE)
-            ->where('accounting_date', $setDate)
-            ->sum('amount');
+                ->where('type', TYPE_EXPENDITURE)
+                ->where('accounting_date', $setDate)
+                ->sum('amount');
             \array_push($charData, ['month' => $setDate, 'project' => '收入', 'money' => $income]);
             \array_push($charData, ['month' => $setDate, 'project' => '支出', 'money' => $spending]);
             \array_push($charData, ['month' => $setDate, 'project' => '利润', 'money' => $income - $spending]);
