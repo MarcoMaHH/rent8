@@ -90,6 +90,10 @@
       handleSave() {
         this.$refs.otherForm.validate().then((valid) => {
           if (valid == true) {
+            if (this.formData.end_date < this.formData.start_date) {
+              this.$message.warning('结束日期不能小于开始日期');
+              return;
+            }
             axiosPost("{:url('save')}", this.formData).then(response => {
               if (response.state == 'success') {
                 this.$message.success(response.msg);
