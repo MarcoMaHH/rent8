@@ -144,7 +144,7 @@
           }
         });
 
-        axiosGet("{:url('queryRemind')}").then(response => {
+        axiosGet("{:url('queryBill')}").then(response => {
           if (response.code == 1) {
             this.remindData = response.data;
           } else {

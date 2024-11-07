@@ -49,7 +49,7 @@ class Index extends Common
         return $this->returnResult($house_info);
     }
 
-    public function queryRemind()
+    public function queryBill()
     {
         $result = Property::getProperty();
         $conditions = array(
