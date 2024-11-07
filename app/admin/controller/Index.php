@@ -7,6 +7,7 @@ use app\admin\model\HouseBilling as BillingModel;
 use app\admin\model\HouseContract as ContractModel;
 use app\admin\model\BillSum as SumModel;
 use app\admin\model\AdminUser as UserModel;
+use app\admin\library\Property;
 use think\facade\View;
 
 class Index extends Common
@@ -25,10 +26,7 @@ class Index extends Common
         $number_count =  $user->houseNumber->count();
         $empty_count =  $user->houseNumber->where('rent_mark', 'N')->count();
         $occupancy = $number_count == 0 ? '0%' : round((($number_count - $empty_count) / $number_count) * 100) . '%';
-        $property = PropertyModel::where('admin_user_id', $loginUser['id'])->select()->toArray();
-        $result = array_map(function ($item) {
-            return $item['id'];
-        }, $property);
+        $result = Property::getProperty();
         $accounting_month = date('Y-m');
         $income = SumModel::where('house_property_id', 'in', $result)
             ->where('type', TYPE_INCOME)
@@ -53,11 +51,7 @@ class Index extends Common
 
     public function queryRemind()
     {
-        $loginUser = $this->auth->getLoginUser();
-        $property = PropertyModel::where('admin_user_id', $loginUser['id'])->select()->toArray();
-        $result = array_map(function ($item) {
-            return $item['id'];
-        }, $property);
+        $result = Property::getProperty();
         $conditions = array(
             ['a.house_property_id', 'in', $result],
             ['a.start_time', '< time', 'today+7 days'],
@@ -113,11 +107,7 @@ class Index extends Common
 
     public function echar()
     {
-        $loginUser = $this->auth->getLoginUser();
-        $property = PropertyModel::where('admin_user_id', $loginUser['id'])->select()->toArray();
-        $result = array_map(function ($item) {
-            return $item['id'];
-        }, $property);
+        $result = Property::getProperty();
         $currentDate = new \DateTime();
         $currentDate->modify('first day of this month');
         $charData = array();
