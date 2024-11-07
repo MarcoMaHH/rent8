@@ -106,7 +106,7 @@
           合同提醒
         </div>
         <t-table :data="contractData" :columns="columnsContract" row-key="id" vertical-align="top" :bordered="true"
-          size="small" :show-header="false" @row-dblclick="onRowClick">
+          size="small" :show-header="false" @row-dblclick="onContractClick">
         </t-table>
       </t-card>
     </t-col>
@@ -252,6 +252,19 @@
           });
         } else {
           location.href = "{:url('house.uncollected/index')}";
+        }
+      },
+      onContractClick: function (data) {
+        if (data.row.house_property_id != this.houseDef) {
+          axiosPost("{:url('house.property/sort')}", { 'id': data.row.house_property_id }).then(response => {
+            if (response.state == 'success') {
+              location.href = "{:url('house.contract/index')}";
+            } else {
+              console.log('房产切换失败');
+            }
+          });
+        } else {
+          location.href = "{:url('house.contract/index')}";
         }
       },
     }

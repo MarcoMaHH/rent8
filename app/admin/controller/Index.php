@@ -76,7 +76,7 @@ class Index extends Common
         $result = Property::getProperty();
         $conditions = array(
             ['a.house_property_id', 'in', $result],
-            ['a.end_date', '< time', 'today+7 days'],
+            ['a.end_date', '< time', 'today+8 days'],
         );
         $contract = ContractModel::where($conditions)
             ->alias('a')
