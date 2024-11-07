@@ -44,7 +44,7 @@ class Number
         $data['house_property_id'] = $number_data['house_property_id'];
         // 账单资料
         $note = "单据开出中途退房，一律不退房租。 \n" .
-                "到期如果不续租，超期将按每天" . $number_data['daily_rent'] . "元计算。" ;
+            "到期如果不续租，超期将按每天" . $number_data['daily_rent'] . "元计算。";
         $lease_type = $number_data['lease_type'];
         $transFlag = true;
         Db::startTrans();
@@ -53,8 +53,8 @@ class Number
             $tenant = TenantModel::create($data);
             // 删除上位租客的账单
             BillingModel::where('house_property_id', $data['house_property_id'])
-            ->where('house_number_id', $data['house_number_id'])
-            ->delete();
+                ->where('house_number_id', $data['house_number_id'])
+                ->delete();
             //insert账单资料
             $billing_data = [
                 'house_property_id' => $data['house_property_id'],
@@ -117,10 +117,10 @@ class Number
             ];
             $number_data->save($number_update);
             TenantModel::where('house_property_id', $number_data->house_property_id)
-            ->where('house_number_id', $number_id)
-            ->where('leave_time', 'null')
-            ->data(['leave_time' => $leave_time, 'mark' => 'Y'])
-            ->update();
+                ->where('house_number_id', $number_id)
+                ->where('leave_time', 'null')
+                ->data(['leave_time' => $leave_time, 'mark' => 'Y'])
+                ->update();
             $billing_data = BillingModel::find($number_data->receipt_number);
             $datediff = intval((strtotime($leave_time) - strtotime($billing_data->start_time)) / (60 * 60 * 24));
             $note = '';
@@ -143,8 +143,8 @@ class Number
             $billing_data->save($billing_update);
             // 移除合同
             ContractModel::where('house_property_id', $number_data->house_property_id)
-            ->where('house_number_id', $number_id)
-            ->delete();
+                ->where('house_number_id', $number_id)
+                ->delete();
             // 提交事务
             Db::commit();
         } catch (\Exception $e) {
@@ -168,9 +168,14 @@ class Number
         $transFlag = true;
         Db::startTrans();
         try {
+            // 删除账单
             BillingModel::where('house_property_id', $number['house_property_id'])
-            ->where('house_number_id', $number['id'])
-            ->delete();
+                ->where('house_number_id', $number['id'])
+                ->delete();
+            // 删除合同
+            ContractModel::where('house_property_id', $number['house_property_id'])
+                ->where('house_number_id', $number['id'])
+                ->delete();
             $number->delete();
             // 提交事务
             Db::commit();
