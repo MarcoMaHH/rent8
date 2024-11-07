@@ -14,6 +14,7 @@
     <template #op="slotProps">
       <t-space>
         <t-button size="small" @click="handleEdit(slotProps.row)">修改</t-button>
+        <t-button size="small" theme="default" @click="handleContract(slotProps.row)">合同</t-button>
       </t-space>
     </template>
   </t-table>
@@ -105,8 +106,12 @@
       handleEdit(row) {
         this.$refs.otherForm.reset();
         this.formData = { ...row };
-        this.formHeader = row.property_name + '-' +row.number_name + ' - 修改合同';
+        this.formHeader = row.property_name + '-' + row.number_name + ' - 修改合同';
         this.dialogVisible = true;
+      },
+      // 合同
+      handleContract(row) {
+        axiosDownload("{:url('contract')}", { id: row.id });
       },
     }
   }

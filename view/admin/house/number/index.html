@@ -40,7 +40,6 @@
           @click="handleCheckIn(slotProps.row)">入住</t-button>
         <t-button size="small" theme="warning" v-if="slotProps.row.rent_mark === 'Y'"
           @click="handleCheckOut(slotProps.row)">退房</t-button>
-        <t-button size="small" theme="default" @click="handleContract(slotProps.row)">合同</t-button>
         <t-popconfirm theme="danger" content="确认删除?" @confirm="handleDelete(slotProps.row)">
           <t-button theme="danger" size="small">删除</t-button>
         </t-popconfirm>
@@ -447,10 +446,6 @@
             });
           }
         });
-      },
-      // 合同
-      handleContract(row) {
-        axiosDownload("{:url('contract')}", { id: row.id });
       },
     }
   }
