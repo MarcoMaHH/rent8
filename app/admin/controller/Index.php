@@ -83,7 +83,7 @@ class Index extends Common
             ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
             ->join('HouseProperty c', 'c.id = a.house_property_id')
             ->field('a.id, a.house_property_id, a.end_date, b.name as number_name, c.name as property_name')
-            ->order(['a.end_date' => 'desc'])
+            ->order(['a.end_date' => 'asc'])
             ->select();
         foreach ($contract as $value) {
             if ($value['end_date']) {
