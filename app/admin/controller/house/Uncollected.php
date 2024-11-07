@@ -3,13 +3,8 @@
 namespace app\admin\controller\house;
 
 use app\admin\controller\Common;
-use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseNumber as NumberModel;
-use app\admin\model\HouseTenant as TenantModel;
 use app\admin\model\HouseBilling as BillingModel;
-use app\admin\model\BillSum as SumModel;
-use app\admin\model\WeMeter as MeterModel;
-use app\admin\model\WeDetail as WeDetailModel;
 use app\common\house\Uncollected as UncollectedAction;
 use app\admin\library\Property;
 use app\admin\library\Date;

@@ -4,8 +4,6 @@ namespace app\api\controller;
 
 use app\api\library\Property;
 use app\admin\model\HouseBilling as BillingModel;
-use app\admin\model\HouseNumber as NumberModel;
-use app\admin\model\HouseProperty as PropertyModel;
 
 class Collected extends Common
 {
