@@ -55,14 +55,14 @@ class Contract extends Common
 
     public function save()
     {
-        $id = $this->request->post('id/d', 0);
         $data = [
+            'id' => $this->request->post('id/d', 0),
             'house_property_id' => $this->request->post('house_property_id/s', '', 'trim'),
             'house_number_id' => $this->request->post('house_number_id/s', '', 'trim'),
             'start_date' => $this->request->post('start_date/s', '', 'trim'),
             'end_date' => $this->request->post('end_date/s', '', 'trim'),
         ];
-        $result = ContractAction::save($id, $data);
+        $result = ContractAction::save($data);
         if ($result['flag']) {
             return $this->returnSuccess($result['msg']);
         } else {
