@@ -2,7 +2,6 @@
 
 namespace app\admin\controller;
 
-use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseBilling as BillingModel;
 use app\admin\model\HouseContract as ContractModel;
 use app\admin\model\BillSum as SumModel;
@@ -57,19 +56,41 @@ class Index extends Common
             ['a.start_time', '< time', 'today+7 days'],
             ['a.accounting_date', 'null', ''],
         );
-        $remind = BillingModel::where($conditions)
+        $bill = BillingModel::where($conditions)
             ->alias('a')
             ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
             ->join('HouseProperty c', 'c.id = a.house_property_id')
             ->field('a.id, a.house_property_id, a.start_time, b.name as number_name, c.name as property_name')
             ->order(['a.start_time' => 'asc'])
             ->select();
-        foreach ($remind as $value) {
+        foreach ($bill as $value) {
             if ($value['start_time']) {
                 $value['start_time'] = \substr($value['start_time'], 0, 10);
             }
         }
-        return $this->returnResult($remind);
+        return $this->returnResult($bill);
+    }
+
+    public function queryContract()
+    {
+        $result = Property::getProperty();
+        $conditions = array(
+            ['a.house_property_id', 'in', $result],
+            ['a.end_date', '< time', 'today+7 days'],
+        );
+        $contract = ContractModel::where($conditions)
+            ->alias('a')
+            ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
+            ->join('HouseProperty c', 'c.id = a.house_property_id')
+            ->field('a.id, a.house_property_id, a.end_date, b.name as number_name, c.name as property_name')
+            ->order(['a.end_date' => 'desc'])
+            ->select();
+        foreach ($contract as $value) {
+            if ($value['end_date']) {
+                $value['end_date'] = \substr($value['end_date'], 0, 10);
+            }
+        }
+        return $this->returnResult($contract);
     }
 
     public function login()
