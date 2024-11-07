@@ -40,7 +40,7 @@ class Contract extends Common
             ->join('HouseProperty c', 'c.id = a.house_property_id')
             ->field('a.*,b.name as number_name, c.name as property_name')
             ->where($conditions)
-            ->order('a.end_date, a.house_property_id')
+            ->order(['a.end_date' => 'desc', 'a.house_property_id'])
             ->select();
         foreach ($contract as $value) {
             if ($value['start_date']) {
