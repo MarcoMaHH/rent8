@@ -40,7 +40,7 @@ class Contract extends Common
             ->join('HouseProperty c', 'c.id = a.house_property_id')
             ->field('a.*,b.name as number_name, c.name as property_name')
             ->where($conditions)
-            ->order(['a.end_date'])
+            ->order('a.end_date, a.house_property_id')
             ->select();
         foreach ($contract as $value) {
             if ($value['start_date']) {
@@ -48,6 +48,7 @@ class Contract extends Common
             }
             if ($value['end_date']) {
                 $value['end_date'] = \substr($value['end_date'], 0, 10);
+                $value['remaining'] = \floor((\strtotime($value['end_date']) - \time()) / 86400);
             }
         }
         return $this->returnResult($contract, $count);
