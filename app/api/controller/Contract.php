@@ -56,6 +56,12 @@ class Contract extends Common
             if (!$data) {
                 return $this->returnError('合同不存在');
             }
+            if ($data->start_date) {
+                $data->start_date = \substr($data->start_date, 0, 10);
+            }
+            if ($data->end_date) {
+                $data->end_date = \substr($data->end_date, 0, 10);
+            }
         } else {
             return $this->returnError('缺少合同ID');
         }
