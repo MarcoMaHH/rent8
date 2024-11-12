@@ -4,6 +4,7 @@ namespace app\api\controller;
 
 use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseBilling as BillingModel;
+use app\admin\model\HouseContract as ContractModel;
 use app\admin\model\BillSum as SumModel;
 
 class Index extends Common
@@ -29,11 +30,15 @@ class Index extends Common
             ->where('accounting_date', null)
             ->where('start_time', '<', $threeDaysAgo)
             ->count();
+        $contract = ContractModel::where('house_property_id', 'in', $result)
+            ->where('end_date', '<', $threeDaysAgo)
+            ->count();
         $house_info = [
             'income' => $income,
             'spending' => $spending,
             'profit' => $income - $spending,
             'bill' => $bill,
+            'contract' => $contract,
         ];
         return $this->returnWechat($house_info);
     }
