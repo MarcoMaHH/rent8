@@ -47,8 +47,8 @@ class Contract extends Common
                 $value['start_date'] = \substr($value['start_date'], 0, 10);
             }
             if ($value['end_date']) {
+                $value['remaining'] = \floor((\strtotime($value['end_date']) - \strtotime('today midnight')) / 86400);
                 $value['end_date'] = \substr($value['end_date'], 0, 10);
-                $value['remaining'] = \floor((\strtotime($value['end_date']) - \time()) / 86400);
             }
         }
         return $this->returnResult($contract, $count);
