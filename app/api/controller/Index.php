@@ -27,7 +27,6 @@ class Index extends Common
         $threeDaysAgo = date('Y-m-d H:i:s', strtotime('+3 days'));
         $bill = BillingModel::where('house_property_id', 'in', $result)
             ->where('accounting_date', null)
-            ->where('meter_reading_time', '=', '')
             ->where('start_time', '<', $threeDaysAgo)
             ->count();
         $house_info = [
