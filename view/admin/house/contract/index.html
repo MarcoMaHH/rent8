@@ -4,11 +4,18 @@
     style="
       display: flex;
       align-items: center;
-      width: 280px;
+      justify-content: space-between;
       margin-bottom: 10px;
     "
   >
-    <div style="flex-grow: 1; margin-right: 5px">
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        width: 280px;
+        margin-left: 10px;
+      "
+    >
       <t-input
         v-model="searchValue"
         placeholder="请输入房产、房间"
@@ -19,6 +26,16 @@
     <t-button theme="primary" @click="handleSearch">
       <template #icon><t-icon name="search" /></template>
     </t-button>
+    <div
+      style="
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      "
+    >
+      有效合同: {{contractMessage.valid}}, 无效合同: {{contractMessage.invalid}}
+    </div>
   </div>
   <t-table
     :data="tableData"
