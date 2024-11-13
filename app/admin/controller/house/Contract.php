@@ -54,6 +54,19 @@ class Contract extends Common
         return $this->returnResult($contract, $count);
     }
 
+    // 合同管理页面-获取合同信息
+    public function getContractMessage()
+    {
+        $house_property_id = Property::getProperty();
+        $contract_info = ContractModel::where('house_property_id', 'in', $house_property_id)
+            ->field([
+                'valid' => 'SUM(CASE WHEN end_date IS NOT NULL THEN 1 ELSE 0 END)',
+                'invalid' => 'SUM(CASE WHEN end_date IS NULL THEN 1 ELSE 0 END)',
+            ])
+            ->find();
+        return $this->returnResult($contract_info);
+    }
+
     public function save()
     {
         $data = [
