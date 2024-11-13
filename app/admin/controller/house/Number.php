@@ -147,7 +147,7 @@ class Number extends Common
     }
 
     // 房间管理页面-获取房间信息
-    public function getMessage()
+    public function getNumberMessage()
     {
         $loginUser = $this->auth->getLoginUser();
         $house_property_id =  Property::getProperty();
