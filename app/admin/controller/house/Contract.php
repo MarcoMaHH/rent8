@@ -58,14 +58,16 @@ class Contract extends Common
     public function getContractMessage()
     {
         $house_property_id = Property::getProperty();
-        $valid = ContractModel::where('house_property_id', 'in', $house_property_id)
-            ->whereNotNull('end_date')
-            ->count();
-        $sum = ContractModel::where('house_property_id', 'in', $house_property_id)
-            ->count();
+        // 合并查询，使用数据库的计算功能来得到有效和总合同数
+        $contractQuery = ContractModel::where('house_property_id', 'in', $house_property_id);
+        $totalContracts = $contractQuery->count(); // 总合同数
+        $validContracts = $contractQuery->whereNotNull('end_date')->count(); // 有效合同数
+        // 通过总数和有效数计算无效合同数
+        $invalidContracts = $totalContracts - $validContracts;
+
         $contract_info = [
-            'valid' => $valid,
-            'invalid' => $sum - $valid,
+            'valid' => $validContracts,
+            'invalid' => $invalidContracts,
         ];
         return $this->returnResult($contract_info);
     }
