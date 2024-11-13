@@ -1,53 +1,74 @@
-{extend name="common/layout" /}
-{block name="main"}
-<t-space style="width: 100%;">
+{extend name="common/layout" /} {block name="main"}
+<t-space style="width: 100%">
   <t-row justify="space-between">
-    <t-col :flex="2" style="margin-right: 10px;">
+    <t-col :flex="2" style="margin-right: 10px">
       <t-card bordered header>
         <t-row>
           <t-col>
             <div style="margin-bottom: 15px">本月收入</div>
-            <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.income}}</div>
+            <div style="font-size: 24px; font-weight: bold; color: #0052d9">
+              {{cardData.income}}
+            </div>
           </t-col>
         </t-row>
       </t-card>
     </t-col>
-    <t-col :flex="2" style="margin-right: 10px;">
+    <t-col :flex="2" style="margin-right: 10px">
       <t-card bordered header>
         <t-row>
           <t-col>
-            <div style="margin-bottom: 15px;">本月支出</div>
-            <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.spending}}</div>
+            <div style="margin-bottom: 15px">本月支出</div>
+            <div style="font-size: 24px; font-weight: bold; color: #0052d9">
+              {{cardData.spending}}
+            </div>
           </t-col>
         </t-row>
       </t-card>
     </t-col>
-    <t-col :flex="2" style="margin-right: 10px;">
+    <t-col :flex="2" style="margin-right: 10px">
       <t-card bordered header>
         <t-row>
           <t-col>
-            <div style="margin-bottom: 15px;">本月利润</div>
-            <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.profit}}</div>
+            <div style="margin-bottom: 15px">本月利润</div>
+            <div style="font-size: 24px; font-weight: bold; color: #0052d9">
+              {{cardData.profit}}
+            </div>
           </t-col>
         </t-row>
       </t-card>
     </t-col>
-    <t-col :flex="2" style="margin-right: 10px;">
+    <t-col :flex="2" style="margin-right: 10px">
       <t-card bordered header>
         <t-row>
           <t-col>
-            <div style="margin-bottom: 15px;">闲置房间</div>
-            <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.empty_count}}</div>
+            <div style="margin-bottom: 15px">闲置房间</div>
+            <div style="font-size: 24px; font-weight: bold; color: #0052d9">
+              {{cardData.empty_count}}
+            </div>
           </t-col>
         </t-row>
       </t-card>
     </t-col>
-    <t-col :flex="2" style="margin-right: 10px;">
+    <t-col :flex="2" style="margin-right: 10px">
       <t-card bordered header>
         <t-row>
           <t-col>
-            <div style="margin-bottom: 15px;">入住率</div>
-            <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.occupancy}}</div>
+            <div style="margin-bottom: 15px">入住率</div>
+            <div style="font-size: 24px; font-weight: bold; color: #0052d9">
+              {{cardData.occupancy}}
+            </div>
+          </t-col>
+        </t-row>
+      </t-card>
+    </t-col>
+    <t-col :flex="2" style="margin-right: 10px">
+      <t-card bordered header>
+        <t-row>
+          <t-col>
+            <div style="margin-bottom: 15px">总房间数</div>
+            <div style="font-size: 24px; font-weight: bold; color: #0052d9">
+              {{cardData.number_count}}
+            </div>
           </t-col>
         </t-row>
       </t-card>
@@ -56,8 +77,10 @@
       <t-card bordered header>
         <t-row>
           <t-col>
-            <div style="margin-bottom: 15px;">总房间数</div>
-            <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.number_count}}</div>
+            <div style="margin-bottom: 15px">总合同数</div>
+            <div style="font-size: 24px; font-weight: bold; color: #0052d9">
+              {{cardData.contract_count}}
+            </div>
           </t-col>
         </t-row>
       </t-card>
@@ -65,47 +88,49 @@
   </t-row>
 </t-space>
 
-<t-space direction="vertical" style="width: 100%; margin-top: 10px;">
+<t-space direction="vertical" style="width: 100%; margin-top: 10px">
   <t-card bordered>
-    <div style="margin-bottom: 20px; ">
-      年度财务收支走势
-    </div>
+    <div style="margin-bottom: 20px">年度财务收支走势</div>
     <div id="c1"></div>
   </t-card>
-  <t-card bordered style="width: 25%;">
-    <div style="margin-bottom: 20px; ">
-      当月支出构成
-    </div>
+  <t-card bordered style="width: 25%">
+    <div style="margin-bottom: 20px">当月支出构成</div>
     <div id="c2"></div>
   </t-card>
 </t-space>
-{/block}
-
-{block name="script"}
+{/block} {block name="script"}
 <script>
   const data = {
-    cardData: { 'income': 0, 'spending': 0, 'profit': 0, 'empty_count': 0, 'occupancy': '0%', 'number_count': 0 },
+    cardData: {
+      income: 0,
+      spending: 0,
+      profit: 0,
+      empty_count: 0,
+      occupancy: "0%",
+      number_count: 0,
+      contract_count: 0,
+    },
   };
   function f() {
     return {
       init: function () {
-        let that = this
-        axiosGet("{:url('queryReport')}").then(response => {
+        let that = this;
+        axiosGet("{:url('queryReport')}").then((response) => {
           if (response.code == 1) {
             if (response.data.length > 0) {
               that.cardData = response.data[0];
             }
           } else {
-            that.$message.error('系统出错了!!!');
+            that.$message.error("系统出错了!!!");
           }
         });
 
-        axiosGet("{:url('echar')}").then(response => {
+        axiosGet("{:url('echar')}").then((response) => {
           if (response.code == 1) {
-            const data = response.data
+            const data = response.data;
             // Step 1: 创建 Chart 对象
             const chart = new G2.Chart({
-              container: 'c1', // 指定图表容器 ID
+              container: "c1", // 指定图表容器 ID
               forceFit: true,
               height: 325,
               padding: [10, 25, 80, 40],
@@ -124,7 +149,7 @@
               shared: true,
             });
 
-            chart.axis('money', {
+            chart.axis("money", {
               label: {
                 formatter: (val) => {
                   // return val + ' °C';
@@ -135,25 +160,25 @@
 
             chart
               .line()
-              .position('month*money')
-              .color('project', ['#0052d9', '#e37318', '#2ba471'])
-              .shape('smooth');
+              .position("month*money")
+              .color("project", ["#0052d9", "#e37318", "#2ba471"])
+              .shape("smooth");
 
             chart
               .point()
-              .position('month*money')
-              .color('project', ['#0052d9', '#e37318', '#2ba471'])
-              .shape('circle');
+              .position("month*money")
+              .color("project", ["#0052d9", "#e37318", "#2ba471"])
+              .shape("circle");
 
             chart.render();
           } else {
-            that.$message.error('系统出错了!!!');
+            that.$message.error("系统出错了!!!");
           }
         });
 
-        axiosGet("{:url('expenditure')}").then(response => {
+        axiosGet("{:url('expenditure')}").then((response) => {
           if (response.code == 1) {
-            const data = response.data
+            const data = response.data;
             // console.log(response.data);
             // const data = [
             //   { item: '水费', percent: 0.4 },
@@ -161,52 +186,53 @@
             //   { item: '其他支出', percent: 0.17 },
             // ];
             const chart = new G2.Chart({
-              container: 'c2',
+              container: "c2",
               forceFit: true,
               height: 200,
               padding: [0, 0, 40, 0],
             });
             chart.source(data, {
               percent: {
-                formatter: val => {
-                  val = (val * 100) + '%';
+                formatter: (val) => {
+                  val = val * 100 + "%";
                   return val;
-                }
-              }
+                },
+              },
             });
-            chart.coord('theta');
+            chart.coord("theta");
             chart.tooltip({
-              showTitle: false
+              showTitle: false,
             });
-            chart.intervalStack()
-              .position('percent')
-              .color('item')
-              .label('percent', {
+            chart
+              .intervalStack()
+              .position("percent")
+              .color("item")
+              .label("percent", {
                 offset: -40,
                 // autoRotate: false,
                 textStyle: {
-                  textAlign: 'center',
+                  textAlign: "center",
                   shadowBlur: 2,
-                  shadowColor: 'rgba(0, 0, 0, .45)',
-                  fill: '#fff'
-                }
+                  shadowColor: "rgba(0, 0, 0, .45)",
+                  fill: "#fff",
+                },
               })
-              .tooltip('item*percent', (item, percent) => {
-                percent = percent * 100 + '%';
+              .tooltip("item*percent", (item, percent) => {
+                percent = percent * 100 + "%";
                 return {
                   name: item,
-                  value: percent
+                  value: percent,
                 };
               })
               .style({
                 lineWidth: 1,
-                stroke: '#fff'
+                stroke: "#fff",
               });
             chart.render();
           }
         });
-      }
-    }
+      },
+    };
   }
 </script>
 {/block}
