@@ -36,7 +36,7 @@ class Report extends Common
             ->count();
         $bill = BillingModel::where('house_property_id', 'in', $house_property_id)
             ->where('start_time', '< time', 'today+7 days')
-            ->whereNotEmpty('accounting_date')
+            ->where('accounting_date', 'null', '')
             ->count();
         $house_info = [
             'income' => $income,
@@ -47,7 +47,7 @@ class Report extends Common
             'empty_count' => $empty_count,
             'contract' => $contract,
             'contract7' => $contract7,
-            'bill' => $bill,
+            'bill7' => $bill,
         ];
         return $this->returnWechat($house_info);
     }
