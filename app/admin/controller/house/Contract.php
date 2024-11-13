@@ -58,12 +58,15 @@ class Contract extends Common
     public function getContractMessage()
     {
         $house_property_id = Property::getProperty();
-        $contract_info = ContractModel::where('house_property_id', 'in', $house_property_id)
-            ->field([
-                'valid' => 'SUM(CASE WHEN end_date IS NOT NULL THEN 1 ELSE 0 END)',
-                'invalid' => 'SUM(CASE WHEN end_date IS NULL THEN 1 ELSE 0 END)',
-            ])
-            ->find();
+        $valid = ContractModel::where('house_property_id', 'in', $house_property_id)
+            ->whereNotNull('end_date')
+            ->count();
+        $sum = ContractModel::where('house_property_id', 'in', $house_property_id)
+            ->count();
+        $contract_info = [
+            'valid' => $valid,
+            'invalid' => $sum - $valid,
+        ];
         return $this->returnResult($contract_info);
     }
 
