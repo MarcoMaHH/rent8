@@ -141,11 +141,11 @@
         });
       },
       queryContractMsg: function () {
-        axiosGet("{:url('getNumberMessage')}").then((response) => {
+        axiosGet("{:url('getContractMessage')}").then((response) => {
           if (response.code == 1) {
-            this.numberMessage = response.data;
+            this.contractMessage = response.data;
           } else {
-            console.log("getMessage error");
+            console.log("getContractMessage error");
           }
         });
       },
