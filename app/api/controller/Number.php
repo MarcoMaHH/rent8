@@ -23,16 +23,21 @@ class Number extends Common
         if ($parameter) {
             $conditions[] = function ($query) use ($parameter) {
                 $query->where('a.name', 'like', "%{$parameter}%")
-                        ->whereOr('b.name', 'like', "%{$parameter}%");
+                    ->whereOr('b.name', 'like', "%{$parameter}%");
             };
         }
         $house_property_id = Property::getProperty();
         $numbers = NumberModel::alias('a')
-        ->join('HouseProperty b', 'a.house_property_id = b.id')
-        ->where($conditions)
-        ->field('a.*, b.name as property_name')
-        ->order('a.name')
-        ->select();
+            ->join('HouseProperty b', 'a.house_property_id = b.id')
+            ->where($conditions)
+            ->field('a.*, b.name as property_name')
+            ->order('a.name')
+            ->select();
+        foreach ($numbers as $value) {
+            if ($value['rent_mark'] === 'N') {
+                $value['idle'] = (new \DateTime())->diff(new \DateTime($value['payment_time']))->days;
+            }
+        }
         return $this->returnWechat($numbers);
     }
 
@@ -83,16 +88,16 @@ class Number extends Common
         $house_number_id = $this->request->param('id/d', 0);
         $house_property_id = $this->request->param('house_property_id/d', 0);
         $data = [
-                'house_property_id' => $house_property_id,
-                'house_number_id' => $house_number_id,
-                'name' => '',
-                'sex' => '',
-                'phone' => '',
-                'id_card_number' => '',
-                'native_place' => '',
-                'work_units' => '',
-                'checkin_time' => date("Y-m-d"),
-            ];
+            'house_property_id' => $house_property_id,
+            'house_number_id' => $house_number_id,
+            'name' => '',
+            'sex' => '',
+            'phone' => '',
+            'id_card_number' => '',
+            'native_place' => '',
+            'work_units' => '',
+            'checkin_time' => date("Y-m-d"),
+        ];
         if (!$number_name = NumberModel::find($house_number_id)) {
             $this->returnError('房间不存在。');
         }
@@ -146,10 +151,10 @@ class Number extends Common
             return $this->returnWechat();
         } else {
             $number = NumberModel::where('house_property_id', 'in', $house_property_id)
-            ->order('name')
-            ->field('id as value,name as label')
-            ->select()
-            ->toArray();
+                ->order('name')
+                ->field('id as value,name as label')
+                ->select()
+                ->toArray();
             return $this->returnWechat($number);
         }
     }
