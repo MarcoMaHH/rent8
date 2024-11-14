@@ -688,7 +688,8 @@
               if (response.state == "success") {
                 this.$message.success(response.msg);
                 this.checkInVisible = false;
-                location.href = "{:url('house.tenant/index')}";
+                this.init();
+                // location.href = "{:url('house.tenant/index')}";
               } else if (response.state == "warning") {
                 this.$message.warning(response.msg);
               } else {
