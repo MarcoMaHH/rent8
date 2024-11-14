@@ -113,6 +113,7 @@ class Number
                 'rent_mark' => 'N',
                 'tenant_id' => '',
                 'checkin_time' => null,
+                'payment_time' => $leave_time,
                 'lease' => 0,
             ];
             $number_data->save($number_update);
