@@ -1,72 +1,46 @@
 {extend name="common/layout" /} {block name="main"}
 <t-card class="list-card-container" :bordered="false">
-  <div
-    style="
+  <div style="
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 10px;
-    "
-  >
+    ">
     <div>
       <t-button theme="primary" @click="handleAdd" :disabled="buttonDisabled">
         <template #icon><t-icon name="add" /></template>
         新建
       </t-button>
-      <t-button
-        theme="primary"
-        @click="handleAddMore"
-        style="margin-left: 10px"
-        :disabled="buttonDisabled"
-      >
+      <t-button theme="primary" @click="handleAddMore" style="margin-left: 10px" :disabled="buttonDisabled">
         批量新建
       </t-button>
     </div>
-    <div
-      style="
+    <div style="
         display: flex;
         align-items: center;
         width: 280px;
         margin-left: 10px;
-      "
-    >
+      ">
       <div style="flex-grow: 1; margin-right: 5px">
-        <t-input
-          v-model="searchValue"
-          placeholder="请输入房间、房号"
-          clearable
-          @enter="handleSearch"
-        />
+        <t-input v-model="searchValue" placeholder="请输入房间、房号" clearable @enter="handleSearch" />
       </div>
       <t-button theme="primary" @click="handleSearch">
         <template #icon><t-icon name="search" /></template>
       </t-button>
     </div>
-    <div
-      style="
+    <div style="
         flex: 1;
         display: flex;
         justify-content: center;
         align-items: center;
-      "
-    >
+      ">
       已租房间: {{numberMessage.rented}}, 空闲房间: {{numberMessage.empty}},
       入住率: {{numberMessage.occupancy}}
     </div>
   </div>
 
-  <t-table
-    :data="tableData"
-    :columns="columns"
-    row-key="id"
-    vertical-align="top"
-    :bordered="true"
-    size="small"
-    active-row-type="single"
-    :hover="true"
-    :pagination="pagination"
-    :loading="tableLoading"
-  >
+  <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
+    active-row-type="single" :hover="true" :pagination="pagination" :loading="tableLoading">
     <template #state="{ row }">
       <t-tag v-if="row.rent_mark === 'Y'" theme="danger" variant="light">
         已租
@@ -78,28 +52,12 @@
     <template #lease_type="{ row }"> {{row.lease_type}} 个月 </template>
     <template #op="slotProps">
       <t-space>
-        <t-button size="small" @click="handleEdit(slotProps.row)"
-          >修改</t-button
-        >
-        <t-button
-          size="small"
-          theme="success"
-          v-if="slotProps.row.rent_mark === 'N'"
-          @click="handleCheckIn(slotProps.row)"
-          >入住</t-button
-        >
-        <t-button
-          size="small"
-          theme="warning"
-          v-if="slotProps.row.rent_mark === 'Y'"
-          @click="handleCheckOut(slotProps.row)"
-          >退房</t-button
-        >
-        <t-popconfirm
-          theme="danger"
-          content="确认删除?"
-          @confirm="handleDelete(slotProps.row)"
-        >
+        <t-button size="small" @click="handleEdit(slotProps.row)">修改</t-button>
+        <t-button size="small" theme="success" v-if="slotProps.row.rent_mark === 'N'"
+          @click="handleCheckIn(slotProps.row)">入住</t-button>
+        <t-button size="small" theme="warning" v-if="slotProps.row.rent_mark === 'Y'"
+          @click="handleCheckOut(slotProps.row)">退房</t-button>
+        <t-popconfirm theme="danger" content="确认删除?" @confirm="handleDelete(slotProps.row)">
           <t-button theme="danger" size="small">删除</t-button>
         </t-popconfirm>
       </t-space>
@@ -108,34 +66,13 @@
 </t-card>
 
 <!-- 新增房间 -->
-<t-dialog
-  v-model:visible="dialogVisible"
-  :header="formHeader"
-  :width="680"
-  :footer="false"
-  top="5px"
->
-  <t-form
-    ref="numberForm"
-    :data="formData"
-    :rules="rules"
-    :label-width="100"
-    @submit="handleSave"
-  >
+<t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false" top="5px">
+  <t-form ref="numberForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
     <t-form-item label="房间名" name="name">
-      <t-input
-        v-model="formData.name"
-        :style="{ width: '480px' }"
-        placeholder="请输入"
-      />
+      <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="房租" name="rental">
-      <t-input-number
-        theme="normal"
-        v-model="formData.rental"
-        :style="{ width: '480px' }"
-        placeholder="请输入"
-      />
+      <t-input-number theme="normal" v-model="formData.rental" :style="{ width: '480px' }" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="租期" name="lease_type">
       <t-radio-group v-model="formData.lease_type">
@@ -147,107 +84,44 @@
       </t-radio-group>
     </t-form-item>
     <t-form-item label="押金" name="deposit">
-      <t-input-number
-        theme="normal"
-        v-model="formData.deposit"
-        :style="{ width: '480px' }"
-        placeholder="请输入"
-      />
+      <t-input-number theme="normal" v-model="formData.deposit" :style="{ width: '480px' }" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="管理费" name="management">
-      <t-input-number
-        v-model="formData.management"
-        :style="{ width: '480px' }"
-        theme="normal"
-        placeholder="请输入"
-      />
+      <t-input-number v-model="formData.management" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="网络费" name="network">
-      <t-input-number
-        v-model="formData.network"
-        :style="{ width: '480px' }"
-        theme="normal"
-        placeholder="请输入"
-      />
+      <t-input-number v-model="formData.network" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="卫生费" name="garbage_fee">
-      <t-input-number
-        v-model="formData.garbage_fee"
-        :style="{ width: '480px' }"
-        theme="normal"
-        placeholder="请输入"
-      />
+      <t-input-number v-model="formData.garbage_fee" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="逾期日租金" name="daily_rent">
-      <t-input-number
-        v-model="formData.daily_rent"
-        :style="{ width: '480px' }"
-        theme="normal"
-        placeholder="请输入"
-      />
+      <t-input-number v-model="formData.daily_rent" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="水费单价" name="water_price">
-      <t-input-number
-        v-model="formData.water_price"
-        :style="{ width: '480px' }"
-        theme="normal"
-        placeholder="请输入"
-      />
+      <t-input-number v-model="formData.water_price" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="电费单价" name="electricity_price">
-      <t-input-number
-        v-model="formData.electricity_price"
-        :style="{ width: '480px' }"
-        theme="normal"
-        placeholder="请输入"
-      />
+      <t-input-number v-model="formData.electricity_price" :style="{ width: '480px' }" theme="normal"
+        placeholder="请输入" />
     </t-form-item>
     <t-form-item style="float: right">
-      <t-button
-        variant="outline"
-        @click="dialogVisible = false"
-        style="margin-right: 5px"
-        >取消</t-button
-      >
+      <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px">取消</t-button>
       <t-button theme="primary" type="submit">确定</t-button>
     </t-form-item>
   </t-form>
 </t-dialog>
 
 <!-- 批量新增房间 -->
-<t-dialog
-  v-model:visible="addMoreVisible"
-  :header="formHeader"
-  :width="680"
-  :footer="false"
-  top="5px"
->
-  <t-form
-    v-show="activeForm === 0"
-    ref="addMoreForm1"
-    :data="formData"
-    :rules="rules"
-    :label-width="100"
-    @submit="handleNext"
-  >
+<t-dialog v-model:visible="addMoreVisible" :header="formHeader" :width="680" :footer="false" top="5px">
+  <t-form v-show="activeForm === 0" ref="addMoreForm1" :data="formData" :rules="rules" :label-width="100"
+    @submit="handleNext">
     <t-form-item label="房间数量" name="quantity">
-      <t-input-number
-        v-model="formData.quantity"
-        :style="{ width: '480px' }"
-        :min="2"
-        :step="1"
-        :max="10"
-        suffix="间"
-        placeholder="请输入"
-      />
+      <t-input-number v-model="formData.quantity" :style="{ width: '480px' }" :min="2" :step="1" :max="10" suffix="间"
+        placeholder="请输入" />
     </t-form-item>
     <t-form-item label="房租" name="rental">
-      <t-input-number
-        theme="normal"
-        v-model="formData.rental"
-        :style="{ width: '480px' }"
-        placeholder="请输入"
-      />
+      <t-input-number theme="normal" v-model="formData.rental" :style="{ width: '480px' }" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="租期" name="lease_type">
       <t-radio-group v-model="formData.lease_type">
@@ -259,194 +133,80 @@
       </t-radio-group>
     </t-form-item>
     <t-form-item label="押金" name="deposit">
-      <t-input-number
-        theme="normal"
-        v-model="formData.deposit"
-        :style="{ width: '480px' }"
-        placeholder="请输入"
-      />
+      <t-input-number theme="normal" v-model="formData.deposit" :style="{ width: '480px' }" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="管理费" name="management">
-      <t-input-number
-        v-model="formData.management"
-        :style="{ width: '480px' }"
-        theme="normal"
-        placeholder="请输入"
-      />
+      <t-input-number v-model="formData.management" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="网络费" name="network">
-      <t-input-number
-        v-model="formData.network"
-        :style="{ width: '480px' }"
-        theme="normal"
-        placeholder="请输入"
-      />
+      <t-input-number v-model="formData.network" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="卫生费" name="garbage_fee">
-      <t-input-number
-        v-model="formData.garbage_fee"
-        :style="{ width: '480px' }"
-        theme="normal"
-        placeholder="请输入"
-      />
+      <t-input-number v-model="formData.garbage_fee" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="逾期日租金" name="daily_rent">
-      <t-input-number
-        v-model="formData.daily_rent"
-        :style="{ width: '480px' }"
-        theme="normal"
-        placeholder="请输入"
-      />
+      <t-input-number v-model="formData.daily_rent" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="水费单价" name="water_price">
-      <t-input-number
-        v-model="formData.water_price"
-        :style="{ width: '480px' }"
-        theme="normal"
-        placeholder="请输入"
-      />
+      <t-input-number v-model="formData.water_price" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="电费单价" name="electricity_price">
-      <t-input-number
-        v-model="formData.electricity_price"
-        :style="{ width: '480px' }"
-        theme="normal"
-        placeholder="请输入"
-      />
+      <t-input-number v-model="formData.electricity_price" :style="{ width: '480px' }" theme="normal"
+        placeholder="请输入" />
     </t-form-item>
     <t-form-item style="float: right">
-      <t-button
-        variant="outline"
-        @click="addMoreVisible = false"
-        style="margin-right: 5px"
-        >取消</t-button
-      >
+      <t-button variant="outline" @click="addMoreVisible = false" style="margin-right: 5px">取消</t-button>
       <t-button theme="primary" type="submit">下一步</t-button>
     </t-form-item>
   </t-form>
   <!-- 第二部 -->
-  <t-form
-    v-show="activeForm === 1"
-    ref="addMoreForm2"
-    :data="numberData"
-    :rules="rules"
-    :label-width="100"
-    @submit="handleSaveMore"
-  >
-    <t-form-item
-      v-for="(item, index) in formData.quantity"
-      :key="index"
-      :label="'房间名' + (index + 1)"
-      :name="'name' + index"
-      :prop="'name' + index"
-    >
-      <t-input
-        v-model="numberData['name' + index]"
-        :style="{ width: '480px' }"
-        placeholder="请输入"
-      />
+  <t-form v-show="activeForm === 1" ref="addMoreForm2" :data="numberData" :rules="rules" :label-width="100"
+    @submit="handleSaveMore">
+    <t-form-item v-for="(item, index) in formData.quantity" :key="index" :label="'房间名' + (index + 1)"
+      :name="'name' + index" :prop="'name' + index">
+      <t-input v-model="numberData['name' + index]" :style="{ width: '480px' }" placeholder="请输入" />
     </t-form-item>
 
     <t-form-item style="float: right">
-      <t-button variant="outline" @click="handleBack" style="margin-right: 5px"
-        >上一步</t-button
-      >
+      <t-button variant="outline" @click="handleBack" style="margin-right: 5px">上一步</t-button>
       <t-button theme="primary" type="submit">确定</t-button>
     </t-form-item>
   </t-form>
 </t-dialog>
 
 <!-- 入住表单 -->
-<t-dialog
-  v-model:visible="checkInVisible"
-  :header="formHeader"
-  :width="680"
-  :footer="false"
->
-  <t-form
-    ref="checkInForm"
-    :data="formData"
-    :rules="checkRules"
-    :label-width="100"
-    @submit="checkIn"
-  >
+<t-dialog v-model:visible="checkInVisible" :header="formHeader" :width="680" :footer="false">
+  <t-form ref="checkInForm" :data="formData" :rules="checkRules" :label-width="100" @submit="checkIn">
     <t-form-item label="房产名" name="house_property_name">
-      <t-input
-        v-model="formData.house_property_name"
-        :style="{ width: '480px' }"
-        readonly
-      />
+      <t-input v-model="formData.house_property_name" :style="{ width: '480px' }" readonly />
     </t-form-item>
     <t-form-item label="房间名" name="house_number_name">
-      <t-input
-        v-model="formData.house_number_name"
-        :style="{ width: '480px' }"
-        readonly
-      />
+      <t-input v-model="formData.house_number_name" :style="{ width: '480px' }" readonly />
     </t-form-item>
     <t-form-item label="入住日期" name="checkin_time">
-      <t-date-picker
-        v-model="formData.checkin_time"
-        mode="date"
-        :style="{ width: '480px' }"
-        clearable
-      />
+      <t-date-picker v-model="formData.checkin_time" mode="date" :style="{ width: '480px' }" clearable />
     </t-form-item>
     <t-form-item style="float: right">
-      <t-button
-        variant="outline"
-        @click="checkInVisible = false"
-        style="margin-right: 5px"
-        >取消</t-button
-      >
+      <t-button variant="outline" @click="checkInVisible = false" style="margin-right: 5px">取消</t-button>
       <t-button theme="primary" type="submit">确定</t-button>
     </t-form-item>
   </t-form>
 </t-dialog>
 
 <!-- 退房表单 -->
-<t-dialog
-  v-model:visible="checkOutVisible"
-  :header="formHeader"
-  :width="680"
-  :footer="false"
->
-  <t-form
-    ref="checkOutForm"
-    :data="formData"
-    :rules="checkRules"
-    :label-width="100"
-    @submit="checkOut"
-  >
+<t-dialog v-model:visible="checkOutVisible" :header="formHeader" :width="680" :footer="false">
+  <t-form ref="checkOutForm" :data="formData" :rules="checkRules" :label-width="100" @submit="checkOut">
     <t-form-item label="房产名" name="house_property_name">
-      <t-input
-        v-model="formData.house_property_name"
-        :style="{ width: '480px' }"
-        readonly
-      />
+      <t-input v-model="formData.house_property_name" :style="{ width: '480px' }" readonly />
     </t-form-item>
     <t-form-item label="房间名" name="house_number_name">
-      <t-input
-        v-model="formData.house_number_name"
-        :style="{ width: '480px' }"
-        readonly
-      />
+      <t-input v-model="formData.house_number_name" :style="{ width: '480px' }" readonly />
     </t-form-item>
     <t-form-item label="退房日期" name="leave_time">
-      <t-date-picker
-        v-model="formData.leave_time"
-        mode="date"
-        :style="{ width: '480px' }"
-        clearable
-      />
+      <t-date-picker v-model="formData.leave_time" mode="date" :style="{ width: '480px' }" clearable />
     </t-form-item>
     <t-form-item style="float: right">
-      <t-button
-        variant="outline"
-        @click="checkOutVisible = false"
-        style="margin-right: 5px"
-        >取消</t-button
-      >
+      <t-button variant="outline" @click="checkOutVisible = false" style="margin-right: 5px">取消</t-button>
       <t-button theme="primary" type="submit">确定</t-button>
     </t-form-item>
   </t-form>
