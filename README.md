@@ -1,3 +1,9 @@
+出租屋管理系统微信小程序版，免费使用，适合白嫖党，小白党！
+
+![最常用房东助手](https://gitee.com/MarcoMaHH/picture/raw/master/project.jpg)
+
+---
+
 # rent8-最常用出租屋管理系统
 
 自家用的出租屋管理系统。本系统基于ThinkPHP8(PHP8)+TDesign(Vue3)开发，前后端**不**分离，这是**最最后的倔强**！！！
@@ -7,14 +13,6 @@
 [rent8-最常用出租屋管理系统-安装教程](https://blog.csdn.net/m0_61078449/article/details/143022025)
 
 [rent8-最常用出租屋管理系统-使用说明](https://blog.csdn.net/m0_61078449/article/details/142572124)
-
----
-
-出租屋管理系统微信小程序版，免费使用，适合白嫖党，小白党！
-
-![最常用房东助手](https://gitee.com/MarcoMaHH/picture/raw/master/project.jpg)
-
----
 
 ### 界面及功能展示
 
