@@ -91,6 +91,7 @@ class Number extends Common
                 ) {
                     throw new \Exception('该房间已存在，请勿重复添加');
                 }
+                $item['payment_time'] = date('Y-m-d');
                 NumberModel::create($item);
             }
             // 提交事务
