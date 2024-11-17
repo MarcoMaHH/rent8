@@ -44,7 +44,7 @@ class Number extends Common
             if ($value['checkin_time']) {
                 $value['checkin_time'] = \substr($value['checkin_time'], 0, 10);
             }
-            if ($value['rent_mark'] === 'N') {
+            if ($value['rent_mark'] === 'N' && $value['payment_time']) {
                 $value['idle'] = (new \DateTime())->diff(new \DateTime($value['payment_time']))->days;
             }
         }
