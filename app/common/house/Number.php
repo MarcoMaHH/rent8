@@ -29,6 +29,7 @@ class Number
             if (NumberModel::where('name', $data['name'])->where('house_property_id', $data['house_property_id'])->find()) {
                 return ['flag' => false, 'msg' => '房间名已存在'];
             }
+            $data['payment_time'] = date('Y-m-d');
             NumberModel::create($data);
             return ['flag' => true, 'msg' => '添加成功'];
         }
