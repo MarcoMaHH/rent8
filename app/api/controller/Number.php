@@ -34,7 +34,7 @@ class Number extends Common
             ->order('a.name')
             ->select();
         foreach ($numbers as $value) {
-            if ($value['rent_mark'] === 'N') {
+            if ($value['rent_mark'] === 'N' && $value['payment_time']) {
                 $value['idle'] = (new \DateTime())->diff(new \DateTime($value['payment_time']))->days;
             }
         }
