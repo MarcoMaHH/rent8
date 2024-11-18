@@ -82,7 +82,7 @@
 
 ### 系统环境
 
-- PHP = 8.1.22 （PS:需要安装fileinfo扩展）
+- PHP = 8.1.22 （PS:需要安装fileinfo、zip扩展）
 - Apache = 2.4.41
 - MySQL = 5.7.28
 
