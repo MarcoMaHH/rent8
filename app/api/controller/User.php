@@ -177,7 +177,6 @@ class User extends Common
                 }
                 return $this->returnSuccess('绑定成功');
             } else {
-                var_dump($result);
                 return $this->returnError('账号绑定失败');
             }
         } catch (\Exception $e) {
