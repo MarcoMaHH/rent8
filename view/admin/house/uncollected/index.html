@@ -178,7 +178,7 @@
 
 <!-- 集中抄表 -->
 <t-dialog v-model:visible="concentratedVisible" :header="formHeader" :width="680" :footer="false" top="5px">
-  <t-form ref="concentratedForm" :label-width="130" @submit="concentratedSave">
+  <t-form ref="concentratedForm" :label-width="150" @submit="concentratedSave">
     <t-form-item v-if="concentratedType == 'E'" v-for="(domain, index) in concentratedData" :key="domain.id"
       :label="domain.property_name + '-' + domain.number_name + '-'+ domain.electricity_meter_last_month">
       <t-input-number v-model="domain.electricity_meter_this_month" :style="{ width: '480px' }" theme="normal"
