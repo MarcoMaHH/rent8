@@ -152,7 +152,7 @@
       handleEdit(row) {
         this.$refs.electricityForm.reset();
         this.formData = { ...row };
-        this.formData.cycle = [row.start_month, row.end_month];
+        this.formData.cycle = [row.start_month, row.end_month ? row.end_month : ''];
         this.formHeader = '修改总电费';
         this.dialogVisible = true;
       },
