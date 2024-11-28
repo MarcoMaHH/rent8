@@ -32,8 +32,7 @@
 <t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false">
   <t-form ref="waterForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
     <t-form-item label="计费周期" name="cycle">
-      <t-date-range-picker v-model="formData.cycle" clearable format="YYYY-MM-DD"
-        :style="{ width: '480px' }" />
+      <t-date-range-picker v-model="formData.cycle" clearable format="YYYY-MM-DD" :style="{ width: '480px' }" />
     </t-form-item>
     <t-form-item label="总用量" name="master_dosage">
       <t-input-number v-model="formData.master_dosage" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
@@ -81,7 +80,14 @@
     formData: { 'cycle': [] },
     formHeader: '',
     rules: {
-      cycle: [{ required: true, message: '必填' }],
+      cycle: [{
+        validator: (val) => {
+          if (val.length !== 2 || !val[0] || !val[1]) {
+            return { result: false, message: '必填', type: 'error' };
+          }
+          return { result: true };
+        }
+      }],
       master_dosage: [{ required: true, message: '必填' }],
       master_sum: [{ required: true, message: '必填' }],
     },
