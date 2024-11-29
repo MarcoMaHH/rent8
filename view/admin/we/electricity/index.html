@@ -32,7 +32,8 @@
 <t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false">
   <t-form ref="electricityForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
     <t-form-item label="计费周期" name="cycle">
-      <t-date-range-picker v-model="formData.cycle" clearable format="YYYY-MM-DD" :style="{ width: '480px' }" />
+      <t-date-range-picker v-model="formData.cycle" clearable format="YYYY-MM-DD" :style="{ width: '480px' }"
+        :disable-date="{ before: disableDate }" />
     </t-form-item>
     <t-form-item label="总用量" name="master_dosage">
       <t-input-number v-model="formData.master_dosage" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
@@ -97,6 +98,7 @@
     },
     // 新增按钮
     insertButton: true,
+    disableDate: '2024-01-01',
   };
   function f() {
     return {
@@ -129,6 +131,7 @@
         });
       },
       handleAdd() {
+        this.disableDate = '2024-01-01';
         this.$refs.electricityForm.reset();
         this.formData = { 'meter_id': this.meter_id, 'house_property_id': this.houseDef, 'cycle': [] };
         this.formHeader = this.houseName + '电表 - 新增电费';;
@@ -160,6 +163,25 @@
         this.queryTable();
       },
       handleEdit(row) {
+        if (row.start_month) {
+          // 将字符串转换为 Date 对象
+          let startDate = new Date(row.start_month);
+          // 检查转换是否成功
+          if (isNaN(startDate.getTime())) {
+            console.error('Invalid date string:', row.start_month);
+            this.disableDate = '2024-01-01';
+          } else {
+            // 日期减一天
+            startDate.setDate(startDate.getDate() - 1);
+            // 转换为 YYYY-MM-DD 格式的字符串
+            let year = startDate.getFullYear();
+            let month = (startDate.getMonth() + 1).toString().padStart(2, '0'); // 月份从0开始，需要加1并补零
+            let day = startDate.getDate().toString().padStart(2, '0');
+            this.disableDate = `${year}-${month}-${day}`;
+          }
+        } else {
+          this.disableDate = '2024-01-01';
+        }
         this.$refs.electricityForm.reset();
         this.formData = { ...row };
         this.formData.cycle = [row.start_month, row.end_month ? row.end_month : ''];
