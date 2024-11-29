@@ -82,8 +82,12 @@
     rules: {
       cycle: [{
         validator: (val) => {
-          if (val.length !== 2 || !val[0] || !val[1]) {
+          if (val.length !== 2) {
             return { result: false, message: '必填', type: 'error' };
+          } else if (!val[0]) {
+            return { result: false, message: '请选择开始日期', type: 'error' };
+          } else if (!val[1]) {
+            return { result: false, message: '请选择结束日期', type: 'error' };
           }
           return { result: true };
         }
