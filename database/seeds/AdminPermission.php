@@ -40,7 +40,7 @@ class AdminPermission extends Seeder
             ['id' => 30, 'admin_role_id' => 2, 'controller' => 'collected', 'action' => '*'],
             ['id' => 31, 'admin_role_id' => 2, 'controller' => 'contract', 'action' => '*'],
             ['id' => 32, 'admin_role_id' => 2, 'controller' => 'tenant', 'action' => '*'],
-            ['id' => 33, 'admin_role_id' => 2, 'controller' => 'reoprt', 'action' => '*'],
+            ['id' => 33, 'admin_role_id' => 2, 'controller' => 'report', 'action' => '*'],
             ['id' => 34, 'admin_role_id' => 2, 'controller' => 'user', 'action' => '*'],
         ])->save();
     }
