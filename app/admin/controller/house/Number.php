@@ -37,7 +37,8 @@ class Number extends Common
             ->field('a.*,b.name as property_name')
             ->order('a.house_property_id, a.name')
             ->select();
-        foreach ($numbers as $value) {
+        $currentDateTime = new \DateTime();
+        foreach ($numbers as &$value) {
             if ($value['lease']) {
                 $value['rent_date'] = Date::getLease($value['checkin_time'], $value['lease'] - $value['lease_type'])[0];
             }
@@ -45,7 +46,7 @@ class Number extends Common
                 $value['checkin_time'] = \substr($value['checkin_time'], 0, 10);
             }
             if ($value['rent_mark'] === 'N' && $value['payment_time']) {
-                $value['idle'] = (new \DateTime())->diff(new \DateTime($value['payment_time']))->days;
+                $value['idle'] = Date::formatDays($currentDateTime->diff(new \DateTime($value['payment_time']))->days);
             }
         }
         return $this->returnResult($numbers);
