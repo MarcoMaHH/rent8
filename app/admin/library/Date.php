@@ -22,7 +22,7 @@ class Date
 
             $output = $years . '年';
             if ($months > 0 || $days > 0) {
-                $output .= $months . '月';
+                $output .= $months . '个月';
                 if ($days > 0) {
                     $output .= $days . '日';
                 }
@@ -32,7 +32,7 @@ class Date
             $months = floor($idleDays / 30);
             $days = $idleDays % 30;
 
-            $output = $months . '月';
+            $output = $months . '个月';
             if ($days > 0) {
                 $output .= $days . '日';
             }
