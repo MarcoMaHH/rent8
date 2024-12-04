@@ -15,6 +15,9 @@
       </t-option>
     </t-select>
     <span style="float: right;">
+      <t-button theme="primary" @click="handleFilter" style="margin-right: 10px;">
+        <template #icon><t-icon name="unfold-more" /></template> 明细账单
+      </t-button>
       <t-button theme="primary" @click="handlePrintAll">
         <template #icon><t-icon name="print" /></template> 打印列表
       </t-button>
