@@ -215,15 +215,6 @@
     // 排序
     order: '',
     field: '',
-    columns: [
-      { title: '序号', colKey: 'serial-number', width: 30, },
-      { title: '房产名', colKey: 'property_name', width: 80, },
-      { title: '房间名', colKey: 'name', width: 80, sorter: true },
-      { title: '金额', colKey: 'total_money', width: 80, },
-      { title: '收款日期', colKey: 'start_time', width: 80 },
-      { title: '抄表日期', colKey: 'meter_reading_time', width: 80 },
-      { title: '操作', colKey: 'op', width: 160, align: 'left' },
-    ],
     readingTimeArr: [],
     readingTime: '',
     // 抄表
@@ -278,10 +269,29 @@
     concentratedVisible: false,
     concentratedData: [],
     concentratedType: '',
+    // 明显账单
+    cloumnsFlag: false,
+    columns: [],
+    columns1: [
+      { title: '序号', colKey: 'serial-number', width: 30, },
+      { title: '房产名', colKey: 'property_name', width: 80, },
+      { title: '房间名', colKey: 'name', width: 80, sorter: true },
+      { title: '金额', colKey: 'total_money', width: 80, },
+      { title: '收款日期', colKey: 'start_time', width: 80 },
+      { title: '抄表日期', colKey: 'meter_reading_time', width: 80 },
+      { title: '操作', colKey: 'op', width: 160, align: 'left' },
+    ],
+    columns2: [
+      { title: '序号', colKey: 'serial-number', width: 30, },
+      { title: '房产名', colKey: 'property_name', width: 80, },
+      { title: '房间名', colKey: 'name', width: 80, sorter: true },
+      { title: '金额', colKey: 'total_money', width: 80, },
+    ],
   }
   function f() {
     return {
       init: function () {
+        this.columns = this.columns1;
         this.queryTable();
         this.queryReadingTime();
       },
@@ -459,6 +469,17 @@
               this.$message.error(response.msg);
             }
           });
+      },
+      // 明细账单
+      handleFilter: function () {
+        if (this.cloumnsFlag) {
+          this.isCollapse = false;
+          this.columns = this.columns1;
+        } else {
+          this.isCollapse = true;
+          this.columns = this.columns2;
+        }
+        this.cloumnsFlag = !this.cloumnsFlag;
       },
     }
   }
