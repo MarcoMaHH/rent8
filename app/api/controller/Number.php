@@ -6,6 +6,7 @@ use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseNumber as NumberModel;
 use app\common\house\Number as NumberAction;
 use app\api\library\Property;
+use app\admin\library\Date;
 
 class Number extends Common
 {
@@ -33,9 +34,10 @@ class Number extends Common
             ->field('a.*, b.name as property_name')
             ->order('a.name')
             ->select();
+        $currentDateTime = new \DateTime();
         foreach ($numbers as $value) {
             if ($value['rent_mark'] === 'N' && $value['payment_time']) {
-                $value['idle'] = (new \DateTime())->diff(new \DateTime($value['payment_time']))->days;
+                $value['idle'] = Date::formatDays($currentDateTime->diff(new \DateTime($value['payment_time']))->days);
             }
         }
         return $this->returnWechat($numbers);
