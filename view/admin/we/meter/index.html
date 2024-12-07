@@ -26,7 +26,7 @@
 <t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false">
   <t-form ref="meterForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
     <t-form-item label="总表名称" name="name">
-      <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" readonly />
+      <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" />
     </t-form-item>
     <t-form-item label="类型" name="type">
       <t-radio-group v-model="formData.type" @change="onChange">
