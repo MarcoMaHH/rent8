@@ -3,6 +3,7 @@
 namespace app\admin\controller;
 
 use app\admin\model\HouseBilling as BillingModel;
+use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseContract as ContractModel;
 use app\admin\model\BillSum as SumModel;
 use app\admin\model\AdminUser as UserModel;
@@ -25,7 +26,10 @@ class Index extends Common
         $number_count =  $user->houseNumber->count();
         $empty_count =  $user->houseNumber->where('rent_mark', 'N')->count();
         $occupancy = $number_count == 0 ? '0%' : round((($number_count - $empty_count) / $number_count) * 100) . '%';
-        $result = Property::getProperty();
+        $property = PropertyModel::where('admin_user_id', $loginUser['id'])->select()->toArray();
+        $result = array_map(function ($item) {
+            return $item['id'];
+        }, $property);
         $accounting_month = date('Y-m');
         $income = SumModel::where('house_property_id', 'in', $result)
             ->where('type', TYPE_INCOME)
@@ -128,7 +132,11 @@ class Index extends Common
 
     public function echar()
     {
-        $result = Property::getProperty();
+        $loginUser = $this->auth->getLoginUser();
+        $property = PropertyModel::where('admin_user_id', $loginUser['id'])->select()->toArray();
+        $result = array_map(function ($item) {
+            return $item['id'];
+        }, $property);
         $currentDate = new \DateTime();
         $currentDate->modify('first day of this month');
         $charData = array();
