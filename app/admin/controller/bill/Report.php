@@ -69,8 +69,8 @@ class Report extends Common
                 ->where('type', TYPE_EXPENDITURE)
                 ->sum('amount');
             \array_push($charData, ['month' => $accounting_month, 'project' => '收入', 'money' => $income]);
-            \array_push($charData, ['month' => $accounting_month, 'project' => '支出', 'money' => intval($spending)]);
-            \array_push($charData, ['month' => $accounting_month, 'project' => '利润', 'money' => $income - intval($spending)]);
+            \array_push($charData, ['month' => $accounting_month, 'project' => '支出', 'money' => round($spending, 2)]);
+            \array_push($charData, ['month' => $accounting_month, 'project' => '利润', 'money' => round($income - $spending, 2)]);
         }
         return $this->returnResult($charData);
     }

@@ -46,7 +46,7 @@ class Index extends Common
             'number_count' => $number_count,
             'empty_count' => $empty_count,
             'occupancy' => $occupancy,
-            'profit' => $income - intval($spending),
+            'profit' =>  round($income - $spending, 2),
             'contract_count' => $contract,
         ];
         return $this->returnResult($house_info);
@@ -152,8 +152,8 @@ class Index extends Common
                 ->where('accounting_date', $setDate)
                 ->sum('amount');
             \array_push($charData, ['month' => $setDate, 'project' => '收入', 'money' => $income]);
-            \array_push($charData, ['month' => $setDate, 'project' => '支出', 'money' => $spending]);
-            \array_push($charData, ['month' => $setDate, 'project' => '利润', 'money' => $income - $spending]);
+            \array_push($charData, ['month' => $setDate, 'project' => '支出', 'money' => round($spending, 2)]);
+            \array_push($charData, ['month' => $setDate, 'project' => '利润', 'money' => round($income - $spending, 2)]);
         }
         return $this->returnResult($charData);
     }
