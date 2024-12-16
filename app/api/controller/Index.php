@@ -34,9 +34,9 @@ class Index extends Common
             ->where('end_date', '<', $threeDaysAgo)
             ->count();
         $house_info = [
-            'income' => $income,
-            'spending' => $spending,
-            'profit' => $income - $spending,
+            'income' => round($income, 2),
+            'spending' => round($spending, 2),
+            'profit' => round($income - $spending, 2),
             'bill' => $bill,
             'contract' => $contract,
         ];
