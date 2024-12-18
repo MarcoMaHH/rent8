@@ -33,27 +33,27 @@ class Electricity extends Common
             \array_push($conditions, ['b.id', '=', $meter_id]);
         }
         $count = WeBillModel::alias('a')
-        ->join('WeMeter b', 'a.meter_id = b.id')
-        ->where($conditions)
-        ->count();
+            ->join('WeMeter b', 'a.meter_id = b.id')
+            ->where($conditions)
+            ->count();
         $water = WeBillModel::alias('a')
-        ->join('WeMeter b', 'a.meter_id = b.id')
-        ->where($conditions)
-        ->order(['a.start_month' => 'desc', 'b.type'])
-        ->field('a.id, a.accounting_date, a.end_month, a.start_month, b.id as meter_id, b.type, b.house_property_id, b.name as electricity_name, a.master_sum, a.master_dosage')
-        ->select();
+            ->join('WeMeter b', 'a.meter_id = b.id')
+            ->where($conditions)
+            ->order(['a.start_month' => 'desc', 'b.type'])
+            ->field('a.id, a.accounting_date, a.end_month, a.start_month, b.id as meter_id, b.type, b.house_property_id, b.name as electricity_name, a.master_sum, a.master_dosage')
+            ->select();
         $result = [];
         foreach ($water as $value) {
             $detail = WeDetailModel::where('meter_id', $value['meter_id'])
-            ->where('type', $value['type'])
-            ->where('calculate_date', 'between time', [$value['start_month'] , $value['end_month']])
-            ->field('sum(amount) as amount, sum(dosage) as dosage')
-            ->select()->toArray();
+                ->where('type', $value['type'])
+                ->where('calculate_date', 'between time', [$value['start_month'], $value['end_month']])
+                ->field('sum(amount) as amount, sum(dosage) as dosage')
+                ->select()->toArray();
             if (count($detail)) {
                 $value['detail_dosage'] = $detail[0]['dosage'];
                 if ($detail[0]['amount']) {
                     $value['detail_sum'] = round($detail[0]['amount'], 2);
-                    $value['difference_sum'] = $value['master_sum'] - $value['detail_sum'];
+                    $value['difference_sum'] = round($value['master_sum'] - $value['detail_sum'], 2);
                     $value['difference_dosage'] = $value['master_dosage'] - $value['detail_dosage'];
                 } else {
                     $value['detail_sum'] = null;
@@ -123,9 +123,9 @@ class Electricity extends Common
             $water->save(['accounting_date' => date('Y-m-d', time())]);
             //总表记录
             $totalData = WeBillModel::where('a.id', $id)->alias('a')
-            ->join('WeMeter b', 'a.meter_id = b.id')
-            ->field('b.type, b.house_property_id, a.master_sum')
-            ->find();
+                ->join('WeMeter b', 'a.meter_id = b.id')
+                ->field('b.type, b.house_property_id, a.master_sum')
+                ->find();
             WeBillModel::create([
                 'meter_id' => $water->meter_id,
                 'house_property_id' => $totalData->house_property_id,

@@ -33,26 +33,26 @@ class Water extends Common
             \array_push($conditions, ['b.id', '=', $meter_id]);
         }
         $count = WeBillModel::alias('a')
-        ->join('WeMeter b', 'a.meter_id = b.id')
-        ->where($conditions)
-        ->count();
+            ->join('WeMeter b', 'a.meter_id = b.id')
+            ->where($conditions)
+            ->count();
         $water = WeBillModel::alias('a')
-        ->join('WeMeter b', 'a.meter_id = b.id')
-        ->where($conditions)
-        ->order(['a.start_month' => 'desc', 'b.type'])
-        ->field('a.id, a.accounting_date, a.end_month, a.start_month, b.id as meter_id, b.type, b.house_property_id, b.name as electricity_name, a.master_sum, a.master_dosage')
-        ->select();
+            ->join('WeMeter b', 'a.meter_id = b.id')
+            ->where($conditions)
+            ->order(['a.start_month' => 'desc', 'b.type'])
+            ->field('a.id, a.accounting_date, a.end_month, a.start_month, b.id as meter_id, b.type, b.house_property_id, b.name as electricity_name, a.master_sum, a.master_dosage')
+            ->select();
         $result = [];
         foreach ($water as  $value) {
             $detail = WeDetailModel::where('meter_id', $value['meter_id'])
-            ->where('type', $value['type'])
-            ->where('calculate_date', 'between time', [$value['start_month'] , $value['end_month']])
-            ->field('sum(amount) as amount, sum(dosage) as dosage')
-            ->select()->toArray();
+                ->where('type', $value['type'])
+                ->where('calculate_date', 'between time', [$value['start_month'], $value['end_month']])
+                ->field('sum(amount) as amount, sum(dosage) as dosage')
+                ->select()->toArray();
             if (count($detail)) {
-                if($detail[0]['amount']) {
+                if ($detail[0]['amount']) {
                     $value['detail_sum'] = round($detail[0]['amount'], 2);
-                    $value['difference_sum'] = $value['master_sum'] - $value['detail_sum'];
+                    $value['difference_sum'] = round($value['master_sum'] - $value['detail_sum'], 2);
                     $value['difference_dosage'] = $value['master_dosage'] - $value['detail_dosage'];
                 } else {
                     $value['detail_sum'] = null;
@@ -76,14 +76,14 @@ class Water extends Common
         $id = $this->request->post('id/d', 0);
         $meter_id = $this->request->param('meter_id/d', 0);
         $data = [
-                'meter_id' => $meter_id,
-                'house_property_id' => $this->request->post('house_property_id/s', null, 'trim'),
-                'start_month' => $this->request->post('start_month/s', '', 'trim'),
-                'end_month' => $this->request->post('end_month/s', '', 'trim'),
-                'master_dosage' => $this->request->param('master_dosage/d', 0),
-                'master_sum' => $this->request->param('master_sum/f', 0.0),
-            ];
-        if(!$meterArr = MeterModel::find($meter_id)) {
+            'meter_id' => $meter_id,
+            'house_property_id' => $this->request->post('house_property_id/s', null, 'trim'),
+            'start_month' => $this->request->post('start_month/s', '', 'trim'),
+            'end_month' => $this->request->post('end_month/s', '', 'trim'),
+            'master_dosage' => $this->request->param('master_dosage/d', 0),
+            'master_sum' => $this->request->param('master_sum/f', 0.0),
+        ];
+        if (!$meterArr = MeterModel::find($meter_id)) {
             return $this->returnError('保存失败，记录不存在。');
         }
         $data['end_month'] = $data['end_month'] . ' 23:59:59';
@@ -121,9 +121,9 @@ class Water extends Common
             $water->save(['accounting_date' => date('Y-m-d', time())]);
             //总表记录
             $totalData = WeBillModel::where('a.id', $id)->alias('a')
-            ->join('WeMeter b', 'a.meter_id = b.id')
-            ->field('b.type, b.house_property_id, a.master_sum')
-            ->find();
+                ->join('WeMeter b', 'a.meter_id = b.id')
+                ->field('b.type, b.house_property_id, a.master_sum')
+                ->find();
             WeBillModel::create([
                 'meter_id' => $water->meter_id,
                 'house_property_id' => $totalData->house_property_id,
@@ -135,7 +135,7 @@ class Water extends Common
                 'type' => TYPE_EXPENDITURE,
                 'accounting_date' => $accounting_month,
             ])->find();
-            if($sum_data) {
+            if ($sum_data) {
                 $sum_data->save([
                     'amount' => $sum_data->amount + $totalData->master_sum,
                 ]);
