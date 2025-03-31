@@ -1,11 +1,6 @@
 {extend name="common/layout" /} {block name="main"}
 <t-card class="list-card-container" :bordered="false">
-  <div style="
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    ">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
     <div>
       <t-button theme="primary" @click="handleAdd" :disabled="buttonDisabled">
         <template #icon><t-icon name="add" /></template>
@@ -14,13 +9,11 @@
       <t-button theme="primary" @click="handleAddMore" style="margin-left: 10px" :disabled="buttonDisabled">
         批量新建
       </t-button>
+      <t-button theme="primary" @click="handleCheckInMore" style="margin-left: 10px" :disabled="buttonDisabled">
+        批量入住
+      </t-button>
     </div>
-    <div style="
-        display: flex;
-        align-items: center;
-        width: 280px;
-        margin-left: 10px;
-      ">
+    <div style="display: flex; align-items: center; width: 280px; margin-left: 10px;">
       <div style="flex-grow: 1; margin-right: 5px">
         <t-input v-model="searchValue" placeholder="请输入房间、房号" clearable @enter="handleSearch" />
       </div>
@@ -28,14 +21,8 @@
         <template #icon><t-icon name="search" /></template>
       </t-button>
     </div>
-    <div style="
-        flex: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      ">
-      已租房间: {{numberMessage.rented}}, 空闲房间: {{numberMessage.empty}},
-      入住率: {{numberMessage.occupancy}}
+    <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+      已租房间: {{numberMessage.rented}}, 空闲房间: {{numberMessage.empty}}, 入住率: {{numberMessage.occupancy}}
     </div>
   </div>
 
@@ -57,7 +44,7 @@
           @click="handleCheckIn(slotProps.row)">入住</t-button>
         <t-button size="small" theme="warning" v-if="slotProps.row.rent_mark === 'Y'"
           @click="handleCheckOut(slotProps.row)">退房</t-button>
-        <t-popconfirm theme="danger" content="确认删除?" @confirm="handleDelete(slotProps.row)">
+        <t-popconfirm theme="danger" content="确认删除?" @confirm="handleDelete(slotProps.row)" :disabled="disable">
           <t-button theme="danger" size="small">删除</t-button>
         </t-popconfirm>
       </t-space>
@@ -105,9 +92,15 @@
       <t-input-number v-model="formData.electricity_price" :style="{ width: '480px' }" theme="normal"
         placeholder="请输入" />
     </t-form-item>
+    <t-form-item label="水电倍率" name="ratio">
+      <t-input-number v-model="formData.ratio" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="设备" name="equipment">
+      <t-textarea v-model="formData.equipment" :style="{ width: '480px' }" placeholder="请输入" autosize />
+    </t-form-item>
     <t-form-item style="float: right">
       <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px">取消</t-button>
-      <t-button theme="primary" type="submit">确定</t-button>
+      <t-button theme="primary" type="submit" :disabled="disable">确定</t-button>
     </t-form-item>
   </t-form>
 </t-dialog>
@@ -154,6 +147,12 @@
       <t-input-number v-model="formData.electricity_price" :style="{ width: '480px' }" theme="normal"
         placeholder="请输入" />
     </t-form-item>
+    <t-form-item label="水电倍率" name="ratio">
+      <t-input-number v-model="formData.ratio" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+    </t-form-item>
+    <t-form-item label="设备" name="equipment">
+      <t-textarea v-model="formData.equipment" :style="{ width: '480px' }" placeholder="请输入" autosize />
+    </t-form-item>
     <t-form-item style="float: right">
       <t-button variant="outline" @click="addMoreVisible = false" style="margin-right: 5px">取消</t-button>
       <t-button theme="primary" type="submit">下一步</t-button>
@@ -169,7 +168,7 @@
 
     <t-form-item style="float: right">
       <t-button variant="outline" @click="handleBack" style="margin-right: 5px">上一步</t-button>
-      <t-button theme="primary" type="submit">确定</t-button>
+      <t-button theme="primary" type="submit" :disabled="disable">确定</t-button>
     </t-form-item>
   </t-form>
 </t-dialog>
@@ -188,7 +187,7 @@
     </t-form-item>
     <t-form-item style="float: right">
       <t-button variant="outline" @click="checkInVisible = false" style="margin-right: 5px">取消</t-button>
-      <t-button theme="primary" type="submit">确定</t-button>
+      <t-button theme="primary" type="submit" :disabled="disable">确定</t-button>
     </t-form-item>
   </t-form>
 </t-dialog>
@@ -207,7 +206,20 @@
     </t-form-item>
     <t-form-item style="float: right">
       <t-button variant="outline" @click="checkOutVisible = false" style="margin-right: 5px">取消</t-button>
-      <t-button theme="primary" type="submit">确定</t-button>
+      <t-button theme="primary" type="submit" :disabled="disable">确定</t-button>
+    </t-form-item>
+  </t-form>
+</t-dialog>
+
+<!-- 批量入住 -->
+<t-dialog v-model:visible="checkInMoreVisible" :header="formHeader" :width="680" :footer="false" top="5px">
+  <t-form ref="checkInMoreForm" :label-width="100" @submit="checkInMoreSave">
+    <t-form-item v-for="(domain, index) in unleasedArray" :key="domain.id" :label="domain.name">
+      <t-date-picker v-model="domain.checkin_time" mode="date" :style="{ width: '480px' }" clearable />
+    </t-form-item>
+    <t-form-item style="float: right">
+      <t-button variant="outline" @click="checkInMoreVisible = false" style="margin-right: 5px;">取消</t-button>
+      <t-button theme="primary" type="submit" :loading="loading">确定</t-button>
     </t-form-item>
   </t-form>
 </t-dialog>
@@ -265,6 +277,7 @@
       daily_rent: [{ required: true, message: "必填", trigger: "blur" }],
       water_price: [{ required: true, message: "必填", trigger: "blur" }],
       electricity_price: [{ required: true, message: "必填", trigger: "blur" }],
+      ratio: [{ required: true, message: "必填", trigger: "blur" }],
       // 使用循环动态生成name0到name7的规则，若未来需要更多，只需调整循环次数
       ...Array.from({ length: 10 }, (_, i) => ({
         [`name${i}`]: [{ required: true, message: "必填", trigger: "blur" }],
@@ -288,14 +301,18 @@
     addMoreVisible: false,
     activeForm: 0,
     numberData: {},
+    // 批量入住
+    checkInMoreVisible: false,
+    unleasedArray: [],
+    // 避免重复点击
+    disable: false,
   };
-
   function f() {
     return {
       init: function () {
         this.tableLoading = true;
-        axiosGet("{:url('queryNumber')}", { parameter: this.searchValue }).then(
-          (response) => {
+        axiosGet("{:url('queryNumber')}", { parameter: this.searchValue })
+          .then((response) => {
             if (response.code == 1) {
               this.tableData = response.data;
               this.pagination.total = response.count;
@@ -303,15 +320,15 @@
               this.$message.error("系统出错");
             }
             this.tableLoading = false;
-          }
-        );
-        axiosGet("{:url('getNumberMessage')}").then((response) => {
-          if (response.code == 1) {
-            this.numberMessage = response.data;
-          } else {
-            console.log("getMessage error");
-          }
-        });
+          });
+        axiosGet("{:url('getNumberMessage')}")
+          .then((response) => {
+            if (response.code == 1) {
+              this.numberMessage = response.data;
+            } else {
+              console.log("getMessage error");
+            }
+          });
       },
       // 查询
       handleSearch() {
@@ -329,6 +346,7 @@
             network: 0,
             garbage_fee: 0,
             lease_type: "1",
+            ratio: 1,
           };
           this.formHeader = this.houseName + " - 新增房间";
           this.dialogVisible = true;
@@ -348,11 +366,46 @@
             network: 0,
             garbage_fee: 0,
             lease_type: "1",
+            ratio: 1,
           };
           this.formHeader = this.houseName + " - 批量新增房间";
           this.activeForm = 0;
           this.addMoreVisible = true;
         }
+      },
+      // 批量入住
+      handleCheckInMore() {
+        axiosGet("{:url('queryUnleasedNumber')}", { parameter: this.searchValue })
+          .then((response) => {
+            if (response.code == 1) {
+              this.unleasedArray = response.data;
+            } else {
+              console.log("queryUnleasedNumber error");
+            }
+          });
+        this.$refs.checkInMoreForm.reset();
+        this.formHeader = this.houseName + " - 批量入住";
+        this.checkInMoreVisible = true;
+      },
+      checkInMoreSave() {
+        if (!this.unleasedArray.length) {
+          this.checkInMoreVisible = false;
+          return;
+        }
+        this.disable = true;
+        axiosPost("{:url('checkInMoreSave')}", this.unleasedArray).then(response => {
+          if (response.state == 'success') {
+            this.$message.success(response.msg);
+            this.init();
+            this.checkInMoreVisible = false;
+          } else if (response.state == 'warning') {
+            this.$message.warning(response.msg);
+          } else {
+            this.$message.error(response.msg);
+          }
+        }).finally(() => {
+          this.disable = false;
+        });
       },
       // 修改
       handleEdit(row) {
@@ -363,6 +416,7 @@
       },
       // 保存
       handleSave() {
+        this.disable = true;
         this.$refs.numberForm.validate().then((valid) => {
           if (valid == true) {
             axiosPost("{:url('save')}", this.formData).then((response) => {
@@ -375,7 +429,11 @@
               } else {
                 this.$message.error(response.msg);
               }
+            }).finally(() => {
+              this.disable = false;
             });
+          } else {
+            this.disable = false;
           }
         });
       },
@@ -396,6 +454,7 @@
       },
       // 批量新增-保存
       handleSaveMore() {
+        this.disable = true;
         this.$refs.addMoreForm2.validate().then((valid) => {
           if (valid == true) {
             let sendData = [];
@@ -414,12 +473,18 @@
               } else {
                 this.$message.error(response.msg);
               }
+            }).finally(() => {
+              this.disable = false;
             });
+          } else {
+            this.disable = false;
           }
         });
       },
       // 删除
       handleDelete(row) {
+        if (this.disable) return;
+        this.disable = true;
         axiosPost("{:url('delete')}", row).then((response) => {
           if (response.state == "success") {
             this.$message.success(response.msg);
@@ -429,6 +494,8 @@
           } else {
             this.$message.error(response.msg);
           }
+        }).finally(() => {
+          this.disable = false;
         });
       },
       // 入住
@@ -443,6 +510,7 @@
         };
       },
       checkIn() {
+        this.disable = true;
         this.$refs.checkInForm.validate().then((valid) => {
           if (valid == true) {
             axiosPost("{:url('checkin')}", this.formData).then((response) => {
@@ -456,7 +524,11 @@
               } else {
                 this.$message.error(response.msg);
               }
+            }).finally(() => {
+              this.disable = false;
             });
+          } else {
+            this.disable = false;
           }
         });
       },
@@ -473,6 +545,7 @@
         };
       },
       checkOut() {
+        this.disable = true;
         this.$refs.checkOutForm.validate().then((valid) => {
           if (valid == true) {
             axiosPost("{:url('checkout')}", this.formData).then((response) => {
@@ -485,7 +558,11 @@
               } else {
                 this.$message.error(response.msg);
               }
+            }).finally(() => {
+              this.disable = false;
             });
+          } else {
+            this.disable = false;
           }
         });
       },

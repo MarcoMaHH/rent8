@@ -3,7 +3,6 @@
 namespace app\admin\controller\we;
 
 use app\admin\controller\Common;
-use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseNumber as NumberModel;
 use app\admin\model\WeMeter as MeterModel;
 use app\admin\model\WeDetail as WeDetailModel;
@@ -16,7 +15,7 @@ class Meter extends Common
 {
     public function index()
     {
-        return View::fetch();
+        return View::fetch('/we/meter/index');
     }
 
     public function queryMeter()

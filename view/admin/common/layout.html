@@ -19,6 +19,16 @@
   <link rel="stylesheet" href="__CDN__/tdesign-icons/0.2.2/index.css" />
   <!-- 导入antv g2 -->
   <script src="__CDN__/antv/g2.min.js"></script>
+  <!-- 导入coze -->
+  <script src="__CDN__/coze/coze.js"></script>
+  <style>
+    /* 自定义悬浮入口的位置 */
+    #position_demo {
+      position: absolute;
+      right: 10px;
+      bottom: 20px;
+    }
+  </style>
   <!-- 导入printJS -->
   <script src="__CDN__/print/print.js"></script>
   <link rel="stylesheet" href="__CDN__/print/print.css" type="text/css">
@@ -37,6 +47,7 @@
       </t-layout>
     </t-layout>
   </div>
+  <div id="position_demo"></div>
   {block name="script"}{/block}
   <script>
     this.token = '{$layout_token}';
@@ -143,7 +154,7 @@
           window.open('https://gitee.com/MarcoMaHH/rent8');
         },
         navToHelper: function () {
-          window.open('https://blog.csdn.net/m0_61078449/article/details/142572124');
+          window.open('https://mp.weixin.qq.com/s/zHunfQ6ndL_IXOCl38mwXQ');
         },
       }
     }
@@ -168,6 +179,27 @@
     });
     app.use(router);
     app.mount("#app");
+  </script>
+  <script>
+    const cozeWebSDK = new CozeWebSDK.WebChatClient({
+      config: {
+        // 智能体 ID
+        botId: '{$coze_botid}',
+      },
+      auth: {
+        //鉴权方式，默认type 为unauth，表示不鉴权；建议设置为 token，表示通过PAT或OAuth鉴权
+        type: 'token',
+        //type 为 token 时，需要设置PAT或OAuth访问密钥
+        token: '{$coze_token}',
+        //访问密钥过期时，使用的新密钥，可以按需设置。
+        onRefreshToken: () => '{$coze_token}',
+      }, ui: {
+        chatBot: {
+          title: "rent8-AI智能客服",
+          uploadable: false,
+        }
+      }
+    });
   </script>
 </body>
 

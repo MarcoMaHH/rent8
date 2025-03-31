@@ -15,19 +15,34 @@ class Uncollected
     public static function save($id, $data)
     {
         if (!$billing_data = BillingModel::find($id)) {
-            return ['flag' => false, 'msg' => '修改失败，账单不存在'];
+            // 新增账单
+            $number_data = NumberModel::where('house_property_id', $data['house_property_id'])
+                ->where('id', $data['house_number_id'])
+                ->find();
+            $data['electricity_consumption'] = $data['electricity_meter_this_month'] - $data['electricity_meter_last_month'];
+            $data['electricity'] = $data['electricity_consumption'] * $number_data->electricity_price * $number_data->ratio;
+            $data['water_consumption'] = $data['water_meter_this_month'] - $data['water_meter_last_month'];
+            $data['water'] = $data['water_consumption'] * $number_data->water_price * $number_data->ratio;
+            $data['total_money'] = round($data['water'] + $data['electricity'] + $data['rental'] + $data['deposit']
+                + $data['management'] + $data['network'] + $data['garbage_fee'] + $data['other_charges'], 2);
+            BillingModel::create($data);
+            return ['flag' => true, 'msg' => '添加成功'];
+        } else {
+            if (isset($data['end_time'])) {
+                unset($data['end_time']);
+            }
+            $number_data = NumberModel::where('house_property_id', $billing_data->house_property_id)
+                ->where('id', $billing_data->house_number_id)
+                ->find();
+            $data['electricity_consumption'] = $data['electricity_meter_this_month'] - $data['electricity_meter_last_month'];
+            $data['electricity'] = $data['electricity_consumption'] * $number_data->electricity_price * $number_data->ratio;
+            $data['water_consumption'] = $data['water_meter_this_month'] - $data['water_meter_last_month'];
+            $data['water'] = $data['water_consumption'] * $number_data->water_price * $number_data->ratio;
+            $data['total_money'] = round($data['water'] + $data['electricity'] + $data['rental'] + $data['deposit']
+                + $data['management'] + $data['network'] + $data['garbage_fee'] + $data['other_charges'], 2);
+            $billing_data->save($data);
+            return ['flag' => true, 'msg' => '修改成功'];
         }
-        $number_data = NumberModel::where('house_property_id', $billing_data->house_property_id)
-            ->where('id', $billing_data->house_number_id)
-            ->find();
-        $data['electricity_consumption'] = $data['electricity_meter_this_month'] - $data['electricity_meter_last_month'];
-        $data['electricity'] = $data['electricity_consumption'] * $number_data->electricity_price;
-        $data['water_consumption'] = $data['water_meter_this_month'] - $data['water_meter_last_month'];
-        $data['water'] = $data['water_consumption'] * $number_data->water_price;
-        $data['total_money'] = round($data['water'] + $data['electricity'] + $data['rental'] + $data['deposit']
-            + $data['management'] + $data['network'] + $data['garbage_fee'] + $data['other_charges'], 2);
-        $billing_data->save($data);
-        return ['flag' => true, 'msg' => '修改成功'];
     }
 
     //到账
@@ -44,7 +59,7 @@ class Uncollected
             if ($number_data->rent_mark === 'Y') {
                 $billing_update['accounting_date'] = date('Y-m-d', time());
                 $billing_data->save($billing_update);
-                if ($billing_data->end_time) {
+                if ($billing_data->end_time && $billing_data->id == $number_data->receipt_number) {
                     $dates = Date::getLease($number_data->checkin_time, $number_data->lease, $number_data->lease_type);
                     $billing_insert = [
                         'house_property_id' => $billing_data['house_property_id'],
@@ -151,21 +166,21 @@ class Uncollected
                     return ['flag' => false, 'msg' => '修改失败，账单不存在'];
                 }
                 $number_data = NumberModel::where('house_property_id', $billing->house_property_id)
-                ->where('id', $billing->house_number_id)
-                ->find();
+                    ->where('id', $billing->house_number_id)
+                    ->find();
                 $data = array();
                 $data['meter_reading_time'] = date('Y-m-d', time());
                 if ($type == TYPE_ELECTRICITY) {
                     $data['electricity_meter_this_month'] = $value['value'];
                     $data['electricity_consumption'] = $value['value'] - $billing['electricity_meter_last_month'];
-                    $data['electricity'] = $data['electricity_consumption'] * $number_data->electricity_price;
+                    $data['electricity'] = $data['electricity_consumption'] * $number_data->electricity_price * $number_data->ratio;
                     $data['total_money'] = round($billing['water'] + $data['electricity'] + $billing['rental']
                         + $billing['deposit'] + $billing['other_charges'] + $billing['management'] + $billing['network'] + $billing['garbage_fee'], 2);
                     $billing->save($data);
                 } elseif ($type == TYPE_WATER) {
                     $data['water_meter_this_month'] = $value['value'];
                     $data['water_consumption'] = $value['value'] - $billing['water_meter_last_month'];
-                    $data['water'] = $data['water_consumption'] * $number_data->water_price;
+                    $data['water'] = $data['water_consumption'] * $number_data->water_price * $number_data->ratio;
                     $data['total_money'] = round($data['water'] + $billing['electricity'] + $billing['rental']
                         + $billing['deposit'] + $billing['other_charges'] + $billing['management'] + $billing['network'] + $billing['garbage_fee'], 2);
                     $billing->save($data);

@@ -20,7 +20,7 @@
         <t-button v-if="slotProps.row.accounting_date == null" size="small"
           @click="handleEdit(slotProps.row)">修改</t-button>
         <t-popconfirm v-if="slotProps.row.accounting_date == null" theme="danger" content="确认到账?"
-          @confirm="handleAccount(slotProps.row)">
+          @confirm="handleAccount(slotProps.row)" :disabled="disable">
           <t-button theme="warning" size="small">到账</t-button>
         </t-popconfirm>
       </t-space>
@@ -43,7 +43,7 @@
     </t-form-item>
     <t-form-item style="float: right">
       <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px;">取消</t-button>
-      <t-button theme="primary" type="submit">确定</t-button>
+      <t-button theme="primary" type="submit" :disabled="disable">确定</t-button>
     </t-form-item>
   </t-form>
 </t-dialog>
@@ -98,7 +98,9 @@
     },
     // 新增按钮
     insertButton: true,
-    disableDate: '2024-01-01',
+    disableDate: '2025-01-01',
+    // 避免重复点击
+    disable: false,
   };
   function f() {
     return {
@@ -138,6 +140,7 @@
         this.dialogVisible = true;
       },
       handleSave() {
+        this.disable = true;
         this.$refs.waterForm.validate().then((valid) => {
           if (valid == true) {
             if (this.formData.cycle[0] && this.formData.cycle[1]) {
@@ -153,8 +156,14 @@
                 } else {
                   this.$message.error(response.msg);
                 }
+              }).finally(() => {
+                this.disable = false;
               });
+            } else {
+              this.disable = false;
             }
+          } else {
+            this.disable = false;
           }
         });
       },
@@ -190,6 +199,8 @@
         this.dialogVisible = true;
       },
       handleAccount(row) {
+        if (this.disable) return;
+        this.disable = true;
         axiosPost("{:url('account')}", { id: row.id }).then(response => {
           if (response.state == 'success') {
             this.$message.success(response.msg);
@@ -199,6 +210,8 @@
           } else {
             this.$message.error(response.msg);
           }
+        }).finally(() => {
+          this.disable = false;
         });
       },
     }

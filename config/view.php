@@ -22,4 +22,5 @@ return [
     'taglib_begin'  => '{',
     // 标签库标签结束标记
     'taglib_end'    => '}',
+    'view_path' => dirname(__DIR__, 1) . '/view/admin/',
 ];

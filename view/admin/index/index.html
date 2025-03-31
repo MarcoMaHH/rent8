@@ -3,10 +3,10 @@
 
 <t-space style="width: 100%;">
   <t-row justify="space-between">
-    <t-col :flex="2" style="margin-right: 10px;">
+    <t-col :flex="4" style="margin-right: 10px;">
       <t-card bordered header style="background-color: #0052d9;">
         <t-row>
-          <t-col :flex="2">
+          <t-col :flex="4">
             <div style="margin-bottom: 15px; color: white;">本月利润</div>
             <div style="font-size: 24px; font-weight: bold; color: white;">{{cardData.profit}}</div>
           </t-col>
@@ -16,10 +16,23 @@
         </t-row>
       </t-card>
     </t-col>
-    <t-col :flex="2" style="margin-right: 10px;">
+    <t-col :flex="4" style="margin-right: 10px;">
       <t-card bordered header>
         <t-row>
-          <t-col :flex="2">
+          <t-col :flex="4">
+            <div style="margin-bottom: 15px;">待收金额</div>
+            <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.pending_amount}}</div>
+          </t-col>
+          <t-col :flex="2" style="margin: 10px 0px 10px 10px;">
+            <t-icon name="money" style="color: #0052d9" size="3em" />
+          </t-col>
+        </t-row>
+      </t-card>
+    </t-col>
+    <t-col :flex="3" style="margin-right: 10px;">
+      <t-card bordered header>
+        <t-row>
+          <t-col :flex="3">
             <div style="margin-bottom: 15px;">闲置房间</div>
             <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.empty_count}}</div>
           </t-col>
@@ -29,10 +42,10 @@
         </t-row>
       </t-card>
     </t-col>
-    <t-col :flex="2" style="margin-right: 10px;">
+    <t-col :flex="3" style="margin-right: 10px;">
       <t-card bordered header>
         <t-row>
-          <t-col :flex="2">
+          <t-col :flex="3">
             <div style="margin-bottom: 15px;">入住率</div>
             <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.occupancy}}</div>
           </t-col>
@@ -42,10 +55,10 @@
         </t-row>
       </t-card>
     </t-col>
-    <t-col :flex="2" style="margin-right: 10px;">
+    <t-col :flex="3" style="margin-right: 10px;">
       <t-card bordered header>
         <t-row>
-          <t-col :flex="2">
+          <t-col :flex="3">
             <div style="margin-bottom: 15px;">总房间数</div>
             <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.number_count}}</div>
           </t-col>
@@ -55,25 +68,12 @@
         </t-row>
       </t-card>
     </t-col>
-    <t-col :flex="2" style="margin-right: 10px;">
-      <t-card bordered header>
-        <t-row>
-          <t-col :flex="2">
-            <div style="margin-bottom: 15px;">总合同数</div>
-            <div style="font-size: 24px; font-weight: bold; color: #0052d9;">{{cardData.contract_count}}</div>
-          </t-col>
-          <t-col :flex="2" style="margin: 10px 0px 10px 10px;">
-            <t-icon name="file" style="color: #0052d9" size="3em" />
-          </t-col>
-        </t-row>
-      </t-card>
-    </t-col>
-    <t-col :flex="2">
+    <t-col :flex="3">
       <t-card bordered header>
         <t-row>
           <t-col :flex="1">
             <div style="margin-bottom: 15px;">账号截止日期</div>
-            <div style="font-size: 24px; font-weight: bold; color: #0052d9;">
+            <div style="font-size: 24px; font-weight: bold; color: #0052d9; margin-bottom: 3px;">
               {$layout_login_user.expiration_date|date='Y-m-d'}</div>
           </t-col>
         </t-row>
@@ -84,7 +84,7 @@
 
 <t-space direction="vertical" style="width: 100%; margin-top: 10px;">
   <t-row justify="space-between">
-    <t-col :flex="10" style="margin-right: 10px;">
+    <t-col :flex="7" style="margin-right: 10px;">
       <t-card bordered>
         <div style="margin-bottom: 20px;">
           年度财务收支走势
@@ -92,7 +92,7 @@
         <div id="c1"></div>
       </t-card>
     </t-col>
-    <t-col :flex="4">
+    <t-col :flex="3">
       <t-card bordered style="margin-bottom: 10px;">
         <div style="margin-bottom: 10px;">
           收租提醒
@@ -119,6 +119,7 @@
 <script>
   const data = {
     cardData: {},
+    pending_amount: 0,
     billBata: [],
     contractData: [],
     columns: [
@@ -168,6 +169,7 @@
         axiosGet("{:url('queryHouseInfo')}").then(response => {
           if (response.code == 1) {
             this.cardData = response.data;
+            this.cardData.pending_amount = this.pending_amount;
           } else {
             this.$message.error('系统出错了!!!');
           }
@@ -176,6 +178,8 @@
         axiosGet("{:url('queryBill')}").then(response => {
           if (response.code == 1) {
             this.billBata = response.data;
+            this.cardData.pending_amount = response.msg;
+            this.pending_amount = response.msg;
           } else {
             this.$message.error('系统出错了!!!');
           }

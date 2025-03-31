@@ -11,7 +11,7 @@ class Permission extends Common
 {
     public function index()
     {
-        return View::fetch();
+        return View::fetch('/admin/permission/index');
     }
 
     public function query()

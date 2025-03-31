@@ -15,7 +15,7 @@ class Report extends Common
 {
     public function index()
     {
-        return View::fetch();
+        return View::fetch('/bill/report/index');
     }
 
     public function queryReport()

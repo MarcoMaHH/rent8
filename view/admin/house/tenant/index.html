@@ -1,13 +1,24 @@
 {extend name="common/layout" /}
 {block name="main"}
 <t-card class="list-card-container" :bordered="false">
-  <div style="display: flex; justify-content: flex-end; width: 400px; margin-bottom: 10px;">
-    <div style="flex-grow: 1; margin-right: 5px;">
-      <t-input v-model="searchValue" placeholder="请输入房号、姓名、身份证号码、联系电话" clearable @enter="handleSearch" />
+  <div style="margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+      <t-button theme="primary" @click="handleAdd" :disabled="buttonDisabled">
+        <template #icon><t-icon name="add" /></template>
+        新建
+      </t-button>
+      <div style="flex: 1; display: flex; gap: 5px; max-width: 300px;">
+        <t-input v-model="searchValue" placeholder="请输入房号、姓名、身份证号码、联系电话" clearable @enter="handleSearch"
+          style="flex:1" />
+      </div>
+      <t-button theme="primary" @click="handleSearch">
+        <template #icon><t-icon name="search" /></template>
+      </t-button>
+      <t-button theme="primary" @click="handleExport" style="margin-left: auto;">
+        <template #icon><t-icon name="file-export" /></template>
+        导出列表
+      </t-button>
     </div>
-    <t-button theme="primary" @click="handleSearch">
-      <template #icon><t-icon name="search" /></template>
-    </t-button>
   </div>
 
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
@@ -16,6 +27,9 @@
       <t-space>
         <t-button size="small" @click="handleEdit(slotProps.row)">修改</t-button>
         <t-button size="small" theme="warning" @click="handlePhoto(slotProps.row)">证件照片</t-button>
+        <t-popconfirm theme="danger" content="确认删除?" @confirm="handleDelete(slotProps.row)" :disabled="disable">
+          <t-button theme="danger" size="small">删除</t-button>
+        </t-popconfirm>
       </t-space>
     </template>
   </t-table>
@@ -31,8 +45,16 @@
 <!-- 新增FORM -->
 <t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false" top="30px">
   <t-form ref="tenantForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
+    <t-form-item label="房间名" name="house_number_id" v-if="!formData.id">
+      <t-select v-model="formData.house_number_id" class="demo-select-base" :style="{ width: '480px' }" clearable
+        filterable>
+        <t-option v-for="(item, index) in numberArr" :key="index" :value="item.value" :label="item.label">
+          {{ item.label }}
+        </t-option>
+      </t-select>
+    </t-form-item>
     <t-form-item label="入住日期" name="checkin_time">
-      <t-input v-model="formData.checkin_time" :style="{ width: '480px' }" readonly />
+      <t-date-picker v-model="formData.checkin_time" mode="date" :style="{ width: '480px' }" clearable />
     </t-form-item>
     <t-form-item label="姓名" name="name">
       <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" />
@@ -60,7 +82,7 @@
     </t-form-item>
     <t-form-item style="float: right">
       <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px;">取消</t-button>
-      <t-button theme="primary" type="submit">确定</t-button>
+      <t-button theme="primary" type="submit" :disabled="disable">确定</t-button>
     </t-form-item>
   </t-form>
 </t-dialog>
@@ -84,7 +106,7 @@
       { title: '备注', colKey: 'note', width: 100, ellipsis: true },
       { title: '入住日期', colKey: 'checkin_time', width: 93, fixed: 'right' },
       { title: '离开日期', colKey: 'leave_time', width: 93, fixed: 'right' },
-      { title: '操作', colKey: 'op', width: 130, fixed: 'right', },
+      { title: '操作', colKey: 'op', width: 160, fixed: 'right', },
     ],
     // 分页
     pagination: {
@@ -96,8 +118,9 @@
     formData: {},
     formHeader: '',
     rules: {
+      house_number_id: [{ required: true, message: '房间名不能为空', trigger: 'change' }],
       name: [{ required: true, message: '必填', trigger: 'blur' }],
-      checkin_time: [{ required: true, message: '必填' }],
+      checkin_time: [{ required: true, message: '必填', trigger: 'blur' }],
       phone: [{ telnumber: true, message: '格式错误', trigger: 'blur' }],
       id_card_number: [{ idcard: true, message: '格式错误', trigger: 'blur' }],
     },
@@ -109,11 +132,16 @@
     selectId: 0,
     // 搜索框
     searchValue: '',
+    // 避免重复点击
+    disable: false,
+    // 新增租客
+    numberArr: [],
   };
   function f() {
     return {
       init: function () {
         this.queryTable();
+        this.queryNumber();
       },
       queryTable: function () {
         this.tableLoading = true;
@@ -127,6 +155,15 @@
           this.tableLoading = false;
         });
       },
+      queryNumber: function () {
+        axiosGet("{:url('house.number/queryRentedNumber')}").then(response => {
+          if (response.code == 1) {
+            this.numberArr = response.data;
+          } else {
+            this.$message.error('系统出错了!!!');
+          }
+        });
+      },
       handleEdit(row) {
         this.$refs.tenantForm.reset();
         this.formData = { ...row };
@@ -134,6 +171,7 @@
         this.dialogVisible = true;
       },
       handleSave() {
+        this.disable = true;
         this.$refs.tenantForm.validate().then((valid) => {
           if (valid == true) {
             axiosPost("{:url('save')}", this.formData).then(response => {
@@ -146,7 +184,11 @@
               } else {
                 this.$message.error(response.msg);
               }
+            }).finally(() => {
+              this.disable = false;
             });
+          } else {
+            this.disable = false;
           }
         });
       },
@@ -189,7 +231,38 @@
       handleSearch() {
         this.queryTable();
       },
-    }
+      // 删除租客
+      handleDelete(row) {
+        if (this.disable) return;
+        this.disable = true;
+        axiosPost("{:url('delete')}", row).then(response => {
+          if (response.state == 'success') {
+            this.$message.success(response.msg);
+            this.init();
+          } else if (response.state == 'warning') {
+            this.$message.warning(response.msg);
+          } else {
+            this.$message.error(response.msg);
+          }
+        }).finally(() => {
+          this.disable = false;
+        });
+      },
+      // 导出excel
+      handleExport() {
+        axiosDownload("{:url('export')}", { 'parameter': this.searchValue });
+      },
+      // 新增租客
+      handleAdd() {
+        this.$refs.tenantForm.reset();
+        this.formData = {
+          house_property_id: this.houseDef,
+          checkin_time: getCurrentDateString(),
+        };
+        this.formHeader = this.houseName + " - 新增租客";
+        this.dialogVisible = true;
+      },
+    };
   }
 </script>
 {/block}

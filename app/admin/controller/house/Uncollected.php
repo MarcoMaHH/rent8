@@ -15,7 +15,7 @@ class Uncollected extends Common
 {
     public function index()
     {
-        return View::fetch();
+        return View::fetch('/house/uncollected/index');
     }
 
     // 抄表日期选项
@@ -28,13 +28,13 @@ class Uncollected extends Common
             ['a.accounting_date', 'null', ''],
         );
         $datas = BillingModel::where($conditions)
-        ->alias('a')
-        ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
-        ->join('HouseProperty c', 'c.id = a.house_property_id')
-        ->distinct(true)
-        ->field('a.meter_reading_time')
-        ->order('a.meter_reading_time', 'asc')
-        ->select();
+            ->alias('a')
+            ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
+            ->join('HouseProperty c', 'c.id = a.house_property_id')
+            ->distinct(true)
+            ->field('a.meter_reading_time')
+            ->order('a.meter_reading_time', 'asc')
+            ->select();
         $data = [];
         foreach ($datas as $value) {
             if ($value['meter_reading_time']) {
@@ -65,15 +65,15 @@ class Uncollected extends Common
             \array_push($conditions, ['a.meter_reading_time', '=', $meter_reading_time]);
         }
         $count = BillingModel::where($conditions)
-        ->alias('a')
-        ->count();
+            ->alias('a')
+            ->count();
         $datas = BillingModel::where($conditions)
-        ->alias('a')
-        ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
-        ->join('HouseProperty c', 'c.id = a.house_property_id')
-        ->field('a.*, b.name, b.water_price, b.electricity_price, c.name as property_name')
-        ->order($field, $order)
-        ->select();
+            ->alias('a')
+            ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
+            ->join('HouseProperty c', 'c.id = a.house_property_id')
+            ->field('a.*, b.name, b.water_price, b.electricity_price, b.ratio, b.receipt_number, c.name as property_name')
+            ->order($field, $order)
+            ->select();
         foreach ($datas as $value) {
             if ($value['meter_reading_time']) {
                 $value['meter_reading_time'] = \substr($value['meter_reading_time'], 0, 10);
@@ -97,6 +97,8 @@ class Uncollected extends Common
             'house_property_id' => $this->request->post('house_property_id/d', 0),
             'house_number_id' => $this->request->post('house_number_id/d', 0),
             'meter_reading_time' => $this->request->post('meter_reading_time/s', '', 'trim'),
+            'start_time' => $this->request->post('start_time/s', '', 'trim'),
+            'end_time' => $this->request->post('end_time/s', '', 'trim'),
             'electricity_meter_this_month' => $this->request->post('electricity_meter_this_month/d', 0),
             'water_meter_this_month' => $this->request->post('water_meter_this_month/d', 0),
             'electricity_meter_last_month' => $this->request->post('electricity_meter_last_month/d', 0),
@@ -142,13 +144,13 @@ class Uncollected extends Common
             ['a.end_time', 'not null', '']
         );
         $billing_data = BillingModel::where($conditions)
-        ->alias('a')
-        ->join('HouseNumber b', 'b.id = a.house_number_id')
-        ->join('HouseProperty c', 'c.id = a.house_property_id')
-        ->field('a.*, b.name as number_name, c.name as property_name')
-        ->order(['a.start_time' => 'desc'])
-        ->limit($limit)
-        ->select();
+            ->alias('a')
+            ->join('HouseNumber b', 'b.id = a.house_number_id')
+            ->join('HouseProperty c', 'c.id = a.house_property_id')
+            ->field('a.*, b.name as number_name, c.name as property_name')
+            ->order(['a.start_time' => 'desc'])
+            ->limit($limit)
+            ->select();
         foreach ($billing_data as $value) {
             $value['start_time'] = \substr($value['start_time'], 0, 10);
         }
@@ -174,12 +176,12 @@ class Uncollected extends Common
             array_push($conditions, ['a.water_meter_this_month', 'null', '']);
         }
         $data = BillingModel::where($conditions)
-        ->alias('a')
-        ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
-        ->join('HouseProperty c', 'c.id = a.house_property_id')
-        ->field('a.*, b.name as number_name, c.name as property_name')
-        ->order('b.name')
-        ->select();
+            ->alias('a')
+            ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
+            ->join('HouseProperty c', 'c.id = a.house_property_id')
+            ->field('a.*, b.name as number_name, c.name as property_name')
+            ->order('b.name')
+            ->select();
         return $this->returnResult($data);
     }
 

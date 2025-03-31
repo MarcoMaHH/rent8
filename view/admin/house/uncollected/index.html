@@ -2,6 +2,10 @@
 {block name="main"}
 <t-card class="list-card-container" :bordered="false">
   <div style="margin-bottom: 10px;">
+    <t-button theme="primary" style="margin-right: 10px;" :disabled="buttonDisabled" @click="addBill()">
+      <template #icon><t-icon name="add" /></template>
+      新建
+    </t-button>
     <t-button theme="primary" style="margin-right: 10px;" @click="concentrated('E')">
       集中抄电
     </t-button>
@@ -22,7 +26,6 @@
         <template #icon><t-icon name="print" /></template> 打印列表
       </t-button>
     </span>
-
   </div>
 
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
@@ -32,11 +35,11 @@
         <t-button size="small" @click="handleEdit(slotProps.row)">抄表</t-button>
         <t-button size="small" v-if="slotProps.row.note != '延期'" theme="success"
           @click="handlePrint(slotProps.row)">收据</t-button>
-        <t-popconfirm theme="danger" content="确认到账?" @confirm="handleAccount(slotProps.row)">
+        <t-popconfirm theme="danger" content="确认到账?" @confirm="handleAccount(slotProps.row)" :disabled="disable">
           <t-button theme="warning" size="small">到账</t-button>
         </t-popconfirm>
         <t-popconfirm v-if="slotProps.row.end_time != null" theme="danger" content="确认延期?"
-          @confirm="handleBalance(slotProps.row)">
+          @confirm="handleBalance(slotProps.row)" :disabled="disable">
           <t-button theme="danger" size="small">延期</t-button>
         </t-popconfirm>
       </t-space>
@@ -47,6 +50,20 @@
 <!-- 抄表FORM -->
 <t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false" top="5px">
   <t-form ref="meterForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
+    <t-form-item label="房间名" name="house_number_id" v-if="isNew">
+      <t-select v-model="formData.house_number_id" class="demo-select-base" :style="{ width: '480px' }" clearable
+        filterable>
+        <t-option v-for="(item, index) in numberArr" :key="index" :value="item.value" :label="item.label">
+          {{ item.label }}
+        </t-option>
+      </t-select>
+    </t-form-item>
+    <t-form-item label="开始日期" name="start_time" v-if="isNew">
+      <t-date-picker v-model="formData.start_time" mode="date" :style="{ width: '480px' }" clearable />
+    </t-form-item>
+    <t-form-item label="结束日期" name="end_time" v-if="isNew">
+      <t-date-picker v-model="formData.end_time" mode="date" :style="{ width: '480px' }" clearable />
+    </t-form-item>
     <t-form-item label="上月电表度数" name="electricity_meter_last_month">
       <t-input-number v-model="formData.electricity_meter_last_month" :style="{ width: '480px' }" theme="normal"
         placeholder="请输入" />
@@ -89,7 +106,7 @@
     </t-form-item>
     <t-form-item style="float: right">
       <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px;">取消</t-button>
-      <t-button theme="primary" type="submit">确定</t-button>
+      <t-button theme="primary" type="submit" :disabled="disable">确定</t-button>
     </t-form-item>
   </t-form>
 </t-dialog>
@@ -99,7 +116,7 @@
   <!-- 表单内容 -->
   <div id="printJS-form333" class="setBorder">
     <div class="setHeader">房 租 收 据 单</div>
-    <div class="container">
+    <div class="title">
       <div class="box">房间:{{ formData.property_name + '-' + formData.name }}</div>
       <div class="box2" v-if="formData.end_time">租期:{{ formData.start_time + '至' + formData.end_time }}</div>
       <div class="box2" v-else>退房日期:{{ formData.start_time}}</div>
@@ -111,6 +128,7 @@
         <th class="setTh">表度数</th>
         <th class="setTh">用量</th>
         <th class="setTh">单价</th>
+        <th class="setTh" v-if="formData.ratio!==1">倍率</th>
         <th class="setTh">金额</th>
       </tr>
       <tr>
@@ -119,6 +137,7 @@
         </td>
         <td class="setTd">{{ formData.electricity_consumption }}度</td>
         <td class="setTd">{{ formData.electricity_price }}元/度</td>
+        <td class="setTd" v-if="formData.ratio!==1">{{ formData.ratio }}</td>
         <td class="setTd">{{ formData.electricity }}元</td>
       </tr>
       <tr>
@@ -126,34 +145,52 @@
         <td class="setTd">{{ formData.water_meter_this_month + '-' + formData.water_meter_last_month }}</td>
         <td class="setTd">{{ formData.water_consumption }}吨</td>
         <td class="setTd">{{ formData.water_price }}元/吨</td>
+        <td class="setTd" v-if="formData.ratio!==1">{{ formData.ratio }}</td>
         <td class="setTd">{{ formData.water }}元</td>
       </tr>
     </table>
     <div class="container">
-      <div class="box">租金：{{ formData.rental }}元</div>
-      <div class="box">押金：{{ formData.deposit }}元</div>
-      <div class="box">管理费：{{ formData.management }}元</div>
+      <div class="box" v-if="titleItem[0]">{{titleItem[0].label}}:{{titleItem[0].value}}元</div>
+      <div class="box" v-else></div>
+      <div class="box" v-if="titleItem[1]">{{titleItem[1].label}}:{{titleItem[1].value}}元</div>
+      <div class="box" v-else></div>
+      <div class="box" v-if="titleItem[2]">{{titleItem[2].label}}:{{titleItem[2].value}}元</div>
+      <div class="box" v-else></div>
     </div>
-    <div class="container">
-      <div class="box">网络费：{{ formData.network }}元</div>
-      <div class="box">卫生费：{{ formData.garbage_fee }}元</div>
-      <div class="box">其他费用：{{ formData.other_charges }}元</div>
+    <div class="container" v-if="titleItem[3]">
+      <div class="box" v-if="titleItem[3]">{{titleItem[3].label}}:{{titleItem[3].value}}元</div>
+      <div class="box" v-else></div>
+      <div class="box" v-if="titleItem[4]">{{titleItem[4].label}}:{{titleItem[4].value}}元</div>
+      <div class="box" v-else></div>
+      <div class="box" v-if="titleItem[5]">{{titleItem[5].label}}:{{titleItem[5].value}}元</div>
+      <div class="box" v-else></div>
     </div>
     <div class="container">合计人民币(大写)：{{ formData.total_money2 }} (¥：{{ formData.total_money }} 元)</div>
     <div class="container">备注：{{ formData.note }}</div>
   </div>
-  <div style="float: right; padding: 8px;">
+  <div style="padding: 8px;">
     <t-popup placement="bottom">
-      <t-button style="margin-right: 10px;">历史水电</t-button>
+      <t-button style="margin-right: 10px;">收款二维码</t-button>
       <template #content>
-        <div style="width: 380px;">
-          <t-table :data="historyData" :columns="historyColumns" row-key="id" vertical-align="top" :bordered="true"
-            size="small">
-          </t-table>
+        <div style="display: flex; flex-wrap: wrap;">
+          <t-image v-for="(code, index) in payCode" :key="index" :src="code.url" :fit="'cover'"
+            :style="{ width: '150px', height: '150px', margin: '10px' }" />
         </div>
       </template>
     </t-popup>
-    <t-button @click="handlePrintReceipt">打印</t-button>
+    <div style="float: right;">
+      <t-popup placement="bottom">
+        <t-button style="margin-right: 10px;">历史水电</t-button>
+        <template #content>
+          <div style="width: 380px;">
+            <t-table :data="historyData" :columns="historyColumns" row-key="id" vertical-align="top" :bordered="true"
+              size="small">
+            </t-table>
+          </div>
+        </template>
+      </t-popup>
+      <t-button @click="handlePrintReceipt">打印</t-button>
+    </div>
   </div>
 </t-dialog>
 
@@ -162,18 +199,42 @@
   <div id="printTable">
     <table>
       <tr>
-        <th></th>
         <th>序号</th>
+        <th>房产名</th>
         <th>房间名</th>
-        <th>金额</th>
-        <th></th>
+        <th>电表度数</th>
+        <th>用电量</th>
+        <th>电费</th>
+        <th>水表度数</th>
+        <th>用水量</th>
+        <th>水费</th>
+        <th>房租</th>
+        <th>押金</th>
+        <th>管理费</th>
+        <th>网络费</th>
+        <th>卫生费</th>
+        <th>其他费用</th>
+        <th>总金额</th>
+        <th>收款日期</th>
       </tr>
       <tr v-for="(item, index) in tableData" :key="item.id">
-        <td>囗</td>
         <td>{{ index + 1 }}</td>
+        <td>{{ item.property_name }}</td>
         <td>{{ item.name }}</td>
+        <td>{{ item.electricity_meter_this_month }}</td>
+        <td>{{ item.electricity_consumption }}</td>
+        <td>{{ item.electricity }}</td>
+        <td>{{ item.water_meter_this_month }}</td>
+        <td>{{ item.water_consumption }}</td>
+        <td>{{ item.water }}</td>
+        <td>{{ item.rental }}</td>
+        <td>{{ item.deposit }}</td>
+        <td>{{ item.management }}</td>
+        <td>{{ item.network }}</td>
+        <td>{{ item.garbage_fee }}</td>
+        <td>{{ item.other_charges }}</td>
         <td>{{ item.total_money }}</td>
-        <td>囗</td>
+        <td>{{ item.start_time }}</td>
       </tr>
     </table>
   </div>
@@ -194,7 +255,7 @@
     </t-form-item>
     <t-form-item style="float: right">
       <t-button variant="outline" @click="concentratedVisible = false" style="margin-right: 5px;">取消</t-button>
-      <t-button theme="primary" type="submit">确定</t-button>
+      <t-button theme="primary" type="submit" :disabled="disable">确定</t-button>
     </t-form-item>
   </t-form>
 </t-dialog>
@@ -222,6 +283,9 @@
     formData: {},
     formHeader: '',
     rules: {
+      house_number_id: [{ required: true, message: '房间名不能为空', trigger: 'change' }],
+      start_time: [{ required: true, message: '开始日期不能为空', trigger: 'change' }],
+      end_time: [{ required: true, message: '结束日期不能为空', trigger: 'change' }],
       electricity_meter_last_month: [{ required: true, message: '上月电表度数不能为空', trigger: 'blur' }],
       water_meter_last_month: [{ required: true, message: '上月水表度数不能为空', trigger: 'blur' }],
       meter_reading_time: [{ required: true, message: '抄表日期不能为空', trigger: 'blur' }],
@@ -301,6 +365,14 @@
       { title: '备注', colKey: 'note', width: 90, ellipsis: true },
       { title: '收款日期', colKey: 'start_time', width: 80 },
     ],
+    titleItem: [],
+    // 新增账单
+    isNew: false,
+    numberArr: [],
+    // 避免重复点击
+    disable: false,
+    // 收款二维码
+    payCode: [],
   }
   function f() {
     return {
@@ -308,6 +380,7 @@
         this.columns = this.columns1;
         this.queryTable();
         this.queryReadingTime();
+        this.queryNumber();
       },
       // 查询抄表日期
       queryReadingTime: function () {
@@ -315,7 +388,17 @@
           if (response.code == 1) {
             this.readingTimeArr = response.data;
           } else {
-            this.$message.error('系统出错了!!!');
+            console.error('查询抄表日期失败!!!');
+          }
+        });
+      },
+      // 查询已租房间号
+      queryNumber: function () {
+        axiosGet("{:url('house.number/queryRentedNumber')}").then(response => {
+          if (response.code == 1) {
+            this.numberArr = response.data;
+          } else {
+            console.error('查询已租房间号失败!!!');
           }
         });
       },
@@ -351,10 +434,22 @@
         this.readingTime = val;
         this.queryTable();
       },
+      // 新增账单
+      addBill: function () {
+        this.isNew = true;
+        this.$refs.meterForm.reset();
+        this.formData = {
+          house_property_id: this.houseDef,
+          meter_reading_time: getCurrentDateString(),
+        };
+        this.formHeader = this.houseName + ' - 新增账单';
+        this.dialogVisible = true;
+      },
       // 抄表
       handleEdit(row) {
         this.$refs.meterForm.reset();
         this.formData = { ...row };
+        this.isNew = this.formData.id !== this.formData.receipt_number;
         if (this.formData.meter_reading_time == null) {
           this.formData.meter_reading_time = getCurrentDateString();
         }
@@ -363,6 +458,7 @@
       },
       // 保存抄表数据
       handleSave() {
+        this.disable = true;
         this.$refs.meterForm.validate().then((valid) => {
           if (valid == true) {
             axiosPost("{:url('save')}", this.formData).then(response => {
@@ -376,7 +472,11 @@
               } else {
                 this.$message.error(response.msg);
               }
+            }).finally(() => {
+              this.disable = false;
             });
+          } else {
+            this.disable = false;
           }
         });
       },
@@ -384,11 +484,27 @@
       handlePrint(row) {
         this.receiptVisible = true;
         this.formData = { ...row };
+        this.titleItem = [];
+        if (row['rental']) this.titleItem.push({ 'label': '租金', 'value': row['rental'] });
+        if (row['deposit']) this.titleItem.push({ 'label': '押金', 'value': row['deposit'] });
+        if (row['management']) this.titleItem.push({ 'label': '管理费', 'value': row['management'] });
+        if (row['network']) this.titleItem.push({ 'label': '网络费', 'value': row['network'] });
+        if (row['garbage_fee']) this.titleItem.push({ 'label': '卫生费', 'value': row['garbage_fee'] });
+        if (row['other_charges']) this.titleItem.push({ 'label': '其他费用', 'value': row['other_charges'] });
+        // 查询历史账单数据
         axiosGet("{:url('queryHistory')}", { number_id: row.house_number_id, tenant_id: row.tenant_id }).then(response => {
           if (response.code == 1) {
             this.historyData = response.data;
           } else {
-            this.$message.error('系统出错了!!!');
+            this.$message.error('查询历史账单数据失败!!!');
+          }
+        });
+        // 查询收款二维码
+        axiosGet("{:url('house.property/queryPhoto')}", { id: row.house_property_id }).then(response => {
+          if (response.code == 1) {
+            this.payCode = response.data;
+          } else {
+            this.$message.error('查询收款二维码失败!!!');
           }
         });
       },
@@ -397,11 +513,13 @@
         printJS({
           printable: 'printJS-form333',
           type: 'html',
-          css: '__STATIC__/css/receipt.css',
+          css: '__STATIC__/css/receipt_print.css',
         })
       },
       // 到账
       handleAccount(row) {
+        if (this.disable) return;
+        this.disable = true;
         axiosPost("{:url('account')}", { id: row.id }).then(response => {
           if (response.state == 'success') {
             this.$message.success(response.msg);
@@ -412,6 +530,8 @@
           } else {
             this.$message.error(response.msg);
           }
+        }).finally(() => {
+          this.disable = false;
         });
       },
       // 打印table
@@ -426,6 +546,8 @@
       },
       // 延期
       handleBalance(row) {
+        if (this.disable) return;
+        this.disable = true;
         axiosPost("{:url('balance')}", { id: row.id }).then(response => {
           if (response.state == 'success') {
             this.$message.success(response.msg);
@@ -435,6 +557,8 @@
           } else {
             this.$message.error(response.msg);
           }
+        }).finally(() => {
+          this.disable = false;
         });
       },
       // 集中抄表
@@ -456,7 +580,12 @@
       },
       // 集中抄表保存
       concentratedSave() {
-        let postData = []
+        if (!this.concentratedData.length) {
+          this.concentratedVisible = false;
+          return;
+        }
+        this.disable = true;
+        let postData = [];
         if (this.concentratedType == 'E') {
           this.concentratedData.forEach(element => {
             if (element.electricity_meter_this_month) {
@@ -470,19 +599,20 @@
             }
           });
         }
-        axiosPost("{:url('saveCentralized')}", { data: postData, type: this.concentratedType })
-          .then(response => {
-            if (response.state == 'success') {
-              this.$message.success(response.msg);
-              this.concentratedVisible = false;
-              this.queryTable();
-              this.queryReadingTime();
-            } else if (response.state == 'warning') {
-              this.$message.warning(response.msg);
-            } else {
-              this.$message.error(response.msg);
-            }
-          });
+        axiosPost("{:url('saveCentralized')}", { data: postData, type: this.concentratedType }).then(response => {
+          if (response.state == 'success') {
+            this.$message.success(response.msg);
+            this.concentratedVisible = false;
+            this.queryTable();
+            this.queryReadingTime();
+          } else if (response.state == 'warning') {
+            this.$message.warning(response.msg);
+          } else {
+            this.$message.error(response.msg);
+          }
+        }).finally(() => {
+          this.disable = false;
+        });
       },
       // 明细账单
       handleFilter: function () {

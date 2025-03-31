@@ -15,16 +15,19 @@ use app\admin\model\HouseBilling as BillingModel;
 use app\admin\model\HouseContract as ContractModel;
 use app\admin\model\HouseNumber as NumberModel;
 use app\admin\model\HouseOther as OtherModel;
-use app\admin\model\TenantPhoto as PhotoModel;
+use app\admin\model\TenantPhoto as TenantPhotoModel;
+use app\admin\model\ContractPhoto as ContractPhotoModel;
+use app\admin\model\PayPhoto as PayPhotoModel;
 use app\admin\validate\AdminUser as UserValidate;
 use think\facade\View;
 use think\facade\Db;
+use think\facade\Log;
 
 class User extends Common
 {
     public function index()
     {
-        return View::fetch();
+        return View::fetch('/admin/user/index');
     }
 
     public function query()
@@ -95,22 +98,15 @@ class User extends Common
             SumModel::where('house_property_id', 'in', $propertyIds)->delete();
             TenantModel::where('house_property_id', 'in', $propertyIds)->delete();
             BillingModel::where('house_property_id', 'in', $propertyIds)->delete();
-            ContractModel::where('house_property_id', 'in', $propertyIds)->delete();
             AnnualModel::where('house_property_id', 'in', $propertyIds)->delete();
             OtherModel::where('house_property_id', 'in', $propertyIds)->delete();
             NumberModel::where('house_property_id', 'in', $propertyIds)->delete();
-            // 删除图片文件
-            $photoRootPath = app()->getRootPath() . 'public' . DIRECTORY_SEPARATOR . 'storage';
-            PhotoModel::where('house_property_id', 'in', $propertyIds)->chunk(100, function ($photos) use ($photoRootPath) {
-                foreach ($photos as $photo) {
-                    $photoName = explode('/', $photo['url']);
-                    $filePath = $photoRootPath . DIRECTORY_SEPARATOR . $photoName[2] . DIRECTORY_SEPARATOR . $photoName[3];
-                    if (file_exists($filePath)) {
-                        unlink($filePath); // 移除@，让错误自然抛出
-                    }
-                }
-            });
-            PhotoModel::where('house_property_id', 'in', $propertyIds)->delete();
+            $photoRootPath = app()->getRootPath() . 'public';
+            // 使用方式
+            ContractModel::where('house_property_id', 'in', $propertyIds)->delete();
+            $this->deletePhotosAndRelatedData(ContractPhotoModel::class, $propertyIds, $photoRootPath);
+            $this->deletePhotosAndRelatedData(TenantPhotoModel::class, $propertyIds, $photoRootPath);
+            $this->deletePhotosAndRelatedData(PayPhotoModel::class, $propertyIds, $photoRootPath);
             PropertyModel::where('admin_user_id', $id)->delete();
 
             // 提交事务
@@ -124,6 +120,45 @@ class User extends Common
         if ($transFlag) {
             return $this->returnSuccess('删除成功');
         }
+    }
+
+    // 尝试删除所有文件夹及空文件夹
+    private function deletePhotosAndRelatedData($modelClass, $propertyIds, $photoRootPath)
+    {
+        $folders = [];
+        $modelClass::where('house_property_id', 'in', $propertyIds)->chunk(
+            100,
+            function ($photos) use ($photoRootPath, &$folders) {
+                foreach ($photos as $photo) {
+                    $filePath = $photoRootPath . DIRECTORY_SEPARATOR .
+                        implode(DIRECTORY_SEPARATOR, array_slice(explode('/', $photo['url']), 1));
+                    $folderPath = dirname($filePath);
+                    $folders[$folderPath] = true;
+                    if (file_exists($filePath)) {
+                        try {
+                            unlink($filePath);
+                        } catch (\Exception $e) {
+                            // 记录日志
+                            Log::error('Delete photo failed: ' . $e->getMessage());
+                            continue;
+                        }
+                    }
+                }
+            }
+        );
+
+        foreach (array_keys($folders) as $folderPath) {
+            try {
+                if (is_dir($folderPath) && count(scandir($folderPath)) === 2) {
+                    rmdir($folderPath);
+                }
+            } catch (\Exception $e) {
+                Log::error('Delete folder failed: ' . $e->getMessage());
+                continue;
+            }
+        }
+
+        $modelClass::where('house_property_id', 'in', $propertyIds)->delete();
     }
 
     public function removeWechat()

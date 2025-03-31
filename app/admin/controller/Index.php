@@ -7,7 +7,6 @@ use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseContract as ContractModel;
 use app\admin\model\BillSum as SumModel;
 use app\admin\model\AdminUser as UserModel;
-use app\admin\library\Property;
 use think\facade\View;
 
 class Index extends Common
@@ -39,22 +38,24 @@ class Index extends Common
             ->where('type', TYPE_EXPENDITURE)
             ->where('accounting_date', $accounting_month)
             ->sum('amount');
-        $contract = ContractModel::where('house_property_id', 'in', $result)
-            ->whereNotNull('end_date')
-            ->count();
         $house_info = [
             'number_count' => $number_count,
             'empty_count' => $empty_count,
             'occupancy' => $occupancy,
             'profit' =>  round($income - $spending, 2),
-            'contract_count' => $contract,
         ];
         return $this->returnResult($house_info);
     }
 
     public function queryBill()
     {
-        $result = Property::getProperty();
+        $loginUser = $this->auth->getLoginUser();
+        $properties = PropertyModel::where('admin_user_id', $loginUser['id'])
+            ->select()
+            ->toArray();
+        $result = array_map(function ($property) {
+            return $property['id'];
+        }, $properties);
         $conditions = array(
             ['a.house_property_id', 'in', $result],
             ['a.start_time', '< time', 'today+7 days'],
@@ -64,20 +65,28 @@ class Index extends Common
             ->alias('a')
             ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
             ->join('HouseProperty c', 'c.id = a.house_property_id')
-            ->field('a.id, a.house_property_id, a.start_time, b.name as number_name, c.name as property_name')
+            ->field('a.id, a.total_money, a.house_property_id, a.start_time, b.name as number_name, c.name as property_name')
             ->order(['a.start_time' => 'asc'])
             ->select();
+        $sum = 0;
         foreach ($bill as $value) {
             if ($value['start_time']) {
                 $value['start_time'] = \substr($value['start_time'], 0, 10);
             }
+            $sum += $value['total_money'] ? $value['total_money'] : 0;
         }
-        return $this->returnResult($bill);
+        return $this->returnResult($bill, 0, round($sum, 2));
     }
 
     public function queryContract()
     {
-        $result = Property::getProperty();
+        $loginUser = $this->auth->getLoginUser();
+        $properties = PropertyModel::where('admin_user_id', $loginUser['id'])
+            ->select()
+            ->toArray();
+        $result = array_map(function ($property) {
+            return $property['id'];
+        }, $properties);
         $conditions = array(
             ['a.house_property_id', 'in', $result],
             ['a.end_date', '< time', 'today+7 days'],
@@ -151,7 +160,7 @@ class Index extends Common
                 ->where('type', TYPE_EXPENDITURE)
                 ->where('accounting_date', $setDate)
                 ->sum('amount');
-            \array_push($charData, ['month' => $setDate, 'project' => '收入', 'money' => $income]);
+            \array_push($charData, ['month' => $setDate, 'project' => '收入', 'money' => round($income, 2)]);
             \array_push($charData, ['month' => $setDate, 'project' => '支出', 'money' => round($spending, 2)]);
             \array_push($charData, ['month' => $setDate, 'project' => '利润', 'money' => round($income - $spending, 2)]);
         }

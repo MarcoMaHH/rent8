@@ -7,10 +7,19 @@
   </t-button>
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
     active-row-type="single" :hover="true" :loading="tableLoading">
+    <template #state="{ row }">
+      <t-tag v-if="row.subscribe_mark === 'N'" theme="danger" variant="light">
+        停用
+      </t-tag>
+      <t-tag v-if="row.subscribe_mark === 'Y'" theme="success" variant="light">
+        开启
+      </t-tag>
+    </template>
     <template #op="slotProps">
       <t-space>
         <t-button size="small" @click="handleEdit(slotProps.row)">修改</t-button>
-        <t-popconfirm theme="danger" content="确认删除?" @confirm="handleDelete(slotProps.row)">
+        <t-button size="small" theme="warning" @click="handlePhoto(slotProps.row)">收款码照片</t-button>
+        <t-popconfirm theme="danger" content="确认删除?" @confirm="handleDelete(slotProps.row)" :disabled="disable">
           <t-button theme="danger" size="small">删除</t-button>
         </t-popconfirm>
       </t-space>
@@ -27,6 +36,12 @@
     <t-form-item label="详细地址" name="address">
       <t-input v-model="formData.address" :style="{ width: '480px' }" placeholder="请输入（PS:用于合同展示）" />
     </t-form-item>
+    <t-form-item label="订阅消息" name="subscribe_mark">
+      <t-radio-group v-model="formData.subscribe_mark">
+        <t-radio value="Y">是</t-radio>
+        <t-radio value="N">否</t-radio>
+      </t-radio-group>
+    </t-form-item>
     <t-form-item label="房东名称" name="landlord">
       <t-input v-model="formData.landlord" :style="{ width: '480px' }" placeholder="请输入（PS:用于合同展示）" />
     </t-form-item>
@@ -38,9 +53,16 @@
     </t-form-item>
     <t-form-item style="float: right">
       <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px;">取消</t-button>
-      <t-button theme="primary" type="submit">确定</t-button>
+      <t-button theme="primary" type="submit" :disabled="disable">确定</t-button>
     </t-form-item>
   </t-form>
+</t-dialog>
+
+<!-- 收款二维码 -->
+<t-dialog v-model:visible="photoVisible" :header="formHeader" :width="680" :footer="false" top="30px">
+  <t-upload ref="uploadRef1" v-model="fileList" :data="uploadData" :max="8" multiple :headers="upheaders"
+    action="upload" theme="image" accept="image/*" :auto-upload="true" @remove="removePhoto"
+    @success="changePhoto"></t-upload>
 </t-dialog>
 {/block}
 
@@ -52,6 +74,7 @@
     columns: [
       { title: '房产名', colKey: 'name', width: 100, align: 'left', fixed: 'left', },
       { title: '详细地址', colKey: 'address', width: 160 },
+      { title: '订阅消息', colKey: 'state', width: 60 },
       { title: '房东名称', colKey: 'landlord', width: 100 },
       { title: '房东手机', colKey: 'phone', width: 160 },
       { title: '房东身份证', colKey: 'id_card', width: 160 },
@@ -62,9 +85,18 @@
     formHeader: '',
     rules: {
       name: [{ required: true, message: '房产名不能为空', trigger: 'blur' }],
+      subscribe_mark: [{ required: true, message: '必选' }],
       phone: [{ telnumber: true, message: '请输入正确的手机号码', trigger: 'blur' }],
       id_card: [{ idcard: true, message: '请输入正确的身份证号码', trigger: 'blur' }],
     },
+    // 避免重复点击
+    disable: false,
+    // 收款二维码
+    photoVisible: false,
+    upheaders: { 'X-CSRF-TOKEN': '{$layout_token}' },
+    uploadData: {},
+    fileList: [],
+    selectId: 0,
   };
 
   function f() {
@@ -83,11 +115,12 @@
       },
       handleAdd() {
         this.$refs.propertyForm.reset();
-        this.formData = {};
+        this.formData = { 'subscribe_mark': 'Y' };
         this.formHeader = '新增房产';
         this.dialogVisible = true;
       },
       handleSave() {
+        this.disable = true;
         this.$refs.propertyForm.validate().then((valid) => {
           if (valid == true) {
             axiosPost("{:url('save')}", this.formData).then(response => {
@@ -100,7 +133,11 @@
               } else {
                 this.$message.error(response.msg);
               }
+            }).finally(() => {
+              this.disable = false;
             });
+          } else {
+            this.disable = false;
           }
         });
       },
@@ -114,6 +151,8 @@
         if (this.tableData.length == 1) {
           this.$message.warning('不能删除全部房产');
         } else {
+          if (this.disable) return;
+          this.disable = true;
           axiosPost("{:url('delete')}", row).then(response => {
             if (response.state == 'success') {
               this.$message.success(response.msg);
@@ -123,7 +162,45 @@
             } else {
               this.$message.error(response.msg);
             }
+          }).finally(() => {
+            this.disable = false;
           });
+        }
+      },
+
+      // 证件照片
+      handlePhoto(row) {
+        this.selectId = row.id;
+        this.queryPhoto();
+        this.formHeader = row.name + ' 收款二维码照片';
+        this.uploadData = { way: row.id }
+        this.photoVisible = true;
+      },
+      queryPhoto() {
+        axiosGet("{:url('queryPhoto')}", { id: this.selectId }).then(response => {
+          if (response.code == 1) {
+            this.fileList = response.data;
+          } else {
+            that.$message.error('系统出错了!!!');
+          }
+        });
+      },
+      removePhoto(file) {
+        axiosPost("{:url('deletePhoto')}", file.file).then(response => {
+          if (!response.state == 'success') {
+            this.$message({
+              message: response.msg, type: response.state
+            });
+          }
+        });
+      },
+      changePhoto(res) {
+        this.queryPhoto();
+        let code = res.response[0].code;
+        if (code == 1) {
+          this.$message.success('上传成功');
+        } else {
+          this.$message.error('上传失败');
         }
       },
     }

@@ -11,8 +11,8 @@ class Property extends Common
     {
         $loginUser = $this->auth->getLoginUser();
         $properties = PropertyModel::where('admin_user_id', $loginUser['id'])
-        ->order('id')
-        ->select();
+            ->order('id')
+            ->select();
         return $this->returnWechat($properties);
     }
 
@@ -21,11 +21,11 @@ class Property extends Common
     {
         $loginUser = $this->auth->getLoginUser();
         $property = PropertyModel::where('admin_user_id', $loginUser['id'])
-        ->field('id as value,name as label, firstly')
-        ->order('firstly, id')
-        ->select()
-        ->toArray();
-        array_unshift($property, ['value' => 0, 'label' => '全部房产', 'firstly' => 'N' ]);
+            ->field('id as value,name as label, firstly')
+            ->order('firstly, id')
+            ->select()
+            ->toArray();
+        array_unshift($property, ['value' => 0, 'label' => '全部房产', 'firstly' => 'N']);
         return $this->returnWechat($property);
     }
 
@@ -60,6 +60,7 @@ class Property extends Common
         $id = $this->request->post('id/d', 0);
         $data = [
             'name' => $this->request->post('name/s', '', 'trim'),
+            'subscribe_mark' => $this->request->post('subscribe_mark/s', 'Y', 'trim'),
             // 'address' => $this->request->post('address/s', '', 'trim'),
         ];
         $loginUser = $this->auth->getLoginUser();

@@ -75,6 +75,8 @@ class Number extends Common
             'daily_rent' => $this->request->post('daily_rent/d', 0),
             'water_price' => $this->request->post('water_price/f', 0.0),
             'electricity_price' => $this->request->post('electricity_price/f', 0.0),
+            'equipment' => $this->request->post('equipment/s', '', 'trim'),
+            'ratio' => $this->request->post('ratio/f', 1),
         ];
         $result = NumberAction::save($id, $data);
         if ($result['flag']) {
@@ -169,10 +171,6 @@ class Number extends Common
             return $this->returnSuccess($result['msg']);
         } else {
             return $this->returnError($result['msg']);
-        }
-
-        if (!$number = NumberModel::find($id)) {
-            return $this->returnError('删除失败,房间不存在。');
         }
     }
 }

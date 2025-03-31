@@ -6,8 +6,6 @@ use app\admin\controller\Common;
 use app\admin\model\WeBill as WeBillModel;
 use app\admin\model\WeMeter as MeterModel;
 use app\admin\model\WeDetail as WeDetailModel;
-use app\admin\model\HouseProperty as PropertyModel;
-use app\admin\model\HouseNumber as NumberModel;
 use app\admin\library\Property;
 use app\admin\model\BillSum as SumModel;
 use think\facade\View;
@@ -17,7 +15,7 @@ class Electricity extends Common
 {
     public function index()
     {
-        return View::fetch();
+        return View::fetch('/we/electricity/index');
     }
 
     //查询电费

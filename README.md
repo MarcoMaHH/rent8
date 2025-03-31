@@ -7,12 +7,15 @@
 # rent8-最常用出租屋管理系统
 
 自家用的出租屋管理系统。本系统基于ThinkPHP8(PHP8)+TDesign(Vue3)开发，混编版前后端不分离。
+本系统有扣子智能管家，有疑问的可以直接问智能管家。
 
 [rent8-最常用出租屋管理系统-微信小程序端](https://gitee.com/MarcoMaHH/rent8_wechat)
 
-[rent8-最常用出租屋管理系统-安装教程](https://blog.csdn.net/m0_61078449/article/details/143022025)
+[rent8-最常用出租屋管理系统-安装教程](https://mp.weixin.qq.com/s/3doZqTsTW9m9RhcBkeAEGg)
 
-[rent8-最常用出租屋管理系统-使用说明](https://blog.csdn.net/m0_61078449/article/details/142572124)
+[rent8-最常用出租屋管理系统-使用说明](https://mp.weixin.qq.com/s/zHunfQ6ndL_IXOCl38mwXQ)
+
+[rent8-最常用出租屋管理系统-扣子AI智能客服](https://www.coze.cn/store/agent/7462019405607010343?bid=6fntqflf06019&bot_id=true)
 
 ### 系统功能概述
 
@@ -60,6 +63,8 @@
 
 ### 界面展示
 
+![智能管家](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/coze.jpg)
+
 ![登录页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/login.jpg)
 
 ![主页面](https://gitee.com/MarcoMaHH/rent8/raw/master/picture/index.jpg)
@@ -82,14 +87,18 @@
 
 ### 系统环境
 
-- PHP = 8.1.22 （PS:需要安装fileinfo、zip扩展）
+- PHP = 8.1.22
 - Apache = 2.4.41
 - MySQL = 5.7.28
+
+PHP需安装的扩展
+curl，mbstring，mysqli，openssl，zip，pdo_mysql，fileinfo
 
 ### 技术栈
 
 - ThinkPHP8（PHP8）
 - TDesign（Vue3）
+- 扣子AI智能体
 - antV G2
 - printJS
 
@@ -104,6 +113,23 @@
 7. `php think seed:run`
 
 PS:宝塔面板安装的，需要在禁用函数里移除putenv()、pcntl_signal()、proc_open()这3个函数。
+
+### 订阅消息提醒
+
+服务器配置方式：
+
+1. Linux cron 配置 ：
+
+   ```bash
+   # 每天上午9点执行（需替换实际域名）
+   0 9 * * * curl "http://yourdomain.com/admin/subscribe/execute"
+   ```
+
+2. Windows 任务计划 ：
+
+   ```bash
+   schtasks /create /tn "WechatSubscribe" /tr "curl http://yourdomain.com/admin/subscribe/execute" /sc DAILY /st 09:00
+   ```
 
 ### 原始账号密码
 

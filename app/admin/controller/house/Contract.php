@@ -4,8 +4,9 @@ namespace app\admin\controller\house;
 
 use app\admin\controller\Common;
 use app\admin\model\HouseContract as ContractModel;
-use app\common\house\Contract as ContractAction;
 use app\admin\model\HouseNumber as NumberModel;
+use app\admin\model\ContractPhoto as PhotoModel;
+use app\common\house\Contract as ContractAction;
 use app\admin\library\Property;
 use app\admin\library\Date;
 use think\facade\View;
@@ -14,7 +15,7 @@ class Contract extends Common
 {
     public function index()
     {
-        return View::fetch();
+        return View::fetch('/house/contract/index');
     }
 
     public function queryContract()
@@ -93,17 +94,15 @@ class Contract extends Common
     public function contract()
     {
         $number_id = $this->request->param('id/d', 0);
-        // $number_id = 0;
         $number_data = NumberModel::where('a.id', $number_id)
             ->alias('a')
-            ->join('HouseProperty b', 'a.house_property_id = b.id')
-            ->leftJoin('HouseTenant c', 'a.tenant_id = c.id')
-            ->field('a.*,b.address, b.landlord, b.id_card as landlordId, b.name as property_name, c.name as renter, c.id_card_number')
+            ->leftjoin('HouseProperty b', 'a.house_property_id = b.id')
+            ->leftjoin('HouseTenant c', 'a.tenant_id = c.id')
+            ->field('a.*, b.address, b.landlord, b.id_card as landlordId, b.name as property_name, c.name as renter, c.id_card_number')
             ->select()->toArray();
-        if (!$number_data) {
+        if (count($number_data) == 0) {
             return $this->returnError('房间不存在');
         }
-        // var_dump($number_data);
         $tmp = new \PhpOffice\PhpWord\TemplateProcessor('static/wordfile/contract.docx'); //打开模板
         $tmp->setValue('landlord', $number_data[0]['landlord']); //替换变量name
         $tmp->setValue('landlordId', $number_data[0]['landlordId']); //替换变量name
@@ -114,7 +113,7 @@ class Contract extends Common
         $tmp->setValue('rentalLower', $number_data[0]['rental']);
         $tmp->setValue('depositLower', $number_data[0]['deposit']);
         $tmp->setValue('deposit', Property::convert_case_number($number_data[0]['deposit']));
-        // $tmp->setValue('management', Property::convert_case_number($number_data[0]['management']));
+        $tmp->setValue('equipment', $number_data[0]['equipment']);
         // $tmp->setValue('network', Property::convert_case_number($number_data[0]['network']));
         // $tmp->setValue('garbage_fee', Property::convert_case_number($number_data[0]['garbage_fee']));
         $startDate = explode('-', Date::getLease($number_data[0]['checkin_time'], $number_data[0]['lease'] - $number_data[0]['lease_type'])[0]);
@@ -135,5 +134,63 @@ class Contract extends Common
         //输出文件内容
         echo fread($file_type, filesize($file_url));
         fclose($file_type);
+    }
+
+    // 合同照片
+    public function upload()
+    {
+        $way = $this->request->post('way/s', '', 'trim');
+        // 获取表单上传文件 例如上传了001.jpg
+        $file = request()->file('file');
+        $originalName = $file->getOriginalName();
+
+        // 提取文件名（不含扩展名）和扩展名
+        $fileNameWithoutExt = pathinfo($originalName, PATHINFO_FILENAME);
+        $extension = pathinfo($originalName, PATHINFO_EXTENSION);
+
+        // 生成随机数
+        $randomNum = mt_rand(1000, 9999); // 生成一个4位的随机数
+
+        // 组合新的文件名
+        $newFileName = $fileNameWithoutExt . '_' . $randomNum . '.' . $extension;
+
+        // 上传到本地服务器
+        $filePath = \think\facade\Filesystem::disk('public')->putFileAs('contract/' . $way, $file, $newFileName);
+        $house_property_id = $this->request->post('house_property_id/s', null, 'trim');
+        $house_number_id = $this->request->post('house_number_id/s', null, 'trim');
+        $data = [
+            'house_property_id' => $house_property_id,
+            'house_number_id' => $house_number_id,
+            'contract_id' => $way,
+            'url' => '/storage/' . $filePath
+        ];
+        PhotoModel::create($data);
+        return json(['code' => 1, 'msg' => '上传成功']);
+    }
+
+    // 查询照片信息
+    public function queryPhoto()
+    {
+        $id = $this->request->param('id/d', 0);
+        $photo = PhotoModel::where('contract_id', $id)->select();
+        foreach ($photo as $value) {
+            $value['name'] = $value['url'];
+        }
+        return $this->returnResult($photo);
+    }
+
+    // 删除照片
+    public function deletePhoto()
+    {
+        $id = $this->request->post('id/d', 0);
+        if (!$photo = PhotoModel::find($id)) {
+            return $this->returnError('删除失败，记录不存在。');
+        }
+        $photo->delete();
+        $photoPath = app()->getRootPath() . 'public' . $photo['url'];
+        if (file_exists($photoPath) && !unlink($photoPath)) {
+            return $this->returnError('删除失败，文件无法删除。');
+        }
+        return $this->returnSuccess('删除成功');
     }
 }

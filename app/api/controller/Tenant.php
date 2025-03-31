@@ -4,6 +4,7 @@ namespace app\api\controller;
 
 use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\HouseTenant as TenantModel;
+use app\common\house\Tenant as TenantAction;
 use app\admin\model\HouseNumber as NumberModel;
 use app\api\library\Property;
 
@@ -16,17 +17,25 @@ class Tenant extends Common
             ['a.house_property_id', 'in', $house_property_id],
             ['a.mark', '=', 'N'],
         );
-        // $house_number_id = $this->request->param('house_number_id/d', 0);
-        // if ($house_number_id) {
-        //     \array_push($conditions, ['a.house_number_id', '=', $house_number_id]);
-        // }
-        $count = TenantModel::where($conditions)->alias('a')->count();
-        $tenants = TenantModel::where($conditions)->alias('a')
-        ->join('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
-        ->join('HouseProperty c', 'a.house_property_id = c.id')
-        ->field("a.*,b.name as number_name, c.name as property_name")
-        ->order(['mark','leave_time' => 'desc','checkin_time' => 'desc'])
-        ->select();
+        $parameter = $this->request->param('parameter/s', '');
+        if ($parameter) {
+            $conditions[] = function ($query) use ($parameter) {
+                $query->where('b.name', 'like', "%{$parameter}%")
+                    ->whereOr('c.name', 'like', "%{$parameter}%");
+            };
+        }
+        $count = TenantModel::alias('a')
+            ->join('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
+            ->join('HouseProperty c', 'a.house_property_id = c.id')
+            ->where($conditions)
+            ->count();
+        $tenants = TenantModel::alias('a')
+            ->join('HouseNumber b', 'a.house_property_id = b.house_property_id and a.house_number_id = b.id')
+            ->join('HouseProperty c', 'a.house_property_id = c.id')
+            ->where($conditions)
+            ->field("a.*,b.name as number_name, c.name as property_name")
+            ->order(['mark', 'leave_time' => 'desc', 'checkin_time' => 'desc'])
+            ->select();
         foreach ($tenants as $value) {
             $value['checkin_time'] = \substr($value['checkin_time'], 0, 10);
             if ($value['leave_time']) {
@@ -95,14 +104,24 @@ class Tenant extends Common
             'id_card_number' => $this->request->post('id_card_number/s', null, 'trim'),
             'native_place' => $this->request->post('native_place/s', '', 'trim'),
             'work_units' => $this->request->post('work_units/s', '', 'trim'),
-            // 'checkin_time' => $this->request->post('checkin_time/s', \date('Ymd'), 'trim'),
+            'checkin_time' => $this->request->post('checkin_time/s', '', 'trim'),
         ];
-        if ($id) {
-            if (!$tenant = TenantModel::find($id)) {
-                return $this->returnError('删除失败，租客不存在');
-            }
-            $tenant->save($data);
-            return $this->returnSuccess('修改成功');
+        $result = TenantAction::save($id, $data);
+        if ($result['flag']) {
+            return $this->returnSuccess($result['msg']);
+        } else {
+            return $this->returnError($result['msg']);
+        }
+    }
+
+    public function delete()
+    {
+        $id = $this->request->param('id/d', 0);
+        $result = TenantAction::delete($id);
+        if ($result['flag']) {
+            return $this->returnSuccess($result['msg']);
+        } else {
+            return $this->returnError($result['msg']);
         }
     }
 }

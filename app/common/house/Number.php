@@ -7,6 +7,7 @@ use app\admin\model\HouseNumber as NumberModel;
 use app\admin\model\HouseTenant as TenantModel;
 use app\admin\model\HouseBilling as BillingModel;
 use app\admin\model\HouseContract as ContractModel;
+use app\admin\model\ContractPhoto as ContractPhotoModel;
 use think\facade\Db;
 
 class Number
@@ -147,6 +148,38 @@ class Number
             ContractModel::where('house_property_id', $number_data->house_property_id)
                 ->where('house_number_id', $number_id)
                 ->delete();
+            // 移除合同图片
+            $photoRootPath = app()->getRootPath() . 'public';
+            $folders = [];
+            ContractPhotoModel::where('house_property_id', $number_data->house_property_id)
+                ->where('house_number_id', $number_id)
+                ->chunk(100, function ($photos) use ($photoRootPath, &$folders) {
+                    foreach ($photos as $photo) {
+                        $filePath = $photoRootPath . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, array_slice(explode('/', $photo['url']), 1));
+                        $folderPath = dirname($filePath);
+                        $folders[$folderPath] = true;
+                        if (file_exists($filePath)) {
+                            try {
+                                unlink($filePath);
+                            } catch (\Exception $e) {
+                                continue;
+                            }
+                        }
+                    }
+                });
+            foreach (array_keys($folders) as $folderPath) {
+                try {
+                    if (is_dir($folderPath) && count(scandir($folderPath)) === 2) {
+                        rmdir($folderPath);
+                    }
+                } catch (\Exception $e) {
+                    continue;
+                }
+            }
+            ContractPhotoModel::where('house_property_id', $number_data->house_property_id)
+                ->where('house_number_id', $number_id)
+                ->delete();
+
             // 提交事务
             Db::commit();
         } catch (\Exception $e) {
@@ -178,6 +211,39 @@ class Number
             ContractModel::where('house_property_id', $number['house_property_id'])
                 ->where('house_number_id', $number['id'])
                 ->delete();
+            // 移除合同图片
+            $photoRootPath = app()->getRootPath() . 'public';
+            $folders = [];
+            ContractPhotoModel::where('house_property_id', $number['house_property_id'])
+                ->where('house_number_id', $number['id'])
+                ->chunk(100, function ($photos) use ($photoRootPath, &$folders) {
+                    foreach ($photos as $photo) {
+                        $filePath = $photoRootPath . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, array_slice(explode('/', $photo['url']), 1));
+                        $folderPath = dirname($filePath);
+                        $folders[$folderPath] = true;
+                        if (file_exists($filePath)) {
+                            try {
+                                unlink($filePath);
+                            } catch (\Exception $e) {
+                                continue;
+                            }
+                        }
+                    }
+                });
+            // 尝试删除所有空文件夹
+            foreach (array_keys($folders) as $folderPath) {
+                try {
+                    if (is_dir($folderPath) && count(scandir($folderPath)) === 2) {
+                        rmdir($folderPath);
+                    }
+                } catch (\Exception $e) {
+                    continue;
+                }
+            }
+            ContractPhotoModel::where('house_property_id', $number['house_property_id'])
+                ->where('house_number_id', $number['id'])
+                ->delete();
+
             $number->delete();
             // 提交事务
             Db::commit();

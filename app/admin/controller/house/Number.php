@@ -15,7 +15,7 @@ class Number extends Common
 {
     public function index()
     {
-        return View::fetch();
+        return View::fetch('/house/number/index');
     }
 
     public function queryNumber()
@@ -67,6 +67,8 @@ class Number extends Common
             'daily_rent' => $this->request->post('daily_rent/d', 0),
             'water_price' => $this->request->post('water_price/f', 0.0),
             'electricity_price' => $this->request->post('electricity_price/f', 0.0),
+            'equipment' => $this->request->post('equipment/s', '', 'trim'),
+            'ratio' => $this->request->post('ratio/f', 1),
         ];
         $result = NumberAction::save($id, $data);
         if ($result['flag']) {
@@ -182,5 +184,50 @@ class Number extends Common
                 ->toArray();
             return $this->returnResult($number);
         }
+    }
+
+    // 未收账单页面-查询已租房间
+    public function queryRentedNumber()
+    {
+        $house_property_id = Property::getProperty();
+        if (count($house_property_id) > 1) {
+            return $this->returnResult();
+        } else {
+            $number = NumberModel::where('rent_mark', 'Y')
+                ->where('house_property_id', 'in', $house_property_id)
+                ->order('name')
+                ->field('id as value,name as label')
+                ->select()
+                ->toArray();
+            return $this->returnResult($number);
+        }
+    }
+
+    // 批量入住
+    public function queryUnleasedNumber()
+    {
+        $house_property_id = Property::getProperty();
+        if (count($house_property_id) > 1) {
+            return $this->returnResult();
+        } else {
+            $number = NumberModel::where('rent_mark', 'N')
+                ->where('house_property_id', 'in', $house_property_id)
+                ->order('name')
+                ->field('id, name, checkin_time')
+                ->select()
+                ->toArray();
+            return $this->returnResult($number);
+        }
+    }
+
+    public function checkInMoreSave()
+    {
+        $data = $this->request->post();
+        foreach ($data as $item) {
+            if (!empty($item['checkin_time'])) {
+                NumberAction::checkin(['house_number_id' => $item['id'], 'checkin_time' => $item['checkin_time']]);
+            }
+        }
+        return $this->returnSuccess('批量入住成功');
     }
 }

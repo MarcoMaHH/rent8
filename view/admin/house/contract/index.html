@@ -1,112 +1,70 @@
 {extend name="common/layout" /} {block name="main"}
 <t-card class="list-card-container" :bordered="false">
-  <div
-    style="
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    "
-  >
-    <div
-      style="
-        display: flex;
-        align-items: center;
-        width: 280px;
-        margin-left: 10px;
-      "
-    >
-      <t-input
-        v-model="searchValue"
-        placeholder="请输入房产、房间"
-        clearable
-        @enter="handleSearch"
-      />
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; width: 280px; margin-right: 5px;">
+      <t-input v-model="searchValue" placeholder="请输入房产、房间" clearable @enter="handleSearch" />
     </div>
     <t-button theme="primary" @click="handleSearch">
       <template #icon><t-icon name="search" /></template>
     </t-button>
-    <div
-      style="
-        flex: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      "
-    >
+    <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
       有效合同数: {{contractMessage.valid}}, 无效合同数:
       {{contractMessage.invalid}}
     </div>
   </div>
-  <t-table
-    :data="tableData"
-    :columns="columns"
-    row-key="id"
-    vertical-align="top"
-    :bordered="true"
-    size="small"
-    active-row-type="single"
-    :hover="true"
-    :loading="tableLoading"
-    :pagination="pagination"
-  >
+  <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
+    active-row-type="single" :hover="true" :loading="tableLoading" :pagination="pagination">
     <template #op="slotProps">
       <t-space>
-        <t-button size="small" @click="handleEdit(slotProps.row)"
-          >修改</t-button
-        >
-        <t-button
-          size="small"
-          theme="default"
-          @click="handleContract(slotProps.row)"
-          >下载合同</t-button
-        >
+        <t-button size="small" @click="handleEdit(slotProps.row)">修改</t-button>
+        <t-button size="small" theme="success" @click="handleRenewal(slotProps.row)">续期</t-button>
+        <t-button size="small" theme="default" @click="handleContract(slotProps.row)">下载合同</t-button>
+        <t-button size="small" theme="warning" @click="handlePhoto(slotProps.row)">合同照片</t-button>
       </t-space>
     </template>
   </t-table>
 </t-card>
 
 <!-- 修改FORM -->
-<t-dialog
-  v-model:visible="dialogVisible"
-  :header="formHeader"
-  :width="680"
-  :footer="false"
->
-  <t-form
-    ref="otherForm"
-    :data="formData"
-    :rules="rules"
-    :label-width="100"
-    @submit="handleSave"
-  >
+<t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false">
+  <t-form ref="otherForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
     <t-form-item label="开始日期" name="start_date">
-      <t-date-picker
-        v-model="formData.start_date"
-        mode="date"
-        :style="{ width: '480px' }"
-        clearable
-      />
+      <t-date-picker v-model="formData.start_date" mode="date" :style="{ width: '480px' }" clearable />
     </t-form-item>
     <t-form-item label="结束日期" name="end_date">
-      <t-date-picker
-        v-model="formData.end_date"
-        mode="date"
-        :style="{ width: '480px' }"
-        clearable
-      />
+      <t-date-picker v-model="formData.end_date" mode="date" :style="{ width: '480px' }" clearable />
     </t-form-item>
     <t-form-item style="float: right">
-      <t-button
-        variant="outline"
-        @click="dialogVisible = false"
-        style="margin-right: 5px"
-        >取消</t-button
-      >
-      <t-button theme="primary" type="submit">确定</t-button>
+      <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px">取消</t-button>
+      <t-button theme="primary" type="submit" :disabled="disable">确定</t-button>
     </t-form-item>
   </t-form>
 </t-dialog>
+
+<!-- 续期 -->
+<t-dialog v-model:visible="renewalVisible" :header="formHeader" :width="680" :footer="false">
+  <t-form ref="renewalForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSaveTwo">
+    <t-form-item label="租期" name="lease">
+      <t-select v-model="formData.lease" clearable filterable :style="{ width: '480px' }">
+        <t-option v-for="(item, index) in options" :key="index" :value="item.value" :label="item.label">
+          {{ item.label }}
+        </t-option>
+      </t-select>
+    </t-form-item>
+    <t-form-item style="float: right">
+      <t-button variant="outline" @click="renewalVisible = false" style="margin-right: 5px">取消</t-button>
+      <t-button theme="primary" type="submit" :disabled="disable">确定</t-button>
+    </t-form-item>
+  </t-form>
+</t-dialog>
+
+<!-- 合同照片 -->
+<t-dialog v-model:visible="photoVisible" :header="formHeader" :width="680" :footer="false" top="30px">
+  <t-upload ref="uploadRef2" v-model="fileList" :data="uploadData" :max="8" multiple :headers="upheaders"
+    action="upload" theme="image" accept="image/*" :auto-upload="true" @remove="removePhoto"
+    @success="changePhoto"></t-upload>
+</t-dialog>
+
 {/block} {block name="script"}
 <script>
   const data = {
@@ -132,11 +90,29 @@
     rules: {
       start_date: [{ required: true, message: "必填" }],
       end_date: [{ required: true, message: "必填" }],
+      lease: [{ required: true, message: "必填" }],
     },
     // 搜索框
     searchValue: "",
     // 房间信息
     contractMessage: {},
+    // 续期
+    renewalVisible: false,
+    options: [
+      { label: '1年', value: 1 },
+      { label: '2年', value: 2 },
+      { label: '3年', value: 3 },
+      { label: '4年', value: 4 },
+      { label: '5年', value: 5 },
+    ],
+    // 证件照片
+    photoVisible: false,
+    upheaders: { 'X-CSRF-TOKEN': '{$layout_token}' },
+    uploadData: {},
+    fileList: [],
+    selectId: 0,
+    // 避免重复点击
+    disable: false,
   };
   function f() {
     return {
@@ -172,10 +148,12 @@
         this.queryTable();
       },
       handleSave() {
+        this.disable = true;
         this.$refs.otherForm.validate().then((valid) => {
           if (valid == true) {
             if (this.formData.end_date < this.formData.start_date) {
               this.$message.warning("结束日期不能小于开始日期");
+              this.disable = false;
               return;
             }
             axiosPost("{:url('save')}", this.formData).then((response) => {
@@ -189,20 +167,102 @@
               } else {
                 this.$message.error(response.msg);
               }
+            }).finally(() => {
+              this.disable = false;
             });
+          } else {
+            this.disable = false;
           }
         });
       },
       handleEdit(row) {
         this.$refs.otherForm.reset();
         this.formData = { ...row };
-        this.formHeader =
-          row.property_name + "-" + row.number_name + " - 修改合同";
+        this.formHeader = row.property_name + "-" + row.number_name + " - 修改合同";
         this.dialogVisible = true;
+      },
+      // 续期
+      handleRenewal(row) {
+        this.$refs.renewalForm.reset();
+        this.formData = { ...row };
+        this.formHeader = row.property_name + "-" + row.number_name + " - 续期";
+        this.renewalVisible = true;
+      },
+      handleSaveTwo() {
+        this.disable = true;
+        this.$refs.renewalForm.validate().then((valid) => {
+          if (valid == true) {
+            if (!this.formData.end_date) {
+              let temp = new Date(this.formData.start_date);
+              temp.setDate(temp.getDate() - 1);
+              this.formData.end_date = temp.toISOString().split('T')[0];
+            }
+
+            let startDate = new Date(this.formData.end_date);
+            startDate.setDate(startDate.getDate() + 1);
+            this.formData.start_date = startDate.toISOString().split('T')[0];
+
+            let endDate = new Date(this.formData.end_date);
+            endDate.setFullYear(endDate.getFullYear() + this.formData.lease);
+            this.formData.end_date = endDate.toISOString().split('T')[0];
+
+            axiosPost("{:url('save')}", this.formData).then((response) => {
+              if (response.state == "success") {
+                this.$message.success(response.msg);
+                this.renewalVisible = false;
+                this.queryTable();
+                this.queryContractMsg();
+              } else if (response.state == "warning") {
+                this.$message.warning(response.msg);
+              } else {
+                this.$message.error(response.msg);
+              }
+            }).finally(() => {
+              this.disable = false;
+            });
+          } else {
+            this.disable = false;
+          }
+        });
       },
       // 合同
       handleContract(row) {
-        axiosDownload("{:url('contract')}", { id: row.id });
+        axiosDownload("{:url('contract')}", { id: row.house_number_id });
+      },
+      // 合同照片
+      handlePhoto(row) {
+        this.selectId = row.id;
+        this.queryPhoto();
+        this.formHeader = row.property_name + '-' + row.number_name + ' 合同照片';
+        this.uploadData = { way: row.id, house_property_id: row.house_property_id, house_number_id: row.house_number_id }
+        this.photoVisible = true;
+      },
+      queryPhoto() {
+        axiosGet("{:url('queryPhoto')}", { id: this.selectId }).then(response => {
+          if (response.code == 1) {
+            this.fileList = response.data;
+          } else {
+            that.$message.error('系统出错了!!!');
+          }
+        });
+      },
+      removePhoto(file) {
+        axiosPost("{:url('deletePhoto')}", file.file).then(response => {
+          if (!response.state == 'success') {
+            this.$message({
+              message: response.msg, type: response.state
+            });
+          }
+        });
+      },
+      changePhoto(res) {
+        this.queryPhoto();
+        let code = res.response[0].code;
+        if (code == 1) {
+          this.$message.success('上传成功');
+        } else {
+          this.$message.error('上传失败');
+        }
       },
     };
   }

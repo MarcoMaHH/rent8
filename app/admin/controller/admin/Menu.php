@@ -11,7 +11,7 @@ class Menu extends Common
 {
     public function index()
     {
-        return View::fetch();
+        return View::fetch('/admin/menu/index');
     }
 
     public function query()

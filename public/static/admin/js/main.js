@@ -45,18 +45,24 @@ async function axiosDownload(url, data) {
       const contentDisposition = headers['content-disposition']
       const patt = new RegExp('filename=([^;]+\.[^\.;]+);*')
       const result = patt.exec(contentDisposition)
-      const filename = decodeURI(JSON.parse(result[1])) // 处理文件名,解决中文乱码问题
-      const blob = new Blob([data], { type: headers['content-type'] })
-      let dom = document.createElement('a')
-      let url = window.URL.createObjectURL(blob)
-      dom.href = url
-      dom.download = decodeURI(filename)
-      dom.style.display = 'none'
-      document.body.appendChild(dom)
-      dom.click()
-      dom.parentNode.removeChild(dom)
-      window.URL.revokeObjectURL(url)
-    }).catch((err) => { })
+      if (result) {
+        const filename = decodeURI(JSON.parse(result[1])) // 处理文件名,解决中文乱码问题
+        const blob = new Blob([data], { type: headers['content-type'] })
+        let dom = document.createElement('a')
+        let url = window.URL.createObjectURL(blob)
+        dom.href = url
+        dom.download = decodeURI(filename)
+        dom.style.display = 'none'
+        document.body.appendChild(dom)
+        dom.click()
+        dom.parentNode.removeChild(dom)
+        window.URL.revokeObjectURL(url)
+      } else {
+        console.error('文件名解析失败!');
+      }
+    }).catch((err) => {
+      console.error('下载文件时发生错误:', err);
+    })
 }
 
 function getCurrentDateString() {

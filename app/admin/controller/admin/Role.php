@@ -1,16 +1,16 @@
 <?php
+
 namespace app\admin\controller\admin;
 
 use app\admin\controller\Common;
 use app\admin\model\AdminRole as RoleModel;
-use app\admin\validate\AdminRole as RoleValidate;
 use think\facade\View;
 
 class Role extends Common
 {
     public function index()
     {
-        return View::fetch();
+        return View::fetch('/admin/role/index');
     }
 
     public function query()
@@ -40,7 +40,7 @@ class Role extends Common
     public function delete()
     {
         $id = $this->request->param('id/d', 0);
-        if (!$role = RoleModel::find($id, 'adminPermission')) {
+        if (!$role = RoleModel::with('adminPermission')->find($id)) {
             return $this->returnError('删除失败，记录不存在');
         }
         $role->together(['admin_permission'])->delete();

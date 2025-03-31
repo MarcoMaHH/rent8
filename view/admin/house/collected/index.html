@@ -2,9 +2,9 @@
 {block name="main"}
 <t-card class="list-card-container" :bordered="false">
   <div style="display: flex; align-items: center; margin-bottom: 10px;">
-    <div style="display: flex; align-items: center; width: 280px; ">
+    <div style="display: flex; align-items: center; width: 380px; ">
       <div style="flex-grow: 1; margin-right: 5px;">
-        <t-input v-model="searchValue" placeholder="请输入房产、房间" clearable @enter="handleSearch" />
+        <t-input v-model="searchValue" placeholder="请输入房产、房间、到账日期（如：2025-02）" clearable @enter="handleSearch" />
       </div>
       <t-button theme="primary" @click="handleSearch">
         <template #icon><t-icon name="search" /></template>
@@ -14,8 +14,11 @@
       今日到账总金额：{{sum}} 元
     </div>
     <div style="margin-left: auto;">
-      <t-button theme="primary" @click="handleFilter">
+      <t-button theme="primary" @click="handleFilter" style="margin-right: 10px;">
         <template #icon><t-icon name="unfold-more" /></template> 明细账单
+      </t-button>
+      <t-button theme="primary" @click="handleExport">
+        <template #icon><t-icon name="file-export" /></template> 导出列表
       </t-button>
     </div>
   </div>
@@ -130,6 +133,15 @@
       // 搜索
       handleSearch() {
         this.queryTable();
+      },
+      // 导出excel
+      handleExport() {
+        let params = {
+          'parameter': this.searchValue,
+          'limit': this.pagination.pageSize,
+          'page': this.pagination.current
+        };
+        axiosDownload("{:url('export')}", params);
       },
     }
   }

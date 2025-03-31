@@ -6,6 +6,7 @@ use app\admin\controller\Common;
 use app\admin\model\HouseProperty as PropertyModel;
 use app\admin\model\BillAnnual as AnnualModel;
 use app\admin\model\BillSum as SumModel;
+use app\admin\library\Property;
 use think\facade\Db;
 use think\facade\View;
 
@@ -13,13 +14,14 @@ class Annual extends Common
 {
     public function index()
     {
-        return View::fetch();
+        return View::fetch('/bill/annual/index');
     }
 
     public function query()
     {
         $loginUser = $this->auth->getLoginUser();
-        $annual = AnnualModel::where('a.admin_user_id', $loginUser['id'])
+        $result = Property::getProperty();
+        $annual = AnnualModel::where('a.house_property_id', 'in', $result)
             ->alias('a')
             ->join('HouseProperty c', 'c.id = a.house_property_id')
             ->field('a.*, c.name as property_name')
@@ -32,13 +34,13 @@ class Annual extends Common
 
         $lasyYear = date('Y', strtotime('-1 year'));
         $propertys = PropertyModel::where('admin_user_id', $loginUser['id'])->select()->toArray();
-        $allIncomes = SumModel::where('admin_user_id', $loginUser['id'])
+        $allIncomes = SumModel::where('house_property_id', 'in', $result)
             ->where('type', 'I')
             ->where('annual', $lasyYear)
             ->field('annual, house_property_id, sum(amount) as amount')
             ->group('annual, house_property_id')
             ->select()->toArray();
-        $allExpenditures = SumModel::where('admin_user_id', $loginUser['id'])
+        $allExpenditures = SumModel::where('house_property_id', 'in', $result)
             ->where('type', 'E')
             ->where('annual', $lasyYear)
             ->field('annual, house_property_id, sum(amount) as amount')
@@ -68,8 +70,8 @@ class Annual extends Common
                     'admin_user_id' => $loginUser['id'],
                     'property_name' => $property['name'],
                     'income' => $income,
-                    'expenditure' => $expenditure,
-                    'profit' => $income - $expenditure,
+                    'expenditure' => round($expenditure, 2),
+                    'profit' => round($income - $expenditure, 2),
                 ]);
             }
         }

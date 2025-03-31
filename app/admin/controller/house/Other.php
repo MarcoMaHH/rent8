@@ -13,7 +13,7 @@ class Other extends Common
 {
     public function index()
     {
-        return View::fetch();
+        return View::fetch('/house/other/index');
     }
 
     public function queryOther()
@@ -28,11 +28,11 @@ class Other extends Common
         }
         $count = OtherModel::alias('a')->where($conditions)->count();
         $numbers = OtherModel::alias('a')
-        ->leftJoin('HouseProperty b', 'a.house_property_id = b.id')
-        ->field('a.*,b.name as property_name')
-        ->where($conditions)
-        ->order(['a.accout_mark','a.accounting_date' => 'desc'])
-        ->select();
+            ->leftJoin('HouseProperty b', 'a.house_property_id = b.id')
+            ->field('a.*,b.name as property_name')
+            ->where($conditions)
+            ->order(['a.accout_mark', 'a.accounting_date' => 'desc'])
+            ->select();
         foreach ($numbers as $value) {
             if ($value['accounting_date']) {
                 $value['accounting_date'] = \substr($value['accounting_date'], 0, 10);
@@ -64,7 +64,7 @@ class Other extends Common
         $data = [
             'house_property_id' => $this->request->post('house_property_id/s', '', 'trim'),
             'type' => $this->request->post('type/s', '', 'trim'),
-            'total_money' => $this->request->post('total_money/d', 0),
+            'total_money' => $this->request->post('total_money/f', 0.0),
             'note' => $this->request->post('note/s', '', 'trim'),
             'circulate_mark' => $this->request->post('circulate_mark/s', '', 'trim'),
             'accounting_date' => $this->request->post('accounting_date/s', '', 'trim'),
