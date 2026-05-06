@@ -21,8 +21,8 @@ class Property extends Common
     {
         $loginUser = $this->auth->getLoginUser();
         $property = PropertyModel::where('admin_user_id', $loginUser['id'])
-            ->field('id as value,name as label, firstly')
-            ->order('firstly, id')
+            ->field('id as value,name as label, default')
+            ->order('default, id')
             ->select()
             ->toArray();
         array_unshift($property, ['value' => 0, 'label' => '全部房产', 'firstly' => 'N']);
@@ -43,6 +43,7 @@ class Property extends Common
     public function edit()
     {
         $id = $this->request->param('id/d', 0);
+        $data = ['id' => 0];
         if ($id) {
             if (!$data = PropertyModel::find($id)) {
                 return $this->returnError('房产不存在');
@@ -60,7 +61,7 @@ class Property extends Common
         $id = $this->request->post('id/d', 0);
         $data = [
             'name' => $this->request->post('name/s', '', 'trim'),
-            'subscribe_mark' => $this->request->post('subscribe_mark/s', 'Y', 'trim'),
+            'name_show' => $this->request->post('name/s', '', 'trim'),
             // 'address' => $this->request->post('address/s', '', 'trim'),
         ];
         $loginUser = $this->auth->getLoginUser();

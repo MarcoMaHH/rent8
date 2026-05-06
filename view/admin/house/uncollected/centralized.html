@@ -1,0 +1,87 @@
+{extend name="common/layout" /}
+{block name="main"}
+<t-card class="list-card-container" :bordered="false">
+  <div style="display: flex; justify-content: center; font-size: 1.5em; margin-bottom: 20px;">{{header}}</div>
+  <div style="display: flex; justify-content: center; align-items: center; height: 100%; ">
+    <t-form ref="form" :data="formData" :label-width="300" @submit="handleSave">
+      <t-row style="margin-bottom: 20px;" :gutter="[32, 24]" v-for="(domain, index) in concentratedData"
+        :key="domain.id">
+        <t-col :span="5">
+          <t-form-item :label="domain.property_name + domain.number_name +' -  上期水表度数：'+ domain.water_meter_last_month">
+            <t-input-number v-model="domain.water_meter_this_month" :style="{ width: '480px' }" theme="normal"
+              placeholder="请输入" />
+          </t-form-item>
+        </t-col>
+        <t-col :span="7">
+          <t-form-item
+            :label="domain.property_name + domain.number_name +' -  上期电表度数：'+ domain.electricity_meter_last_month">
+            <t-input-number v-model="domain.electricity_meter_this_month" :style="{ width: '480px' }" theme="normal"
+              placeholder="请输入" />
+          </t-form-item>
+        </t-col>
+      </t-row>
+      <t-form-item>
+        <t-button variant="outline" @click="handleCancel" style="margin-right: 5px">取消</t-button>
+        <t-button theme="primary" type="submit" :disabled="doubleClicking" style="margin-right: 5px">保存</t-button>
+      </t-form-item>
+    </t-form>
+  </div>
+</t-card>
+
+{/block}
+
+{block name="script"}
+<script>
+  const data = {
+    formData: {},
+    // 避免重复点击
+    doubleClicking: false,
+    header: '集中抄表',
+    // 集中抄表
+    concentratedData: [],
+  };
+
+  function f() {
+    return {
+      init: function () {
+        axiosGet("{:url('queryCentralized')}").then(response => {
+          if (response.code == 1) {
+            this.concentratedData = response.data;
+          } else {
+            this.$message.error('系统出错');
+          }
+        });
+      },
+      handleCancel() {
+        location.href = "{:url('index')}";
+      },
+      // 集中抄表保存
+      handleSave() {
+        if (!this.concentratedData.length) {
+          location.href = "{:url('index')}";
+          return;
+        }
+        this.doubleClicking = true;
+        let postData = [];
+        this.concentratedData.forEach(element => {
+          if (element.electricity_meter_this_month || element.water_meter_this_month) {
+            postData.push({ id: element.id, electricity: element.electricity_meter_this_month, water: element.water_meter_this_month });
+          }
+        });
+        axiosPost("{:url('saveCentralized')}", { data: postData }).then(response => {
+          if (response.state == 'success') {
+            this.$message.success(response.msg);
+            location.href = "{:url('index')}";
+          } else if (response.state == 'warning') {
+            this.$message.warning(response.msg);
+          } else {
+            this.$message.error(response.msg);
+          }
+        }).finally(() => {
+          this.doubleClicking = false;
+        });
+      },
+    }
+  }
+</script>
+{/block}

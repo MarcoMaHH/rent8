@@ -6,6 +6,7 @@ use app\admin\library\Auth;
 use app\BaseController;
 use think\facade\Session;
 use think\facade\View;
+use think\facade\Log;
 use Firebase\JWT\JWT;
 
 //每页显示的条数
@@ -24,6 +25,12 @@ define('TYPE_WATER', 'W');
 define('TYPE_INCOME', 'I');
 //类型-支出
 define('TYPE_EXPENDITURE', 'E');
+
+// adminSubscribe类型
+//类型-续约
+define('TYPE_RENEWAL', 'A');
+//类型-收租
+define('TYPE_RENT', 'B');
 
 class Common extends BaseController
 {
@@ -58,13 +65,13 @@ class Common extends BaseController
             View::assign('current_route', $this->auth->currentRoute($controller));
             View::assign('layout_token', $this->getToken());
             // 获取coze的token
-            $appId = env('COZE_APP_ID'); // 替换为您的 APP_ID
-            $publicKeyFingerprint = env('COZE_PUBLIC_KEY_FINGERPRINT'); // 替换为您的 PUBLIC_KEY_FINGERPRINT
+            $appId = '1105070413136'; // 替换为您的 APP_ID
+            $publicKeyFingerprint = 'gzbpaE3nWClBDXmbAHMAES5wE9QB1WiK4xqQivPMzhw'; // 替换为您的 PUBLIC_KEY_FINGERPRINT
             $privateKeyFilePath = 'static/private_key.pem'; // 替换为您的私钥文件路径
             $jwt = $this->generateJWT($appId, $publicKeyFingerprint, $privateKeyFilePath);
             $accessToken = $this->getAccessToken($jwt);
             View::assign('coze_token', $accessToken);
-            View::assign('coze_botid', env('COZE_BOTID'));
+            View::assign('coze_botid', '7462019405607010343');
         }
     }
 
@@ -96,30 +103,56 @@ class Common extends BaseController
             'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
             'duration_seconds' => 86399 // 令牌有效期，最大为24小时（86400秒）
         ];
+        $maxRetries = 3;
+        for ($retry = 0; $retry < $maxRetries; $retry++) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $jwt
+            ]);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            curl_setopt($ch, CURLOPT_TIMEOUT, 1500); // 设置请求超时时间
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $jwt
-        ]);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            $response = curl_exec($ch);
 
-        $response = curl_exec($ch);
-        // if ($response === false) {
-        //     die('cURL Error: ' . curl_error($ch));
-        // }
-        curl_close($ch);
+            // 检查 cURL 错误
+            if ($response === false) {
+                $errorMessage = 'cURL Error: ' . curl_error($ch);
+                Log::error($errorMessage);
+                curl_close($ch);
+                continue;
+            }
 
-        $responseData = json_decode($response, true);
-        if (isset($responseData['access_token'])) {
-            return $responseData['access_token'];
-        } else {
-            die('Failed to get access token: ' . json_encode($responseData));
+            curl_close($ch);
+
+            // 检查响应是否为空
+            if (empty($response)) {
+                Log::error('Empty response from API.');
+                continue;
+            }
+
+            // 解析 JSON 响应
+            $responseData = json_decode($response, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                Log::error('Invalid JSON response: ' . $response);
+                continue;
+            }
+
+            // 检查是否包含 access_token
+            if (isset($responseData['access_token'])) {
+                return $responseData['access_token'];
+            } else {
+                Log::error('Failed to get access token: ' . json_encode($responseData));
+                continue;
+            }
         }
+
+        // 如果所有重试都失败，抛出异常
+        throw new \Exception('Failed to get access token after ' . $maxRetries . ' retries.');
     }
 
     public function getToken()

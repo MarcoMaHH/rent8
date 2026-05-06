@@ -1,0 +1,154 @@
+{extend name="common/layout" /}
+{block name="main"}
+<t-card class="list-card-container" :bordered="false">
+  <div style="display: flex; justify-content: center; font-size: 1.5em; margin-bottom: 20px;">{{header}}</div>
+  <div style="display: flex; justify-content: center; align-items: center; height: 100%; ">
+    <t-form ref="form" :data="formData" :rules="rules" :label-width="200" @submit="handleSave">
+      <t-form-item label="账单类型" name="bill_type">
+        <t-tag v-if="bill_type_array.find(i => i.value === formData.bill_type)"
+          :theme="bill_type_array.find(i => i.value === formData.bill_type)?.note" variant="light">
+          {{ bill_type_array.find(i => i.value === formData.bill_type)?.label }}
+        </t-tag>
+      </t-form-item>
+      <t-form-item v-if="formData.bill_type == 'A'" label="开始日期" name="start_time">
+        <t-date-picker v-model="formData.start_time" mode="date" :style="{ width: '480px' }" clearable />
+      </t-form-item>
+      <t-form-item v-if="formData.bill_type == 'A'" label="结束日期" name="end_time">
+        <t-date-picker v-model="formData.end_time" mode="date" :style="{ width: '480px' }" clearable />
+      </t-form-item>
+      <t-form-item v-if="formData.bill_type != 'B'" label="上期电表度数" name="electricity_meter_last_month">
+        <t-input-number v-model="formData.electricity_meter_last_month" :style="{ width: '480px' }" theme="normal"
+          placeholder="请输入" />
+      </t-form-item>
+      <t-form-item v-if="formData.bill_type != 'B'" label="上期水表度数" name="water_meter_last_month">
+        <t-input-number v-model="formData.water_meter_last_month" :style="{ width: '480px' }" theme="normal"
+          placeholder="请输入" />
+      </t-form-item>
+      <t-form-item label="抄表日期" name="meter_reading_time">
+        <t-date-picker v-model="formData.meter_reading_time" mode="date" :style="{ width: '480px' }" clearable />
+      </t-form-item>
+      <t-form-item v-if="formData.bill_type != 'B'" label="本期电表度数" name="electricity_meter_this_month">
+        <t-input-number v-model="formData.electricity_meter_this_month" :style="{ width: '480px' }" theme="normal"
+          placeholder="请输入" />
+      </t-form-item>
+      <t-form-item v-if="formData.bill_type != 'B'" label="本期水表度数" name="water_meter_this_month">
+        <t-input-number v-model="formData.water_meter_this_month" :style="{ width: '480px' }" theme="normal"
+          placeholder="请输入" />
+      </t-form-item>
+      <t-form-item label="房租" name="rental">
+        <t-input-number theme="normal" v-model="formData.rental" :style="{ width: '480px' }" placeholder="请输入" />
+      </t-form-item>
+      <t-form-item v-if="formData.bill_type != 'B'" label="押金" name="deposit">
+        <t-input-number theme="normal" v-model="formData.deposit" :style="{ width: '480px' }" placeholder="请输入" />
+      </t-form-item>
+      <template v-if="formData.bill_type != 'B'" v-for="(value, index) in label_array" :key="index">
+        <t-form-item v-if="value.column_name " :label="value.column_name" :name="value.column_id">
+          <t-input-number v-model="formData[value.column_id]" :style="{ width: '480px' }" theme="normal"
+            placeholder="请输入" />
+        </t-form-item>
+      </template>
+      <t-form-item label="备注" name="note">
+        <t-textarea v-model="formData.note" :style="{ width: '480px' }" placeholder="请输入" autosize />
+      </t-form-item>
+      <t-form-item>
+        <t-button variant="outline" @click="handleCancel" style="margin-right: 5px">取消</t-button>
+        <t-button theme="primary" type="submit" :disabled="doubleClicking" style="margin-right: 5px">保存</t-button>
+      </t-form-item>
+    </t-form>
+  </div>
+</t-card>
+
+{/block}
+
+{block name="script"}
+<script>
+  const data = {
+    formData: {},
+    rules: {
+      start_time: [{ required: true, message: "必填", trigger: "blur" }],
+      end_time: [{ required: true, message: "必填", trigger: "blur" }],
+      electricity_meter_last_month: [{ required: true, message: "必填", trigger: "blur" }],
+      water_meter_last_month: [{ required: true, message: "必填", trigger: "blur" }],
+      meter_reading_time: [{ required: true, message: "必填", trigger: "blur" }],
+      electricity_meter_this_month: [{ required: true, message: "必填", trigger: "blur" }],
+      water_meter_this_month: [{ required: true, message: "必填", trigger: "blur" }],
+      rental: [{ required: true, message: "必填", trigger: "blur" }],
+      deposit: [{ required: true, message: "必填", trigger: "blur" }],
+      daily_rent: [{ required: true, message: "必填", trigger: "blur" }],
+      ratio: [{ required: true, message: "必填", trigger: "blur" }],
+      fees1: [{ required: true, message: "必填", trigger: "blur" }],
+      fees2: [{ required: true, message: "必填", trigger: "blur" }],
+      fees3: [{ required: true, message: "必填", trigger: "blur" }],
+      fees4: [{ required: true, message: "必填", trigger: "blur" }],
+    },
+    // 避免重复点击
+    doubleClicking: false,
+    header: '房间',
+    ymd: [],
+    // 账单类型标签
+    bill_type_array: [],
+    // label[]
+    label_array: [],
+  };
+
+  function f() {
+    return {
+      init: function () {
+        axiosGet("{:url('admin.parameter/queryParameter')}", { parameter: 'ymd' }).then(response => {
+          if (response.code == 1) {
+            this.ymd = response.data;
+          } else {
+            console.error('年月日参数获取失败');
+          }
+        });
+        axiosGet("{:url('admin.parameter/queryParameter')}", { parameter: 'bill_type' }).then(response => {
+          if (response.code == 1) {
+            this.bill_type_array = response.data;
+          } else {
+            console.error('账单类型参数获取失败');
+          }
+        });
+        axiosGet("{:url('house.fee/queryFee')}", { 'house_property_id': '{$house_property_id}', 'type': 'F' }).then(response => {
+          if (response.code == 1) {
+            this.label_array = response.data;
+          } else {
+            console.error('label参数获取失败');
+          }
+        });
+        axiosGet("{:url('queryUncollectedEdit')}", { id: '{$id}' }).then(response => {
+          if (response.code == 1) {
+            this.formData = response.data;
+            this.header = response.msg;
+          } else {
+            this.$message.error('系统出错');
+          }
+        });
+      },
+      handleCancel() {
+        history.back();
+      },
+      handleSave() {
+        this.doubleClicking = true;
+        this.$refs.form.validate().then((valid) => {
+          if (valid == true) {
+            axiosPost("{:url('runSave')}", this.formData).then(response => {
+              if (response.state == 'success') {
+                this.$message.success(response.msg);
+                location.href = "{:url('index')}";
+              } else if (response.state == 'warning') {
+                this.$message.warning(response.msg);
+              } else {
+                this.$message.error(response.msg);
+              }
+            }).finally(() => {
+              this.doubleClicking = false;
+            });
+          } else {
+            this.doubleClicking = false;
+          }
+        });
+      },
+    }
+  }
+</script>
+{/block}

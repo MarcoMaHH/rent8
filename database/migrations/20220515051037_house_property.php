@@ -37,37 +37,42 @@ class HouseProperty extends Migrator
             'integer',
             ['null' => false, 'default' => 0,  'comment' => '用户id']
         )
-        ->addColumn(
-            'name',
-            'string',
-            ['limit' => 32, 'null' => false, 'default' => '', 'comment' => '房产名']
-        )
-        ->addColumn(
-            'address',
-            'string',
-            ['limit' => 255, 'comment' => '详细地址']
-        )
-        ->addColumn(
-            'landlord',
-            'string',
-            ['limit' => 32, 'comment' => '房东名称']
-        )
-        ->addColumn(
-            'phone',
-            'string',
-            ['limit' => 32, 'comment' => '房东手机']
-        )
-        ->addColumn(
-            'id_card',
-            'string',
-            ['limit' => 32, 'comment' => '房东身份证']
-        )
-        ->addColumn(
-            'firstly',
-            'string',
-            ['null' => false, 'default' => 'N', 'comment' => '是否默认']
-        )
-        ->addTimestamps()
-        ->create();
+            ->addColumn(
+                'name',
+                'string',
+                ['limit' => 8, 'null' => false, 'default' => '', 'comment' => '房产名']
+            )
+            ->addColumn(
+                'name_show',
+                'string',
+                ['limit' => 32, 'null' => false, 'default' => '', 'comment' => '房产名(展示)']
+            )
+            ->addColumn(
+                'address',
+                'string',
+                ['limit' => 255, 'comment' => '详细地址']
+            )
+            ->addColumn(
+                'landlord',
+                'string',
+                ['limit' => 32, 'comment' => '房东id']
+            )
+            ->addColumn(
+                'phone',
+                'string',
+                ['limit' => 32, 'comment' => '房东手机']
+            )
+            ->addColumn(
+                'id_card',
+                'string',
+                ['limit' => 32, 'comment' => '房东身份证']
+            )
+            ->addColumn(
+                'default',
+                'string',
+                ['null' => false, 'default' => 'N', 'comment' => '是否默认']
+            )
+            ->addTimestamps()
+            ->create();
     }
 }

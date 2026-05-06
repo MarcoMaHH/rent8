@@ -3,9 +3,46 @@
 namespace app\admin\controller;
 
 use app\admin\model\AdminSubscribe as SubscribeModel;
+use Exception;
+
+// adminSubscribe类型
+//类型-续约
+define('TYPE_RENEWAL', 'A');
+//类型-收租
+define('TYPE_RENT', 'B');
 
 class Subscribe
 {
+    public function link()
+    {
+        $maxRetries = 5;
+        $retryCount = 0;
+
+        while ($retryCount < $maxRetries) {
+            try {
+                // 替换 ping() 方法为简单的数据库查询
+                $result = \think\facade\Db::query('SELECT 1');
+                if ($result) {
+                    file_put_contents('php://stdout', 'subscribe link success' . PHP_EOL);
+                    return;
+                }
+            } catch (Exception $e) {
+                $retryCount++;
+                // 添加带延时的重连机制
+                sleep(pow(2, $retryCount));
+                \think\facade\Db::reconnect();
+            }
+        }
+        // 替换原来的异常抛出为结构化日志输出
+        $logMessage = json_encode([
+            'severity' => 'CRITICAL',
+            'message' => "数据库连接失败: 已尝试 {$maxRetries} 次重连",
+            'timestamp' => date('c')
+        ]);
+        file_put_contents('php://stdout', $logMessage . PHP_EOL);
+        return;
+    }
+
     private function getAccessToken()
     {
         $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" . env('WECHAT_APP_ID') . "&secret=" . env('WECHAT_APP_SECRET');
@@ -17,10 +54,11 @@ class Subscribe
     public function execute()
     {
         // 微信小程序订阅消息模板ID
-        $templateId = env('WECHAT_TEMPLATE_ID');
+        $rentTemplate = env('WECHAT_RENT_TEMPLATE');
+        $renewalTemplate = env('WECHAT_RENEWAL_TEMPLATE');
         $accessToken = $this->getAccessToken();
         $subscribeModel = new SubscribeModel(); // 实例化模型
-        $subscribes = $subscribeModel->where('time2', '<=', date('Y-m-d 23:59:59'))->select();
+        $subscribes = $subscribeModel->where('time', '<=', date('Y-m-d 23:59:59'))->select();
 
         if (empty($subscribes)) {
             return json(['message' => 'No subscribes to process']);
@@ -40,13 +78,18 @@ class Subscribe
         foreach ($subscribes as $value) {
             $postData = [
                 'touser' => $value['open_id'],
-                'template_id' => $templateId,
                 'page' => '/pages/index/index',
-                'data' => [
-                    'thing1' => ['value' => $value['thing1']],
-                    'time2' => ['value' => substr($value['time2'], 0, 10)],
-                ]
             ];
+            if ($value['subscribe_type'] == TYPE_RENEWAL) {
+                $postData['template_id'] = $renewalTemplate;
+                $postData['data']['thing2'] = ['value' => $value['thing']];
+                $postData['data']['time5'] = ['value' => substr($value['time'], 0, 10)];
+            } else if ($value['subscribe_type'] == TYPE_RENT) {
+                $postData['template_id'] = $rentTemplate;
+                $postData['data']['thing1'] = ['value' => $value['thing']];
+                $postData['data']['time2'] = ['value' => substr($value['time'], 0, 10)];
+                $postData['data']['amount4'] = ['value' => $value['amount']];
+            }
 
             $postJson = json_encode($postData);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $postJson);

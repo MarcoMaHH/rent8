@@ -1,0 +1,185 @@
+{extend name="common/layout" /}
+{block name="main"}
+<t-card class="list-card-container" :bordered="false">
+  <div style="display: flex; justify-content: center; font-size: 1.5em; margin-bottom: 20px;">{{header}}</div>
+  <div style="display: flex; justify-content: center; align-items: center; height: 100%; ">
+    <t-form v-show="activeForm === 0" ref="addMoreForm1" :data="formData" :rules="rules" :label-width="200"
+      @submit="handleNext">
+      <t-form-item label="房间数量" name="quantity">
+        <t-input-number v-model="formData.quantity" :style="{ width: '480px' }" :min="1" :step="1" :max="10" suffix="间"
+          placeholder="请输入" />
+      </t-form-item>
+      <t-form-item label="收租周期" name="cycle">
+        <t-input-number v-model="formData.cycle" theme="normal" :max="60" :min="1" :step="1" :style="{ width: '270px' }"
+          placeholder="请输入">
+        </t-input-number>
+        <div style="width: 20px;"></div>
+        <t-radio-group v-model="formData.cycle_type">
+          <t-radio v-for="(item, index) in ymd" :key="index" :value="item.value">{{item.label}}</t-radio>
+        </t-radio-group>
+      </t-form-item>
+      <t-form-item label="房租" name="rental">
+        <t-input-number theme="normal" v-model="formData.rental" :style="{ width: '480px' }" placeholder="请输入" />
+      </t-form-item>
+      <t-form-item label="押金" name="deposit">
+        <t-input-number theme="normal" v-model="formData.deposit" :style="{ width: '480px' }" placeholder="请输入" />
+      </t-form-item>
+      <t-form-item label="逾期日租金" name="daily_rent">
+        <t-input-number v-model="formData.daily_rent" :style="{ width: '480px' }" theme="normal" placeholder="请输入" />
+      </t-form-item>
+      <t-form-item label="水费单价" name="water_price">
+        <t-input-number theme="normal" v-model="formData.water_price" :style="{ width: '480px' }" placeholder="请输入" />
+      </t-form-item>
+      <t-form-item label="电费单价" name="electricity_price">
+        <t-input-number theme="normal" v-model="formData.electricity_price" :style="{ width: '480px' }"
+          placeholder="请输入" />
+      </t-form-item>
+      <template v-for="(item, index) in feeData" :key="index">
+        <t-form-item v-if="item.column_name" :label="item.column_name" :name="item.column_id"
+          :rules="rules[item.column_id]">
+          <t-input-number theme="normal" v-model="formData[item.column_id]" :style="{ width: '480px' }"
+            placeholder="请输入" />
+        </t-form-item>
+      </template>
+      <t-form-item label="设备" name="equipment">
+        <t-textarea v-model="formData.equipment" :style="{ width: '480px' }" placeholder="请输入" autosize />
+      </t-form-item>
+      <t-form-item>
+        <t-button variant="outline" @click="handleCancel" style="margin-right: 5px">取消</t-button>
+        <t-button theme="primary" type="submit">下一步</t-button>
+      </t-form-item>
+    </t-form>
+    <!-- 第2步 -->
+    <t-form v-show="activeForm === 1" ref="addMoreForm2" :data="numberData" :rules="rules" :label-width="200"
+      @submit="handleSaveMore">
+      <t-form-item v-for="(item, index) in formData.quantity" :key="index" :label="'房间名' + (index + 1)"
+        :name="'name' + index" :prop="'name' + index">
+        <t-input v-model="numberData['name' + index]" :style="{ width: '480px' }" placeholder="请输入" />
+      </t-form-item>
+
+      <t-form-item style="float: right">
+        <t-button variant="outline" @click="handleBack" style="margin-right: 5px">上一步</t-button>
+        <t-button theme="primary" type="submit" :disabled="doubleClicking">保存</t-button>
+      </t-form-item>
+    </t-form>
+  </div>
+</t-card>
+{/block}
+
+{block name="script"}
+<script>
+  const data = {
+    formData: {},
+    rules: {
+      quantity: [
+        { required: true, message: "必填", trigger: "blur" },
+        { min: 1, message: "最小值为1", type: "error", trigger: "blur" },
+        { max: 10, message: "最大值为10", type: "error", trigger: "blur" },
+      ],
+      cycle: [
+        { required: true, message: "必填", trigger: "blur" },
+        { min: 1, message: '输入字数应在1到60之间', type: 'error', trigger: 'blur' },
+        { max: 60, message: '输入字数应在1到60之间', type: 'error', trigger: 'blur' },
+      ],
+      rental: [{ required: true, message: "必填", trigger: "blur" }],
+      deposit: [{ required: true, message: "必填", trigger: "blur" }],
+      daily_rent: [{ required: true, message: "必填", trigger: "blur" }],
+      water_price: [{ required: true, message: "必填", trigger: "blur" }],
+      electricity_price: [{ required: true, message: "必填", trigger: "blur" }],
+      fees1: [{ required: true, message: "必填", trigger: "blur" }],
+      fees2: [{ required: true, message: "必填", trigger: "blur" }],
+      fees3: [{ required: true, message: "必填", trigger: "blur" }],
+      fees4: [{ required: true, message: "必填", trigger: "blur" }],
+      // 使用循环动态生成name0到name10的规则，若未来需要更多，只需调整循环次数
+      ...Array.from({ length: 10 }, (_, i) => ({
+        [`name${i}`]: [{ required: true, message: "必填", trigger: "blur" }],
+      })).reduce((acc, curr) => ({ ...acc, ...curr }), {}),
+    },
+    // 避免重复点击
+    doubleClicking: false,
+    header: '新增房间',
+    // 批量新增
+    activeForm: 0,
+    numberData: {},
+    // 费用名称枚举值数组
+    feeData: [],
+    // 收租周期枚举值数组-年月日
+    ymd: [],
+  };
+
+  function f() {
+    return {
+      init: function () {
+        axiosGet("{:url('admin.parameter/queryParameter')}", { parameter: 'ymd' }).then(response => {
+          if (response.code == 1) {
+            this.ymd = response.data;
+          } else {
+            console.error('年月日参数获取失败');
+          }
+        });
+        axiosGet("{:url('queryNumberEdit')}", { house_property_id: '{$house_property_id}' }).then(response => {
+          if (response.code == 1) {
+            this.formData = response.data;
+            this.formData["quantity"] = 1;
+            this.header = response.msg;
+          } else {
+            this.$message.error('系统出错');
+          }
+        });
+        axiosGet("{:url('house.fee/queryFee')}").then(response => {
+          if (response.code == 1) {
+            this.feeData = response.data;
+          } else {
+            console.error('费用名称参数获取失败');
+          }
+        });
+      },
+      handleCancel() {
+        history.back();
+      },
+      handleNext() {
+        this.$refs.addMoreForm1.validate().then((valid) => {
+          if (valid == true) {
+            for (let i = 0; i < this.formData.quantity; i++) {
+              this.numberData["name" + i] = "";
+            }
+            this.activeForm = 1;
+          }
+        });
+      },
+      handleBack() {
+        this.activeForm = 0;
+      },
+
+      // 批量新增-保存
+      handleSaveMore() {
+        this.doubleClicking = true;
+        this.$refs.addMoreForm2.validate().then((valid) => {
+          if (valid == true) {
+            let sendData = [];
+            for (let i = 0; i < this.formData.quantity; i++) {
+              let roomData = { ...this.formData };
+              roomData["name"] = this.numberData["name" + i];
+              sendData.push(roomData);
+            }
+            axiosPost("{:url('runIncrease')}", sendData).then((response) => {
+              if (response.state == "success") {
+                this.$message.success(response.msg);
+                location.href = "{:url('index')}";
+              } else if (response.state == "warning") {
+                this.$message.warning(response.msg);
+              } else {
+                this.$message.error(response.msg);
+              }
+            }).finally(() => {
+              this.doubleClicking = false;
+            });
+          } else {
+            this.doubleClicking = false;
+          }
+        });
+      },
+    }
+  }
+</script>
+{/block}

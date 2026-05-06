@@ -1,0 +1,73 @@
+<!-- 收据页面 -->
+<t-dialog v-model:visible="receiptVisible" :width="630" :footer="false" :header="false" :close-Btn="false" top="50px">
+  <!-- 表单内容 -->
+  <div id="printJS-form333" class="setBorder">
+    <div class="setHeader">房 租 收 据 单</div>
+    <div class="title">
+      <div class="box">用户:{{ formData.property_name_show + '-' + formData.number_name }}
+      </div>
+    </div>
+    <div class="title">
+      <div class="box1" v-if="formData.end_time">租期:{{ formData.start_time + '至' + formData.end_time }}</div>
+      <div class="box" v-else>退房日期:{{ formData.start_time}}</div>
+      <div class="box3">抄表日期:{{ formData.meter_reading_time }}</div>
+    </div>
+    <table class="setTable">
+      <tr>
+        <th class="setTh">表类</th>
+        <th class="setTh">表度数</th>
+        <th class="setTh">用量</th>
+        <th class="setTh">单价</th>
+        <th class="setTh">金额</th>
+      </tr>
+      <tr>
+        <td class="setTd">电费</td>
+        <td class="setTd">{{ formData.electricity_meter_this_month + '-' + formData.electricity_meter_last_month }}
+        </td>
+        <td class="setTd">{{ formData.electricity_consumption }}度</td>
+        <td class="setTd">{{ formData.electricity_price }}元/度</td>
+        <td class="setTd">{{ formData.electricity }}元</td>
+      </tr>
+      <tr>
+        <td class="setTd">水费</td>
+        <td class="setTd">{{ formData.water_meter_this_month + '-' + formData.water_meter_last_month }}</td>
+        <td class="setTd">{{ formData.water_consumption }}吨</td>
+        <td class="setTd">{{ formData.water_price }}元/吨</td>
+        <td class="setTd">{{ formData.water }}元</td>
+      </tr>
+    </table>
+    <div class="container">
+      <div class="box" v-if="titleItem[0]">{{titleItem[0].label}}:{{titleItem[0].value}}元</div>
+      <div class="box" v-else></div>
+      <div class="box" v-if="titleItem[1]">{{titleItem[1].label}}:{{titleItem[1].value}}元</div>
+      <div class="box" v-else></div>
+      <div class="box" v-if="titleItem[2]">{{titleItem[2].label}}:{{titleItem[2].value}}元</div>
+      <div class="box" v-else></div>
+    </div>
+    <div class="container" v-if="titleItem[3]">
+      <div class="box" v-if="titleItem[3]">{{titleItem[3].label}}:{{titleItem[3].value}}元</div>
+      <div class="box" v-else></div>
+      <div class="box" v-if="titleItem[4]">{{titleItem[4].label}}:{{titleItem[4].value}}元</div>
+      <div class="box" v-else></div>
+      <div class="box" v-if="titleItem[5]">{{titleItem[5].label}}:{{titleItem[5].value}}元</div>
+      <div class="box" v-else></div>
+    </div>
+    <div class="container">合计人民币(大写)：{{ formData.total_money2 }} (¥：{{ formData.total_money }} 元)</div>
+    <div class="container">备注：{{ formData.note }}</div>
+  </div>
+  <div style="padding: 8px;">
+    <div style="float: right;">
+      <t-popup placement="bottom">
+        <t-button style="margin-right: 10px;">历史水电</t-button>
+        <template #content>
+          <div style="width: 380px;">
+            <t-table :data="historyData" :columns="historyColumns" row-key="id" vertical-align="top" :bordered="true"
+              size="small">
+            </t-table>
+          </div>
+        </template>
+      </t-popup>
+      <t-button @click="handlePrintReceipt">打印</t-button>
+    </div>
+  </div>
+</t-dialog>

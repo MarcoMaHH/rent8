@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>rent8-最常用出租屋管理系统</title>
+  <title>rent82-最常用出租屋管理系统</title>
   <!-- 导入 Vue3 -->
   <script src="__CDN__/vue/3.4.19/vue.global.js"></script>
   <!-- 引入Vue Router -->
@@ -12,8 +12,8 @@
   <!-- axios -->
   <script src="__STATIC__/js/axios.min.js"></script>
   <!-- 导入 TDesign 组件库 -->
-  <script src="__CDN__/tdesign/1.9.9/tdesign.min.js"></script>
-  <link rel="stylesheet" href="__CDN__/tdesign/1.9.9/tdesign.min.css" />
+  <script src="__CDN__/tdesign/1.15.2/tdesign.min.js"></script>
+  <link rel="stylesheet" href="__CDN__/tdesign/1.15.2/tdesign.min.css" />
   <!-- 导入 TDesign icon -->
   <script src="__CDN__/tdesign-icons/0.2.2/index.js"></script>
   <link rel="stylesheet" href="__CDN__/tdesign-icons/0.2.2/index.css" />
@@ -125,7 +125,7 @@
               this.houseList = response.data;
               this.houseDef = 0;
               for (let index = 0; index < this.houseList.length; index++) {
-                if (this.houseList[index].firstly == 'Y') {
+                if (this.houseList[index].default == 'Y') {
                   this.houseDef = this.houseList[index].id;
                   this.houseName = this.houseList[index].name;
                   this.buttonDisabled = false;
@@ -151,10 +151,10 @@
           });
         },
         navToGitee: function () {
-          window.open('https://gitee.com/MarcoMaHH/rent8');
+          window.open('https://gitee.com/MarcoMaHH/rent82');
         },
         navToHelper: function () {
-          window.open('https://mp.weixin.qq.com/s/zHunfQ6ndL_IXOCl38mwXQ');
+          window.open('https://mp.weixin.qq.com/s/1yjQTSsLazYJ7D2FBYu5MA');
         },
       }
     }

@@ -1,0 +1,65 @@
+{extend name="common/layout" /}
+{block name="main"}
+<t-card class="list-card-container" :bordered="false">
+  <div style="display: flex; justify-content: center; font-size: 1.5em; margin-bottom: 20px;">{{header}}</div>
+  <div style="display: flex; flex-direction: column; align-items: center; height: 100%;">
+    <t-upload ref="uploadRef1" v-model="fileList" :data="uploadData" :max="8" multiple :headers="upheaders"
+      action="upload" theme="image" accept="image/*" :auto-upload="true" @remove="removePhoto"
+      @success="changePhoto"></t-upload>
+    <div style="margin-top: 20px;"> <!-- 可选，增加一些顶部间距 -->
+      <t-button variant="outline" @click="handleCancel">返回</t-button>
+    </div>
+  </div>
+</t-card>
+{/block}
+
+{block name="script"}
+<script>
+  const data = {
+    upheaders: { 'X-CSRF-TOKEN': '{$layout_token}' },
+    uploadData: { tenant_contract_id: '{$id}' },
+    fileList: [],
+    header: '合同照片',
+  };
+
+  function f() {
+    return {
+      init: function () {
+        this.queryPhoto();
+      },
+      handleCancel() {
+        history.back();
+      },
+      queryPhoto() {
+        axiosGet("{:url('queryPhoto')}", { id: '{$id}' }).then(response => {
+          if (response.code == 1) {
+            this.fileList = response.data;
+            this.header = response.msg;
+          } else {
+            that.$message.error('系统出错了!!!');
+          }
+        });
+      },
+      // 证件照片
+      removePhoto(file) {
+        axiosPost("{:url('deletePhoto')}", file.file).then(response => {
+          if (!response.state == 'success') {
+            this.$message({
+              message: response.msg, type: response.state
+            });
+          }
+        });
+      },
+      changePhoto(res) {
+        this.queryPhoto();
+        let code = res.response[0].code;
+        if (code == 1) {
+          this.$message.success('上传成功');
+        } else {
+          this.$message.error('上传失败');
+        }
+      },
+    }
+  }
+</script>
+{/block}

@@ -1,0 +1,95 @@
+{extend name="common/layout" /}
+{block name="main"}
+<t-card class="list-card-container" :bordered="false">
+  <div style="display: flex; justify-content: center; font-size: 1.5em; margin-bottom: 20px;">{{header}}</div>
+  <div style="display: flex; justify-content: center; align-items: center; height: 100%; ">
+    <t-form ref="propertyForm" :data="formData" :rules="rules" :label-width="100" @submit="handleSave">
+      <t-form-item label="房产名" name="name">
+        <t-input v-model="formData.name" :style="{ width: '480px' }" placeholder="请输入" @change="onNameChange" />
+      </t-form-item>
+      <t-form-item label="房产展示名" name="name_show">
+        <t-input v-model="formData.name_show" :style="{ width: '480px' }" placeholder="请输入（PS:用于收据单展示）" />
+      </t-form-item>
+      <t-form-item label="详细地址" name="address">
+        <t-input v-model="formData.address" :style="{ width: '480px' }" placeholder="请输入（PS:用于合同展示）" />
+      </t-form-item>
+      <t-form-item label="房东名称" name="landlord">
+        <t-input v-model="formData.landlord" :style="{ width: '480px' }" placeholder="请输入（PS:用于合同展示）" />
+      </t-form-item>
+      <t-form-item label="房东手机" name="phone">
+        <t-input-number v-model="formData.phone" :style="{ width: '480px' }" theme="normal"
+          placeholder="请输入（PS:用于合同展示）" />
+      </t-form-item>
+      <t-form-item label="房东身份证" name="id_card">
+        <t-input v-model="formData.id_card" :style="{ width: '480px' }" theme="normal" placeholder="请输入（PS:用于合同展示）" />
+      </t-form-item>
+      <t-form-item>
+        <t-button variant="outline" @click="handleCancel" style="margin-right: 5px;">取消</t-button>
+        <t-button theme="primary" type="submit" :disabled="doubleClicking">保存</t-button>
+      </t-form-item>
+    </t-form>
+  </div>
+</t-card>
+{/block}
+
+{block name="script"}
+<script>
+  const data = {
+    formData: {},
+    rules: {
+      name: [
+        { required: true, message: '房产名不能为空', trigger: 'blur' },
+        { max: 10, message: '房产名符长度超出', trigger: 'blur' },
+      ],
+      name_show: [{ required: true, message: '房产名不能为空', trigger: 'blur' }],
+      phone: [{ telnumber: true, message: '请输入正确的手机号码', trigger: 'blur' }],
+      id_card: [{ idcard: true, message: '请输入正确的身份证号码', trigger: 'blur' }],
+    },
+    // 避免重复点击
+    doubleClicking: false,
+    header: '房产',
+  };
+
+  function f() {
+    return {
+      init: function () {
+        axiosGet("{:url('queryPropertyEdit')}", { id: '{$id}' }).then(response => {
+          if (response.code == 1) {
+            this.formData = response.data;
+            this.header = this.formData.id ? '修改房产' : '新增房产';
+          } else {
+            this.$message.error('系统出错了!!!');
+          }
+        });
+      },
+      handleCancel() {
+        history.back();
+      },
+      handleSave() {
+        this.doubleClicking = true;
+        this.$refs.propertyForm.validate().then((valid) => {
+          if (valid == true) {
+            axiosPost("{:url('runSave')}", this.formData).then(response => {
+              if (response.state == 'success') {
+                this.$message.success(response.msg);
+                location.href = "{:url('index')}";
+              } else if (response.state == 'warning') {
+                this.$message.warning(response.msg);
+              } else {
+                this.$message.error(response.msg);
+              }
+            }).finally(() => {
+              this.doubleClicking = false;
+            });
+          } else {
+            this.doubleClicking = false;
+          }
+        });
+      },
+      onNameChange(val) {
+        this.formData.name_show = val;
+      },
+    }
+  }
+</script>
+{/block}

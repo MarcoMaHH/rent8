@@ -33,8 +33,14 @@ class AdminSubscribe extends Migrator
             ['engine' => 'InnoDB', 'collation' => 'utf8mb4_general_ci']
         );
         $table->addColumn('open_id', 'string', ['limit' => 32, 'null' => false, 'comment' => '微信小程序openID'])
-            ->addColumn('thing1', 'string', ['limit' => 32, 'null' => false, 'comment' => '房产名称'])
-            ->addColumn('time2', 'timestamp', ['null' => false, 'comment' => '收租日期'])
+            ->addColumn('thing', 'string', ['limit' => 32, 'null' => false, 'comment' => '名称'])
+            ->addColumn('time', 'timestamp', ['null' => false, 'comment' => '日期'])
+            ->addColumn('amount', 'integer', ['null' => false, 'default' => 0, 'comment' => '金额'])
+            ->addColumn(
+                'subscribe_type',
+                'string',
+                ['limit' => 4, 'null' => false, 'default' => 'rent', 'comment' => '订阅消息类型']
+            )
             ->addTimestamps()
             ->create();
     }

@@ -1,0 +1,222 @@
+{extend name="common/layout" /}
+{block name="main"}
+<t-card class="list-card-container" :bordered="false">
+  <div style="margin-bottom: 10px;">
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+      <div style="flex: 1; display: flex; gap: 5px; max-width: 300px;">
+        <t-input v-model="searchValue" placeholder="请输入房号、姓名、身份证号码、联系电话" clearable @enter="handleSearch"
+          style="flex:1" />
+      </div>
+      <t-button theme="primary" @click="handleSearch">
+        <template #icon><t-icon name="search" /></template>
+      </t-button>
+
+      <div style="margin-left: auto;">
+        <t-button theme="primary" @click="handleFilter" style="margin-right: 10px;">
+          <template #icon><t-icon name="unfold-more" /></template> 详细信息
+        </t-button>
+        <t-button theme="primary" @click="handleExport" style="margin-left: auto;">
+          <template #icon><t-icon name="file-export" /></template>
+          导出列表
+        </t-button>
+      </div>
+    </div>
+  </div>
+
+  <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
+    active-row-type="single" :hover="true" :loading="tableLoading" :pagination="pagination">
+    <template #op="slotProps">
+      <t-space>
+        <t-button size="small" @click="handleEdit(slotProps.row)">修改</t-button>
+        <t-button size="small" theme="warning" @click="handlePhoto(slotProps.row)">证件照片</t-button>
+        <t-button size="small" v-if="slotProps.row.checkout_mark === 'N' && slotProps.row.pid === 0" theme="warning"
+          @click="handleAdd(slotProps.row)">新增同住人员</t-button>
+        <t-popconfirm v-if="slotProps.row.checkout_mark === 'Y' || slotProps.row.pid !== 0" theme="danger"
+          content="确认删除?" @confirm="handleDelete(slotProps.row)" :disabled="doubleClicking">
+          <t-button theme="danger" size="small">删除</t-button>
+        </t-popconfirm>
+      </t-space>
+    </template>
+  </t-table>
+</t-card>
+
+<!-- 新增FORM -->
+<t-dialog v-model:visible="photoVisible" :header="formHeader" :width="680" :footer="false" top="30px">
+  <t-upload ref="uploadRef1" v-model="fileList" :data="uploadData" :max="8" multiple :headers="upheaders"
+    action="upload" theme="image" accept="image/*" :auto-upload="true" @remove="removePhoto"
+    @success="changePhoto"></t-upload>
+</t-dialog>
+{/block}
+
+{block name="script"}
+<script>
+  const data = {
+    tableData: [],
+    tableLoading: false,
+    columns: [
+      { title: '房产名', colKey: 'property_name', width: 80, fixed: 'left' },
+      { title: '房间名', colKey: 'number_name', width: 75, fixed: 'left' },
+      { title: '姓名', colKey: 'name', width: 70, fixed: 'left' },
+      { title: '身份证号码', colKey: 'id_card_number', width: 110, ellipsis: true },
+      { title: '联系电话', colKey: 'phone', width: 80 },
+      { title: '备注', colKey: 'note', width: 80, ellipsis: true },
+      { title: '入住日期', colKey: 'checkin_date', width: 85, fixed: 'right' },
+      { title: '离开日期', colKey: 'leave_date', width: 85, fixed: 'right' },
+      { title: '操作', colKey: 'op', width: 210, fixed: 'right', },
+    ],
+    // 分页
+    pagination: {
+      defaultPageSize: 10,
+      total: 10,
+      defaultCurrent: 1,
+    },
+    dialogVisible: false,
+    formData: {},
+    formHeader: '',
+    rules: {
+      house_number_id: [{ required: true, message: '房间名不能为空', trigger: 'change' }],
+      name: [{ required: true, message: '必填', trigger: 'blur' }],
+      checkin_time: [{ required: true, message: '必填', trigger: 'blur' }],
+      phone: [{ telnumber: true, message: '格式错误', trigger: 'blur' }],
+      id_card_number: [{ idcard: true, message: '格式错误', trigger: 'blur' }],
+    },
+    // 证件照片
+    photoVisible: false,
+    upheaders: { 'X-CSRF-TOKEN': '{$layout_token}' },
+    uploadData: {},
+    fileList: [],
+    selectId: 0,
+    // 搜索框
+    searchValue: '',
+    // 避免重复点击
+    doubleClicking: false,
+    // 新增租客
+    numberArr: [],
+    // 详细信息
+    cloumnsFlag: false,
+    columns1: [
+      { title: '房产名', colKey: 'property_name', width: 80, fixed: 'left' },
+      { title: '房间名', colKey: 'number_name', width: 75, fixed: 'left' },
+      { title: '姓名', colKey: 'name', width: 70, fixed: 'left' },
+      { title: '身份证号码', colKey: 'id_card_number', width: 110, ellipsis: true },
+      { title: '联系电话', colKey: 'phone', width: 80 },
+      { title: '备注', colKey: 'note', width: 80, ellipsis: true },
+      { title: '入住日期', colKey: 'checkin_date', width: 85, fixed: 'right' },
+      { title: '离开日期', colKey: 'leave_date', width: 85, fixed: 'right' },
+      { title: '操作', colKey: 'op', width: 210, fixed: 'right', },
+    ],
+    columns2: [
+      { title: '房产名', colKey: 'property_name', width: 80, fixed: 'left' },
+      { title: '房间名', colKey: 'number_name', width: 75, fixed: 'left' },
+      { title: '姓名', colKey: 'name', width: 70, fixed: 'left' },
+      { title: '性别', colKey: 'sex_name', width: 35, fixed: 'left' },
+      { title: '年龄', colKey: 'age', width: 35, fixed: 'left' },
+      { title: '身份证号码', colKey: 'id_card_number', width: 110, ellipsis: true },
+      { title: '联系电话', colKey: 'phone', width: 80 },
+      { title: '户口所在地', colKey: 'native_place', width: 80, ellipsis: true },
+      { title: '现工作单位', colKey: 'work_units', width: 80, ellipsis: true },
+      { title: '备注', colKey: 'note', width: 80, ellipsis: true },
+      { title: '入住日期', colKey: 'checkin_date', width: 85, fixed: 'right' },
+      { title: '离开日期', colKey: 'leave_date', width: 85, fixed: 'right' },
+      { title: '操作', colKey: 'op', width: 210, fixed: 'right', },
+    ],
+  };
+  function f() {
+    return {
+      init: function () {
+        this.queryTable();
+      },
+      queryTable: function () {
+        this.tableLoading = true;
+        axiosGet("{:url('queryTenant')}", { 'parameter': this.searchValue }).then(response => {
+          if (response.code == 1) {
+            this.tableData = response.data;
+            this.pagination.total = response.count;
+          } else {
+            this.$message.error('系统出错了!!!');
+          }
+          this.tableLoading = false;
+        });
+      },
+      handleEdit(row) {
+        location.href = "{:url('tenant.message/save')}?id=" + row.id;
+      },
+      // 证件照片
+      handlePhoto(row) {
+        this.selectId = row.id;
+        this.queryPhoto();
+        this.formHeader = row.property_name + '-' + row.number_name + '-' + row.name;
+        this.uploadData = { way: row.id, house_property_id: row.house_property_id }
+        this.photoVisible = true;
+      },
+      queryPhoto() {
+        axiosGet("{:url('queryPhoto')}", { id: this.selectId }).then(response => {
+          if (response.code == 1) {
+            this.fileList = response.data;
+          } else {
+            that.$message.error('系统出错了!!!');
+          }
+        });
+      },
+      removePhoto(file) {
+        axiosPost("{:url('deletePhoto')}", file.file).then(response => {
+          if (!response.state == 'success') {
+            this.$message({
+              message: response.msg, type: response.state
+            });
+          }
+        });
+      },
+      changePhoto(res) {
+        this.queryPhoto();
+        let code = res.response[0].code;
+        if (code == 1) {
+          this.$message.success('上传成功');
+        } else {
+          this.$message.error('上传失败');
+        }
+      },
+      // 搜索
+      handleSearch() {
+        this.queryTable();
+      },
+      // 删除租客
+      handleDelete(row) {
+        if (this.doubleClicking) return;
+        this.doubleClicking = true;
+        axiosPost("{:url('delete')}", { id: row.id }).then(response => {
+          if (response.state == 'success') {
+            this.$message.success(response.msg);
+            this.init();
+          } else if (response.state == 'warning') {
+            this.$message.warning(response.msg);
+          } else {
+            this.$message.error(response.msg);
+          }
+        }).finally(() => {
+          this.doubleClicking = false;
+        });
+      },
+      // 导出excel
+      handleExport() {
+        axiosDownload("{:url('export')}", { 'parameter': this.searchValue });
+      },
+      // 新增租客
+      handleAdd(row) {
+        location.href = "{:url('tenant.message/save')}?tenant_message_id=" + row.id;
+      },
+      // 详细信息
+      handleFilter: function () {
+        if (this.cloumnsFlag) {
+          this.isCollapse = false;
+          this.columns = this.columns1;
+        } else {
+          this.isCollapse = true;
+          this.columns = this.columns2;
+        }
+        this.cloumnsFlag = !this.cloumnsFlag;
+      },
+    };
+  }
+</script>
+{/block}

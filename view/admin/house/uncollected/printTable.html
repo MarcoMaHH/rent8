@@ -1,0 +1,20 @@
+<t-dialog :visible="false" :width="630" :footer="false" :header="false" :close-Btn="false" top="50px">
+  <div id="printTable">
+    <table>
+      <tr>
+        <th>序号</th>
+        <th>房产名</th>
+        <th>房间名</th>
+        <th>总金额</th>
+        <th>收款日期</th>
+      </tr>
+      <tr v-for="(item, index) in tableData" :key="item.id">
+        <td>{{ index + 1 }}</td>
+        <td>{{ item.property_name }}</td>
+        <td>{{ item.number_name }}</td>
+        <td>{{ item.total_money }}</td>
+        <td>{{ item.start_time }}</td>
+      </tr>
+    </table>
+  </div>
+</t-dialog>

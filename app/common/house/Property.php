@@ -3,7 +3,6 @@
 namespace app\common\house;
 
 use app\admin\model\HouseProperty as PropertyModel;
-use app\admin\model\PayPhoto as PayPhotoModel;
 use app\admin\validate\HouseProperty as PropertyValidate;
 
 class Property
@@ -28,10 +27,10 @@ class Property
             return ['flag' => false, 'msg' => '房间名已存在'];
         }
         $data['admin_user_id'] = $admin_user_id;
-        $data['firstly'] = 'Y';
-        PropertyModel::where('admin_user_id', $admin_user_id)->update(['firstly' => 'N']);
+        $data['default'] = 'Y';
+        PropertyModel::where('admin_user_id', $admin_user_id)->update(['default' => 'N']);
         PropertyModel::create($data);
-        return ['flag' => true, 'msg' => '添加成功'];
+        return ['flag' => true, 'msg' => '新增成功'];
     }
 
     public static function sort($id, $admin_user_id)
@@ -43,9 +42,9 @@ class Property
                 'id' => $value['id']
             );
             if ($value['id'] === $id) {
-                $temp['firstly'] = 'Y';
+                $temp['default'] = 'Y';
             } else {
-                $temp['firstly'] = 'N';
+                $temp['default'] = 'N';
             }
             \array_push($result, $temp);
         }
@@ -63,34 +62,6 @@ class Property
         if (!$validate->scene('delete')->check(['id' => $id])) {
             return ['flag' => false, 'msg' => '删除失败，' . $validate->getError()];
         }
-        $photoRootPath = app()->getRootPath() . 'public';
-        $folders = [];
-        PayPhotoModel::where('house_property_id', '=', $id)->chunk(100, function ($photos) use ($photoRootPath, &$folders) {
-            foreach ($photos as $photo) {
-                $filePath = $photoRootPath . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, array_slice(explode('/', $photo['url']), 1));
-                $folderPath = dirname($filePath);
-                $folders[$folderPath] = true;
-                if (file_exists($filePath)) {
-                    try {
-                        unlink($filePath);
-                    } catch (\Exception $e) {
-                        continue;
-                    }
-                }
-            }
-        });
-
-        // 尝试删除所有空文件夹
-        foreach (array_keys($folders) as $folderPath) {
-            try {
-                if (is_dir($folderPath) && count(scandir($folderPath)) === 2) {
-                    rmdir($folderPath);
-                }
-            } catch (\Exception $e) {
-                continue;
-            }
-        }
-        PayPhotoModel::where('house_property_id', '=', $id)->delete();
         $property->delete();
         return ['flag' => true, 'msg' => '删除成功'];
     }

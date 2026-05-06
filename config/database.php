@@ -22,23 +22,23 @@ return [
     'connections'     => [
         'mysql' => [
             // 数据库类型
-            'type'            => env('DB_TYPE', 'mysql'),
+            'type' => 'mysql',
             // 服务器地址
-            'hostname'        => env('DB_HOST', '127.0.0.1'),
-            // 数据库名
-            'database'        => env('DB_NAME', ''),
+            'hostname' => (preg_split('/:/', getenv('MYSQL_ADDRESS'))[0] == null) ? env('DB_HOST') : preg_split('/:/', getenv('MYSQL_ADDRESS'))[0],
+            // 服务器端口
+            'hostport' => (preg_split('/:/', getenv('MYSQL_ADDRESS'))[0] == null) ? env('DB_PORT') : preg_split('/:/', getenv('MYSQL_ADDRESS'))[1],
             // 用户名
-            'username'        => env('DB_USER', 'root'),
+            'username' => (getenv('MYSQL_USERNAME') == null) ? env('DB_USER') : getenv('MYSQL_USERNAME'),
             // 密码
-            'password'        => env('DB_PASS', ''),
-            // 端口
-            'hostport'        => env('DB_PORT', '3306'),
+            'password' => (getenv('MYSQL_PASSWORD') == null) ? env('DB_PASS') : getenv('MYSQL_PASSWORD'),
+            // 数据库名
+            'database' => (getenv('MYSQL_DATABASE') == null) ? env('DB_NAME') : getenv('MYSQL_DATABASE'),
             // 数据库连接参数
             'params'          => [],
             // 数据库编码默认采用utf8
             'charset'         => env('DB_CHARSET', 'utf8'),
             // 数据库表前缀
-            'prefix'          => env('DB_PREFIX', ''),
+            'prefix' => (getenv('MYSQL_PREFIX') == null) ? env('DB_PREFIX') : getenv('MYSQL_PREFIX'),
 
             // 数据库部署方式:0 集中式(单一服务器),1 分布式(主从服务器)
             'deploy'          => 0,

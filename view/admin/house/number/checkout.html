@@ -1,0 +1,92 @@
+{extend name="common/layout" /}
+{block name="main"}
+<t-card class="list-card-container" :bordered="false">
+  <div style="display: flex; justify-content: center; font-size: 1.5em; margin-bottom: 20px;">{{header}}</div>
+  <div style="display: flex; justify-content: center; align-items: center; height: 100%; ">
+    <t-form ref="form" :data="formData" :rules="rules" :label-width="200" @submit="handleSave">
+      <t-form-item label="退房日期" name="calculate_date">
+        <t-date-picker v-model="formData.calculate_date" mode="date" :style="{ width: '480px' }" clearable />
+      </t-form-item>
+      <t-form-item label="水表吨数" :help="`上期水表吨数：${formData.water_meter_last_month}`" name="water_meter">
+        <t-input-number theme="normal" v-model="formData.water_meter" :style="{ width: '480px' }" placeholder="请输入" />
+      </t-form-item>
+      <t-form-item label="电表度数" :help="`上期电表度数：${formData.electricity_meter_last_month}`" name="electricity_meter">
+        <t-input-number theme="normal" v-model="formData.electricity_meter" :style="{ width: '480px' }"
+          placeholder="请输入" />
+      </t-form-item>
+      <t-form-item label="备注" name="note">
+        <t-input v-model="formData.note" :style="{ width: '480px' }" placeholder="请输入" />
+      </t-form-item>
+      <t-form-item>
+        <t-button variant="outline" @click="handleCancel" style="margin-right: 5px">取消</t-button>
+        <t-button theme="primary" type="submit" :disabled="doubleClicking" style="margin-right: 5px">保存</t-button>
+      </t-form-item>
+    </t-form>
+  </div>
+</t-card>
+{/block}
+
+{block name="script"}
+<script>
+  const data = {
+    formData: {
+      water_meter_last_month: 0,
+      electricity_meter_last_month: 0,
+    },
+    rules: {
+      tenant_name: [{ required: true, message: "必填", trigger: "blur" }],
+      calculate_date: [{ required: true, message: "必填", trigger: "blur" }],
+      water_meter: [{ required: true, message: "必填", trigger: "blur" }],
+      electricity_meter: [{ required: true, message: "必填", trigger: "blur" }],
+    },
+    // 避免重复点击
+    doubleClicking: false,
+    header: '租客退房',
+    // 分页
+    pagination: {
+      defaultPageSize: 10,
+      total: 10,
+      defaultCurrent: 1,
+    },
+  };
+
+  function f() {
+    return {
+      init: function () {
+        axiosGet("{:url('queryCheckout')}", { id: '{$id}' }).then(response => {
+          if (response.code == 1) {
+            this.formData = response.data;
+            this.header = response.msg;
+          } else {
+            this.$message.error('系统出错');
+          }
+        });
+      },
+      handleCancel() {
+        history.back();
+      },
+      handleSave() {
+        this.doubleClicking = true;
+        this.$refs.form.validate().then((valid) => {
+          if (valid == true) {
+            axiosPost("{:url('runCheckout')}", this.formData).then((response) => {
+              if (response.state == "success") {
+                this.$message.success(response.msg);
+                location.href = "{:url('index')}";
+              } else if (response.state == "warning") {
+                this.$message.warning(response.msg);
+              } else {
+                this.$message.error(response.msg);
+              }
+            }).finally(() => {
+              this.doubleClicking = false;
+            });
+          } else {
+            this.doubleClicking = false;
+          }
+        });
+      },
+    }
+  }
+</script>
+{/block}

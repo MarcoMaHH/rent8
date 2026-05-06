@@ -4,9 +4,6 @@ namespace app\api\controller;
 
 use app\api\validate\User as UserValidate;
 use app\admin\model\AdminUser as UserModel;
-use app\admin\model\HouseBilling as BillingModel;
-use app\admin\model\HouseProperty as PropertyModel;
-use app\admin\model\AdminSubscribe as SubscribeModel;
 
 class User extends Common
 {
@@ -205,82 +202,5 @@ class User extends Common
     {
         $this->auth->logout();
         return $this->returnSuccess('退出成功');
-    }
-
-    // 微信小程序订阅消息
-    public function subscribe()
-    {
-        $loginUser = $this->auth->getLoginUser();
-        $properties = PropertyModel::where('admin_user_id', $loginUser['id'])
-            ->select()
-            ->toArray();
-        $result = array_map(function ($property) {
-            return $property['id'];
-        }, $properties);
-        $conditions = array(
-            ['a.house_property_id', 'in', $result],
-            ['a.start_time', '> time', 'today'],
-            ['a.accounting_date', 'null', ''],
-            ['c.subscribe_mark', '=', 'Y'],
-        );
-        $bill = BillingModel::where($conditions)
-            ->alias('a')
-            ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
-            ->join('HouseProperty c', 'c.id = a.house_property_id')
-            ->field('a.id, a.total_money, a.house_property_id, a.start_time, b.name as number_name, c.name as property_name')
-            ->order(['a.start_time' => 'asc'])
-            ->limit(1)
-            ->select()
-            ->toArray();
-        if (count($bill) == 0) {
-            return $this->returnError('无账单');
-        }
-
-        // 获取用户openid
-        $code = $this->request->post('code/s', '', 'trim');
-        try {
-            $ch = curl_init();
-            // 构建包含查询字符串的URL
-            $url = 'https://api.weixin.qq.com/sns/jscode2session?' . http_build_query([
-                'appid' => env('WECHAT_APP_ID'),
-                'secret' => env('WECHAT_APP_SECRET'),
-                'js_code' => $code,
-                'grant_type' => 'authorization_code'
-            ]);
-
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            $response = curl_exec($ch);
-
-            if ($response === false) {
-                return $this->returnSuccess(curl_error($ch));
-            }
-            curl_close($ch);
-            $result = json_decode($response, true);
-            if (isset($result['openid'])) {
-                $data = [
-                    'thing1' => $bill[0]['property_name'] . '-' . $bill[0]['number_name'],
-                    'time2' => $bill[0]['start_time'],
-                ];
-
-                // 查询是否存在记录
-                $subscribeRecord = SubscribeModel::where('open_id', $result['openid'])->find();
-                if ($subscribeRecord) {
-                    // 记录存在，执行更新操作
-                    $subscribeRecord->save($data);
-                } else {
-                    // 记录不存在，执行新增操作
-                    $data['open_id'] = $result['openid'];
-                    SubscribeModel::create($data);
-                }
-
-                return $this->returnSuccess('订阅成功');
-            } else {
-                return $this->returnError('订阅失败');
-            }
-        } catch (\Exception $e) {
-            return $this->returnError($e->getMessage());
-        }
     }
 }

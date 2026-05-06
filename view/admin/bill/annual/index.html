@@ -1,9 +1,6 @@
 {extend name="common/layout" /}
 {block name="main"}
 <t-card class="list-card-container" :bordered="false">
-  <t-button theme="primary" style="margin-bottom: 10px;" @click="handleArrange">
-    整理数据
-  </t-button>
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
     active-row-type="single" :hover="true" :loading="tableLoading">
   </t-table>
@@ -35,16 +32,6 @@
             this.$message.error('系统出错了!!!');
           }
           this.tableLoading = false;
-        });
-      },
-      handleArrange() {
-        axiosGet("{:url('arrange')}").then(response => {
-          if (response.code == 1) {
-            this.$message.success(response.msg);
-            this.init();
-          } else {
-            this.$message.error('系统出错了!!!');
-          }
         });
       },
     }

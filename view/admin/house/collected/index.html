@@ -2,9 +2,9 @@
 {block name="main"}
 <t-card class="list-card-container" :bordered="false">
   <div style="display: flex; align-items: center; margin-bottom: 10px;">
-    <div style="display: flex; align-items: center; width: 380px; ">
+    <div style="display: flex; align-items: center; width: 300px; ">
       <div style="flex-grow: 1; margin-right: 5px;">
-        <t-input v-model="searchValue" placeholder="请输入房产、房间、到账日期（如：2025-02）" clearable @enter="handleSearch" />
+        <t-input v-model="searchValue" placeholder="请输入房产、房间、租客" clearable @enter="handleSearch" />
       </div>
       <t-button theme="primary" @click="handleSearch">
         <template #icon><t-icon name="search" /></template>
@@ -18,14 +18,39 @@
         <template #icon><t-icon name="unfold-more" /></template> 明细账单
       </t-button>
       <t-button theme="primary" @click="handleExport">
-        <template #icon><t-icon name="file-export" /></template> 导出列表
+        <template #icon><t-icon name="file-export" /></template> 导出账单
       </t-button>
     </div>
   </div>
 
   <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
     active-row-type="single" :hover="true" :loading="tableLoading" :pagination="pagination" @page-change="onPageChange">
+    <template #bill_type="{ row }">
+      <t-tag v-if="bill_type_array.find(i => i.value === row.bill_type)"
+        :theme="bill_type_array.find(i => i.value === row.bill_type)?.note" variant="light">
+        {{ bill_type_array.find(i => i.value === row.bill_type)?.label }}
+      </t-tag>
+    </template>
   </t-table>
+
+  <!-- 导出FORM -->
+  <t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false">
+    <t-form ref="exportForm" :data="formData" :rules="rules" :label-width="100" @submit="handleExportSave">
+      <t-form-item label="计算类别" name="type">
+        <t-radio-group v-model="formData.type">
+          <t-radio value="S">收款日期</t-radio>
+          <t-radio value="A">到账日期</t-radio>
+        </t-radio-group>
+      </t-form-item>
+      <t-form-item label="导出月份" name="export_time">
+        <t-date-picker v-model="formData.export_time" mode="month" :style="{ width: '480px' }" clearable />
+      </t-form-item>
+      <t-form-item style="float: right">
+        <t-button variant="outline" @click="dialogVisible = false" style="margin-right: 5px;">取消</t-button>
+        <t-button theme="primary" type="submit" :disabled="doubleClicking">确定</t-button>
+      </t-form-item>
+    </t-form>
+  </t-dialog>
 </t-card>
 {/block}
 
@@ -36,41 +61,8 @@
     tableLoading: false,
     cloumnsFlag: false,
     columns: [],
-    columns1: [
-      { title: '房产名', colKey: 'property_name', width: 90, fixed: 'left' },
-      { title: '房间名', colKey: 'number_name', width: 60, fixed: 'left' },
-      { title: '租期', colKey: 'lease', width: 190, fixed: 'left' },
-      { title: '电费', colKey: 'electricity', width: 50 },
-      { title: '水费', colKey: 'water', width: 50 },
-      { title: '租金', colKey: 'rental', width: 50 },
-      { title: '押金', colKey: 'deposit', width: 50 },
-      { title: '管理费', colKey: 'management', width: 60 },
-      { title: '网络费', colKey: 'network', width: 59 },
-      { title: '卫生费', colKey: 'garbage_fee', width: 60 },
-      { title: '其他费用', colKey: 'other_charges', width: 75 },
-      { title: '总金额', colKey: 'total_money', width: 80 },
-      { title: '到账日期', colKey: 'accounting_date', width: 100, fixed: 'right' },
-    ],
-    columns2: [
-      { title: '房产名', colKey: 'property_name', width: 87, fixed: 'left' },
-      { title: '房间名', colKey: 'number_name', width: 80, fixed: 'left' },
-      { title: '租期', colKey: 'lease', width: 110, fixed: 'left', ellipsis: true },
-      { title: '电表度数', colKey: 'electricity_meter_this_month', width: 73 },
-      { title: '用电量', colKey: 'electricity_consumption', width: 60 },
-      { title: '电费', colKey: 'electricity', width: 60 },
-      { title: '水表度数', colKey: 'water_meter_this_month', width: 73 },
-      { title: '用水量', colKey: 'water_consumption', width: 60 },
-      { title: '水费', colKey: 'water', width: 50 },
-      { title: '租金', colKey: 'rental', width: 50 },
-      { title: '押金', colKey: 'deposit', width: 50 },
-      { title: '管理费', colKey: 'management', width: 59 },
-      { title: '网络费', colKey: 'network', width: 59 },
-      { title: '卫生费', colKey: 'garbage_fee', width: 59 },
-      { title: '其他费用', colKey: 'other_charges', width: 75 },
-      { title: '总金额', colKey: 'total_money', width: 59 },
-      { title: '备注', colKey: 'note', width: 90, ellipsis: true },
-      { title: '到账日期', colKey: 'accounting_date', width: 95, fixed: 'right' },
-    ],
+    columns1: [],
+    columns2: [],
     sum: 0,
     house_number_id: '',
     // 搜索框
@@ -81,19 +73,44 @@
       total: 10,
       defaultCurrent: 1,
       pageSize: 10,
-      // current: 1,
     },
+    bill_type_array: [],
+    // 导出表单数据
+    formData: {},
+    dialogVisible: false,
+    formHeader: '导出账单',
+    rules: {
+      export_time: [{ required: true, message: "必填", trigger: "blur" }],
+      type: [{ required: true, message: "必选", trigger: "blur" }],
+    },
+    // 避免重复点击
+    doubleClicking: false,
   };
   function f() {
     return {
       init: function () {
-        this.columns = this.columns1;
+        axiosGet("{:url('getColumns')}").then((response) => {
+          if (response.code == 1) {
+            this.columns = response.data[0];
+            this.columns1 = response.data[0];
+            this.columns2 = response.data[1];
+          } else {
+            console.log("getMessage error");
+          }
+        });
         this.queryTable();
         axiosGet("{:url('sum')}").then(response => {
           if (response.code == 1) {
             this.sum = response.msg;
           } else {
             this.$message.error('系统出错了!!!');
+          }
+        });
+        axiosGet("{:url('admin.parameter/queryParameter')}", { parameter: 'bill_type' }).then(response => {
+          if (response.code == 1) {
+            this.bill_type_array = response.data;
+          } else {
+            console.error('账单类型参数获取失败');
           }
         });
       },
@@ -136,12 +153,24 @@
       },
       // 导出excel
       handleExport() {
-        let params = {
-          'parameter': this.searchValue,
-          'limit': this.pagination.pageSize,
-          'page': this.pagination.current
+        this.$refs.exportForm.reset();
+        this.formData = {
+          type: 'A',
+          export_time: new Date().toISOString().slice(0, 7)  // 格式为YYYY-MM
         };
-        axiosDownload("{:url('export')}", params);
+        this.dialogVisible = true;
+      },
+      handleExportSave() {
+        this.doubleClicking = true;
+        this.$refs.exportForm.validate().then((valid) => {
+          if (valid == true) {
+            axiosDownload("{:url('export')}", this.formData);
+            this.dialogVisible = false;
+            this.doubleClicking = false;
+          } else {
+            this.doubleClicking = false;
+          }
+        });
       },
     }
   }

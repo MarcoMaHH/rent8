@@ -5,8 +5,8 @@ namespace app\api\controller;
 use app\api\library\Property;
 use app\admin\model\BillSum as SumModel;
 use app\admin\model\AdminUser as UserModel;
-use app\admin\model\HouseContract as ContractModel;
-use app\admin\model\HouseBilling as BillingModel;
+use app\admin\model\TenantContract as ContractModel;
+use app\admin\model\HouseReceipt as ReceiptModel;
 
 class Report extends Common
 {
@@ -26,7 +26,7 @@ class Report extends Common
             ->sum('amount');
         $user = UserModel::find($loginUser['id']);
         $number_count =  $user->houseNumber->where('house_property_id', 'in', $house_property_id)->count();
-        $empty_count =  $user->houseNumber->where('rent_mark', 'N')->where('house_property_id', 'in', $house_property_id)->count();
+        $empty_count =  $user->houseNumber->where('checkin_date', 'NULL', '')->where('house_property_id', 'in', $house_property_id)->count();
         $occupancy = $number_count == 0 ? '0%' : round((($number_count - $empty_count) / $number_count) * 100) . '%';
         $contract = ContractModel::where('house_property_id', 'in', $house_property_id)
             ->whereNotNull('end_date')
@@ -34,7 +34,7 @@ class Report extends Common
         $contract7 = ContractModel::where('house_property_id', 'in', $house_property_id)
             ->where('end_date', '< time', 'today+7 days')
             ->count();
-        $bill = BillingModel::where('house_property_id', 'in', $house_property_id)
+        $bill = ReceiptModel::where('house_property_id', 'in', $house_property_id)
             ->where('start_time', '< time', 'today+7 days')
             ->where('accounting_date', 'null', '')
             ->count();

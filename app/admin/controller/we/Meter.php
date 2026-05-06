@@ -26,23 +26,25 @@ class Meter extends Common
         );
         $count = MeterModel::where($conditions)->alias('a')->count();
         $meters = MeterModel::where($conditions)->alias('a')
-        ->join('HouseProperty c', 'a.house_property_id = c.id')
-        ->field("a.*, c.name as property_name")
-        ->order(['house_property_id'])
-        ->select();
+            ->join('HouseProperty c', 'a.house_property_id = c.id')
+            ->field("a.*, c.name as property_name")
+            ->order(['house_property_id'])
+            ->select();
         foreach ($meters as $value) {
             if ($value['house_number_id']) {
                 $value['number_name'] = '';
                 $array = explode(',', $value['house_number_id']);
                 foreach ($array as $value1) {
-                    $value['number_name'] .= NumberModel::find($value1)['name'] . ',';
+                    if ($number = NumberModel::find($value1)) {
+                        $value['number_name'] .= $number['name'] . ',';
+                    }
                 }
                 if (strlen($value['number_name']) > 0) {
                     $value['number_name'] = substr($value['number_name'], 0, -1);
                 }
             }
         }
-        return $this->returnResult($meters);
+        return $this->returnResult($meters, $count);
     }
 
     public function save()

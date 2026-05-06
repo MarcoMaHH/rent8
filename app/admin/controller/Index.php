@@ -2,9 +2,9 @@
 
 namespace app\admin\controller;
 
-use app\admin\model\HouseBilling as BillingModel;
+use app\admin\model\HouseReceipt as ReceiptModel;
 use app\admin\model\HouseProperty as PropertyModel;
-use app\admin\model\HouseContract as ContractModel;
+use app\admin\model\TenantContract as ContractModel;
 use app\admin\model\BillSum as SumModel;
 use app\admin\model\AdminUser as UserModel;
 use think\facade\View;
@@ -23,7 +23,7 @@ class Index extends Common
         $loginUser = $this->auth->getLoginUser();
         $user = UserModel::find($loginUser['id']);
         $number_count =  $user->houseNumber->count();
-        $empty_count =  $user->houseNumber->where('rent_mark', 'N')->count();
+        $empty_count =  $user->houseNumber->where('checkin_date', 'NULL', '')->count();
         $occupancy = $number_count == 0 ? '0%' : round((($number_count - $empty_count) / $number_count) * 100) . '%';
         $property = PropertyModel::where('admin_user_id', $loginUser['id'])->select()->toArray();
         $result = array_map(function ($item) {
@@ -61,7 +61,7 @@ class Index extends Common
             ['a.start_time', '< time', 'today+7 days'],
             ['a.accounting_date', 'null', ''],
         );
-        $bill = BillingModel::where($conditions)
+        $bill = ReceiptModel::where($conditions)
             ->alias('a')
             ->join('HouseNumber b', 'b.house_property_id = a.house_property_id and b.id = a.house_number_id')
             ->join('HouseProperty c', 'c.id = a.house_property_id')
@@ -74,6 +74,7 @@ class Index extends Common
                 $value['start_time'] = \substr($value['start_time'], 0, 10);
             }
             $sum += $value['total_money'] ? $value['total_money'] : 0;
+            $value['merge'] = $value['property_name'] . ' - ' . $value['number_name'];
         }
         return $this->returnResult($bill, 0, round($sum, 2));
     }
@@ -102,6 +103,7 @@ class Index extends Common
             if ($value['end_date']) {
                 $value['end_date'] = \substr($value['end_date'], 0, 10);
             }
+            $value['merge'] = $value['property_name'] . ' - ' . $value['number_name'];
         }
         return $this->returnResult($contract);
     }

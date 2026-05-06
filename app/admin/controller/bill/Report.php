@@ -8,7 +8,7 @@ use app\admin\model\AdminUser as UserModel;
 use app\admin\library\Property;
 use app\admin\model\HouseOther as OtherModel;
 use app\admin\model\WeBill as WeBillModel;
-use app\admin\model\HouseContract as ContractModel;
+use app\admin\model\TenantContract as ContractModel;
 use think\facade\View;
 
 class Report extends Common
@@ -34,7 +34,10 @@ class Report extends Common
             ->sum('amount');
         $user = UserModel::find($loginUser['id']);
         $number_count =  $user->houseNumber->where('house_property_id', 'in', $house_property_id)->count();
-        $empty_count =  $user->houseNumber->where('rent_mark', 'N')->where('house_property_id', 'in', $house_property_id)->count();
+        $empty_count = $user->houseNumber
+            ->where('house_property_id', 'in', $house_property_id)
+            ->where('checkin_date', 'NULL', '')
+            ->count();
         $occupancy = $number_count == 0 ? '0%' : round((($number_count - $empty_count) / $number_count) * 100) . '%';
         $contract = ContractModel::where('house_property_id', 'in', $house_property_id)
             ->whereNotNull('end_date')

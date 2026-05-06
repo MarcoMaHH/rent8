@@ -1,0 +1,155 @@
+{extend name="common/layout" /}
+{block name="main"}
+<t-card class="list-card-container" :bordered="false">
+  <div style="display: flex; justify-content: center; font-size: 1.5em; margin-bottom: 20px;">{{header}}</div>
+  <div style="display: flex; justify-content: center; align-items: center; height: 100%; ">
+    <t-form ref="form" :data="formData" :rules="rules" :label-width="200" @submit="handleSave">
+      <t-form-item>
+        <t-button theme="primary" @click="selectTenant">
+          选择租客
+        </t-button>
+      </t-form-item>
+      <t-form-item label="租客名" name="tenant_name">
+        <t-input v-model="formData.tenant_name" :style="{ width: '480px' }" placeholder="请输入" />
+      </t-form-item>
+      <t-form-item label="入住日期" name="calculate_date">
+        <t-date-picker v-model="formData.calculate_date" mode="date" :style="{ width: '480px' }" clearable />
+      </t-form-item>
+      <t-form-item label="水表底数" name="water_meter">
+        <t-input-number theme="normal" v-model="formData.water_meter" :style="{ width: '480px' }" placeholder="请输入" />
+      </t-form-item>
+      <t-form-item label="电表底数" name="electricity_meter">
+        <t-input-number theme="normal" v-model="formData.electricity_meter" :style="{ width: '480px' }"
+          placeholder="请输入" />
+      </t-form-item>
+      <t-divider>租客信息</t-divider>
+      <t-form-item label="性别" name="sex">
+        <t-radio-group v-model="formData.sex">
+          <t-radio value="M">男</t-radio>
+          <t-radio value="F">女</t-radio>
+        </t-radio-group>
+      </t-form-item>
+      <t-form-item label="手机号码" name="phone">
+        <t-input v-model="formData.phone" :style="{ width: '480px' }" placeholder="请输入" />
+      </t-form-item>
+      <t-form-item label="身份证号码" name="id_card_number">
+        <t-input v-model="formData.id_card_number" :style="{ width: '480px' }" placeholder="请输入" />
+      </t-form-item>
+      <t-form-item label="籍贯" name="native_place">
+        <t-input v-model="formData.native_place" :style="{ width: '480px' }" placeholder="请输入" />
+      </t-form-item>
+      <t-form-item label="工作单位" name="work_units">
+        <t-input v-model="formData.work_units" :style="{ width: '480px' }" placeholder="请输入" />
+      </t-form-item>
+      <t-form-item label="备注" name="note">
+        <t-input v-model="formData.note" :style="{ width: '480px' }" placeholder="请输入" />
+      </t-form-item>
+      <t-form-item>
+        <t-button variant="outline" @click="handleCancel" style="margin-right: 5px">取消</t-button>
+        <t-button theme="primary" type="submit" :disabled="doubleClicking" style="margin-right: 5px">保存</t-button>
+      </t-form-item>
+    </t-form>
+  </div>
+</t-card>
+
+<t-dialog v-model:visible="dialogVisible" :header="formHeader" :width="680" :footer="false" top="50px">
+  <t-table :data="tableData" :columns="columns" row-key="id" vertical-align="top" :bordered="true" size="small"
+    active-row-type="single" :loading="tableLoading" :pagination="pagination" @row-dblclick="onRowClick">
+  </t-table>
+</t-dialog>
+{/block}
+
+{block name="script"}
+<script>
+  const data = {
+    formData: {},
+    rules: {
+      tenant_name: [{ required: true, message: "必填", trigger: "blur" }],
+      calculate_date: [{ required: true, message: "必填", trigger: "blur" }],
+      water_meter: [{ required: true, message: "必填", trigger: "blur" }],
+      electricity_meter: [{ required: true, message: "必填", trigger: "blur" }],
+      phone: [{ telnumber: true, message: '请输入正确的手机号码', trigger: 'blur' }],
+      id_card_number: [{ idcard: true, message: '请输入正确的身份证号码', trigger: 'blur' }],
+    },
+    // 避免重复点击
+    doubleClicking: false,
+    header: '租客入住',
+    // 租客入住表单
+    dialogVisible: false,
+    tableData: [],
+    formHeader: '双击选择租客',
+    columns: [
+      { title: "房产名", colKey: "property_name", width: 80 },
+      { title: "房间名", colKey: "number_name", width: 80 },
+      { title: "租客名", colKey: "tenant_name", width: 80 },
+    ],
+    tableLoading: false,
+    // 分页
+    pagination: {
+      defaultPageSize: 10,
+      total: 10,
+      defaultCurrent: 1,
+    },
+  };
+
+  function f() {
+    return {
+      init: function () {
+        axiosGet("{:url('queryCheckin')}", { id: '{$id}' }).then(response => {
+          if (response.code == 1) {
+            this.formData = response.data;
+            this.header = response.msg;
+          } else {
+            this.$message.error('系统出错');
+          }
+        });
+      },
+      handleCancel() {
+        history.back();
+      },
+      handleSave() {
+        this.doubleClicking = true;
+        this.$refs.form.validate().then((valid) => {
+          if (valid == true) {
+            axiosPost("{:url('runCheckin')}", this.formData).then((response) => {
+              if (response.state == "success") {
+                this.$message.success(response.msg);
+                location.href = "{:url('index')}";
+              } else if (response.state == "warning") {
+                this.$message.warning(response.msg);
+              } else {
+                this.$message.error(response.msg);
+              }
+            }).finally(() => {
+              this.doubleClicking = false;
+            });
+          } else {
+            this.doubleClicking = false;
+          }
+        });
+      },
+      selectTenant() {
+        this.dialogVisible = true;
+        axiosGet("{:url('tenant.message/selectTenant')}", { id: '{$id}' }).then(response => {
+          if (response.code == 1) {
+            this.tableData = response.data;
+            this.pagination.total = response.count;
+          } else {
+            this.$message.error('系统出错');
+          }
+        });
+      },
+      onRowClick(row) {
+        this.formData.id_card_number = row.row.id_card_number;
+        this.formData.native_place = row.row.native_place;
+        this.formData.note = row.row.note;
+        this.formData.phone = row.row.phone;
+        this.formData.sex = row.row.sex;
+        this.formData.work_units = row.row.work_units;
+        this.formData.tenant_name = row.row.tenant_name;
+        this.dialogVisible = false;
+      }
+    }
+  }
+</script>
+{/block}

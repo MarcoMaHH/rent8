@@ -18,16 +18,16 @@ class Property
         $user = Auth::getInstance()->getLoginUser()['id'];
         if ($user) {
             $properties = PropertyModel::where('admin_user_id', $user)
-                                       ->field('id,firstly')
-                                       ->select()
-                                       ->toArray();
+                ->field('id,default')
+                ->select()
+                ->toArray();
 
             $allPropertyIds = array_map(function ($property) {
                 return $property['id'];
             }, $properties);
 
             $preferredProperty = array_filter($properties, function ($property) {
-                return $property['firstly'] === 'Y';
+                return $property['default'] === 'Y';
             });
 
             if (!empty($preferredProperty)) {
@@ -36,6 +36,5 @@ class Property
         }
 
         return $preferredPropertyId ? [$preferredPropertyId] : $allPropertyIds;
-
     }
 }

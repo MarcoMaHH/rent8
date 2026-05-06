@@ -4,11 +4,11 @@ namespace app\admin\library;
 
 class Date
 {
-    public static function getLease($checkin, $i = 1, $lease_type = 1)
+    public static function getLease($calculate, $cycle = 1, $cycle_type = 'month', $lease = 1)
     {
-        $j = $i + $lease_type;
-        $star = date('Y-m-d', strtotime("$checkin +$i month"));
-        $end = date('Y-m-d', strtotime("$checkin +$j month - 1 day"));
+        $j = $cycle + $lease;
+        $star = date('Y-m-d', strtotime("$calculate +$lease $cycle_type"));
+        $end = date('Y-m-d', strtotime("$calculate +$j $cycle_type - 1 day"));
         return array($star, $end);
     }
 

@@ -17,6 +17,12 @@ define('TYPE_INCOME', 'I');
 //类型-支出
 define('TYPE_EXPENDITURE', 'E');
 
+// adminSubscribe类型
+//类型-续约
+define('TYPE_RENEWAL', 'A');
+//类型-收租
+define('TYPE_RENT', 'B');
+
 class Common extends BaseController
 {
     protected $auth;
